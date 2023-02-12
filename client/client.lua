@@ -10,9 +10,8 @@ local ShopPrompt2 = GetRandomIntInRange(0, 0xffffff)
 local PlayerJob
 local JobName
 local JobGrade
-local InMenu = false
 
-local cam = nil
+cam = nil
 zoom = 4.0
 offset = 0.2
 local InterP = true
@@ -39,7 +38,6 @@ local horseName
 local horseComponents = {}
 local initializing = false
 local alreadySentShopData = false
-local myHorses = {}
 local SaddlesUsing = nil
 local SaddleclothsUsing = nil
 local StirrupsUsing = nil
@@ -49,7 +47,7 @@ local HorseTailsUsing = nil
 local AcsHornUsing = nil
 local AcsLuggageUsing = nil
 
-local cameraUsing = {
+cameraUsing = {
     {
         name = "Horse",
         x = 0.2,
@@ -76,7 +74,7 @@ Citizen.CreateThread(function()
         local dead = IsEntityDead(player)
         local hour = GetClockHours()
 
-        if InMenu == false and not dead then
+        if not dead then
             for shopId, shopConfig in pairs(Config.stables) do
                 if shopConfig.shopHours then
                     if hour >= shopConfig.shopClose or hour < shopConfig.shopOpen then
@@ -249,6 +247,302 @@ Citizen.CreateThread(function()
     end
 end)
 
+local function NativeSetPedComponentEnabled(ped, component)
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, component, true, true, true)
+end
+
+local function createCamera(entity)
+    groundCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
+    SetCamCoord(groundCam, StablePoint[1] + 0.5, StablePoint[2] - 3.6, StablePoint[3] )
+    SetCamRot(groundCam, -20.0, 0.0, HeadingPoint + 20)
+    SetCamActive(groundCam, true)
+    RenderScriptCams(true, false, 1, true, true)
+    --Wait(3000)
+    -- last camera, create interpolate
+    fixedCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
+    SetCamCoord(fixedCam, StablePoint[1] + 0.5, StablePoint[2] - 3.6, StablePoint[3] +1.8)
+    SetCamRot(fixedCam, -20.0, 0, HeadingPoint + 50.0)
+    SetCamActive(fixedCam, true)
+    SetCamActiveWithInterp(fixedCam, groundCam, 3900, true, true)
+    Wait(3900)
+    DestroyCam(groundCam)
+end
+
+local function getShopData()
+    alreadySentShopData = true
+    local ret = Config.Horses
+    return ret
+end
+
+local function setcloth(hash)
+    local model2 = GetHashKey(tonumber(hash))
+    if not HasModelLoaded(model2) then
+        Citizen.InvokeNative(0xFA28FE3A6246FC30, model2)
+    end
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(hash), true, true, true)
+end
+
+function OpenStable()
+    inCustomization = true
+    horsesp = true
+    local playerHorse = MyHorse_entity
+    local player = PlayerPedId()
+
+    SetEntityHeading(playerHorse, 334)
+    SetNuiFocus(true, true)
+    InterP = true
+
+    local hashm = GetEntityModel(playerHorse)
+
+    if hashm ~= nil and IsPedOnMount(player) then
+        createCamera(player)
+    else
+        createCamera(player)
+    end
+    --  SetEntityVisible(PlayerPedId(), false)
+    if not alreadySentShopData then
+        SendNUIMessage(
+            {
+                action = "show",
+                shopData = getShopData()
+            }
+        )
+    else
+        SendNUIMessage(
+            {
+                action = "show"
+            }
+        )
+    end
+    TriggerServerEvent('oss_stables:AskForMyHorses')
+end
+
+local function rotation(dir)
+    local playerHorse = MyHorse_entity
+    local pedRot = GetEntityHeading(playerHorse) + dir
+    SetEntityHeading(playerHorse, pedRot % 360)
+end
+
+local function SetHorseName(data)
+    SetNuiFocus(false, false)
+    SendNUIMessage(
+        {
+            action = "hide"
+        }
+    )
+    Wait(200)
+    local HorseName = ""
+
+	Citizen.CreateThread(function()
+		AddTextEntry('FMMC_MPM_NA', "Name your horse:")
+		DisplayOnscreenKeyboard(1, "FMMC_MPM_NA", "", "", "", "", "", 30)
+		while (UpdateOnscreenKeyboard() == 0) do
+			DisableAllControlActions(0)
+			Citizen.Wait(0)
+		end
+		if (GetOnscreenKeyboardResult()) then
+            HorseName = GetOnscreenKeyboardResult()
+            TriggerServerEvent('oss_stables:BuyHorse', data, HorseName)
+
+            SetNuiFocus(true, true)
+            SendNUIMessage(
+            {
+                action = "show",
+                shopData = getShopData()
+            }
+        )
+
+        Wait(1000)
+        TriggerServerEvent('oss_stables:AskForMyHorses')
+		end
+    end)
+end
+
+local function CloseStable()
+    local dados = {
+        -- ['saddles'] = SaddlesUsing,
+        -- ['saddlescloths'] = SaddleclothsUsing,
+        -- ['stirrups'] = StirrupsUsing,
+        -- ['bags'] = BagsUsing,
+        -- ['manes'] = ManesUsing,
+        -- ['horsetails'] = HorseTailsUsing,
+        -- ['acshorn'] = AcsHornUsing,
+        -- ['ascluggage'] = AcsLuggageUsing
+        SaddlesUsing,
+        SaddleclothsUsing,
+        StirrupsUsing,
+        BagsUsing,
+        ManesUsing,
+        HorseTailsUsing,
+        AcsHornUsing,
+        AcsLuggageUsing
+    }
+    local DadosEncoded = json.encode(dados)
+
+    if DadosEncoded ~= "[]" then
+        TriggerServerEvent('oss_stables:UpdateHorseComponents', dados, IdMyHorse, MyHorse_entity)
+    end
+end
+
+local function InitiateHorse(atCoords)
+    if initializing then
+        return
+    end
+
+    initializing = true
+
+    if SpawnplayerHorse ~= 0 then
+        DeleteEntity(SpawnplayerHorse)
+        SpawnplayerHorse = 0
+    end
+
+    local player = PlayerPedId()
+    local pCoords = GetEntityCoords(player)
+    local modelHash = GetHashKey(horseModel)
+
+    if not HasModelLoaded(modelHash) then
+        RequestModel(modelHash)
+        while not HasModelLoaded(modelHash) do
+            Citizen.Wait(10)
+        end
+    end
+
+    local spawnPosition
+
+    if atCoords == nil then
+        local x, y, z = table.unpack(pCoords)
+        local bool, nodePosition = GetClosestVehicleNode(x, y, z, 1, 3.0, 0.0)
+        local index = 0
+        while index <= 25 do
+            local _bool, _nodePosition = GetNthClosestVehicleNode(x, y, z, index, 1, 3.0, 2.5)
+            if _bool == true or _bool == 1 then
+                bool = _bool
+                nodePosition = _nodePosition
+                index = index + 3
+            else
+                break
+            end
+        end
+        spawnPosition = nodePosition
+    else
+        spawnPosition = atCoords
+    end
+
+    if spawnPosition == nil then
+        initializing = false
+        return
+    end
+
+    local entity = CreatePed(modelHash, spawnPosition, GetEntityHeading(player), true, true)
+    SetModelAsNoLongerNeeded(modelHash)
+
+    Citizen.InvokeNative(0x9587913B9E772D29, entity, 0)
+    Citizen.InvokeNative(0x4DB9D03AC4E1FA84, entity, -1, -1, 0)
+    Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, entity)
+    Citizen.InvokeNative(0xBCC76708E5677E1D9, entity, 0)
+    Citizen.InvokeNative(0xB8B6430EAD2D2437, entity, GetHashKey("PLAYER_HORSE"))
+    Citizen.InvokeNative(0xFD6943B6DF77E449, entity, false)
+
+    SetPedConfigFlag(entity, 324, true)
+    SetPedConfigFlag(entity, 211, true)
+    SetPedConfigFlag(entity, 208, true)
+    SetPedConfigFlag(entity, 209, true)
+    SetPedConfigFlag(entity, 400, true)
+    SetPedConfigFlag(entity, 297, true)
+    SetPedConfigFlag(entity, 136, false)
+    SetPedConfigFlag(entity, 312, false)
+    SetPedConfigFlag(entity, 113, false)
+    SetPedConfigFlag(entity, 301, false)
+    SetPedConfigFlag(entity, 277, true)
+    SetPedConfigFlag(entity, 319, true)
+    SetPedConfigFlag(entity, 6, true)
+
+    SetAnimalTuningBoolParam(entity, 25, false)
+    SetAnimalTuningBoolParam(entity, 24, false)
+
+    TaskAnimalUnalerted(entity, -1, false, 0, 0)
+    Citizen.InvokeNative(0x283978A15512B2FE, entity, true)
+
+    SpawnplayerHorse = entity
+
+    Citizen.InvokeNative(0x283978A15512B2FE, entity, true)
+    -- SetVehicleHasBeenOwnedByPlayer(playerHorse, true)
+    SetPedNameDebug(entity, horseName)
+    SetPedPromptName(entity, horseName)
+    --CreatePrompts(PromptGetGroupIdForTargetEntity(entity))
+    if horseComponents ~= nil and horseComponents ~= "0" then
+        for _, componentHash in pairs(json.decode(horseComponents)) do
+            NativeSetPedComponentEnabled(entity, tonumber(componentHash))
+        end
+    end
+
+    if horseModel == "A_C_Horse_MP_Mangy_Backup" then     
+        NativeSetPedComponentEnabled(entity, 0x106961A8) --sela
+        NativeSetPedComponentEnabled(entity, 0x508B80B9) --blanket
+    end
+
+    TaskGoToEntity(entity, player, -1, 7.2, 2.0, 0, 0)
+    SetPedConfigFlag(entity, 297, true) -- Enable_Horse_Leadin
+    initializing = false
+end
+
+local function WhistleHorse()
+    local player = PlayerPedId()
+    if SpawnplayerHorse ~= 0 then
+        if GetScriptTaskStatus(SpawnplayerHorse, 0x4924437D, 0) ~= 0 then
+            local pcoords = GetEntityCoords(player)
+            local hcoords = GetEntityCoords(SpawnplayerHorse)
+            local caldist = #(pcoords - hcoords)
+            if caldist >= 100 then
+                DeleteEntity(SpawnplayerHorse)
+                Wait(1000)
+                SpawnplayerHorse = 0
+            else
+                TaskGoToEntity(SpawnplayerHorse, player, -1, 4, 2.0, 0, 0)
+            end
+        end
+    else
+        TriggerServerEvent('oss_stables:GetSelectedHorse')
+        Wait(100)
+        InitiateHorse()
+    end
+end
+
+local function fleeHorse(playerHorse)
+    local player = PlayerPedId()
+    TaskAnimalFlee(SpawnplayerHorse, player, -1)
+    Wait(5000)
+    DeleteEntity(SpawnplayerHorse)
+    Wait(1000)
+    SpawnplayerHorse = 0
+end
+
+function createCam(creatorType)
+    for k, v in pairs(cams) do
+        if cams[k].type == creatorType then
+            cam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", cams[k].x, cams[k].y, cams[k].z, cams[k].rx, cams[k].ry, cams[k].rz, cams[k].fov, false, 0) -- CAMERA COORDS
+            SetCamActive(cam, true)
+            RenderScriptCams(true, false, 3000, true, false)
+            createPeds()
+        end
+    end
+end
+
+local function interpCamera(cameraName, entity)
+    for k, v in pairs(cameraUsing) do
+        if cameraUsing[k].name == cameraName then
+            tempCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
+            AttachCamToEntity(tempCam, entity, cameraUsing[k].x + CamPos[1], cameraUsing[k].y + CamPos[2], cameraUsing[k].z)
+            SetCamActive(tempCam, true)
+            SetCamRot(tempCam, -30.0, 0, HeadingPoint + 50.0)
+            if InterP then
+                SetCamActiveWithInterp(tempCam, fixedCam, 1200, true, true)
+                InterP = false
+            end
+        end
+    end
+end
+
 RegisterNUICallback("rotate", function(data, cb)
     if (data["key"] == "left") then
         rotation(20)
@@ -395,13 +689,13 @@ RegisterNUICallback("AcsLuggage", function(data)
 end)
 
 RegisterNUICallback("selectHorse", function(data)
-    TriggerServerEvent('VP:STABLE:SelectHorseWithId', tonumber(data.horseID))
+    TriggerServerEvent('oss_stables:SelectHorseWithId', tonumber(data.horseID))
 end)
 
 RegisterNUICallback("sellHorse", function(data)
     DeleteEntity(showroomHorse_entity)
-    TriggerServerEvent('VP:STABLE:SellHorseWithId', tonumber(data.horseID))
-    TriggerServerEvent('VP:STABLE:AskForMyHorses')
+    TriggerServerEvent('oss_stables:SellHorseWithId', tonumber(data.horseID))
+    TriggerServerEvent('oss_stables:AskForMyHorses')
     alreadySentShopData = false
     Wait(300)
 
@@ -411,7 +705,7 @@ RegisterNUICallback("sellHorse", function(data)
             shopData = getShopData()
         }
     )
-    TriggerServerEvent('VP:STABLE:AskForMyHorses')
+    TriggerServerEvent('oss_stables:AskForMyHorses')
 end)
 
 RegisterNUICallback("loadHorse", function(data)
@@ -530,292 +824,8 @@ RegisterNUICallback("CloseStable", function()
     CloseStable()
 end)
 
-function NativeSetPedComponentEnabled(ped, component)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, component, true, true, true)
-end
-
-function createCamera(entity)
-    groundCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
-    SetCamCoord(groundCam, StablePoint[1] + 0.5, StablePoint[2] - 3.6, StablePoint[3] )
-    SetCamRot(groundCam, -20.0, 0.0, HeadingPoint + 20)
-    SetCamActive(groundCam, true)
-    RenderScriptCams(true, false, 1, true, true)
-    --Wait(3000)
-    -- last camera, create interpolate
-    fixedCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
-    SetCamCoord(fixedCam, StablePoint[1] + 0.5, StablePoint[2] - 3.6, StablePoint[3] +1.8)
-    SetCamRot(fixedCam, -20.0, 0, HeadingPoint + 50.0)
-    SetCamActive(fixedCam, true)
-    SetCamActiveWithInterp(fixedCam, groundCam, 3900, true, true)
-    Wait(3900)
-    DestroyCam(groundCam)
-end
-
-function getShopData()
-    alreadySentShopData = true
-    local ret = Config.Horses
-    return ret
-end
-
-function setcloth(hash)
-    local model2 = GetHashKey(tonumber(hash))
-    if not HasModelLoaded(model2) then
-        Citizen.InvokeNative(0xFA28FE3A6246FC30, model2)
-    end
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(hash), true, true, true)
-end
-
-function OpenStable()
-    inCustomization = true
-    horsesp = true
-    local playerHorse = MyHorse_entity
-    local player = PlayerPedId()
-
-    SetEntityHeading(playerHorse, 334)
-    SetNuiFocus(true, true)
-    InterP = true
-
-    local hashm = GetEntityModel(playerHorse)
-
-    if hashm ~= nil and IsPedOnMount(player) then
-        createCamera(player)
-    else
-        createCamera(player)
-    end
-    --  SetEntityVisible(PlayerPedId(), false)
-    if not alreadySentShopData then
-        SendNUIMessage(
-            {
-                action = "show",
-                shopData = getShopData()
-            }
-        )
-    else
-        SendNUIMessage(
-            {
-                action = "show"
-            }
-        )
-    end
-    TriggerServerEvent('VP:STABLE:AskForMyHorses')
-end
-
-function rotation(dir)
-    local playerHorse = MyHorse_entity
-    local pedRot = GetEntityHeading(playerHorse) + dir
-    SetEntityHeading(playerHorse, pedRot % 360)
-end
-
-function SetHorseName(data)
-    SetNuiFocus(false, false)
-    SendNUIMessage(
-        {
-            action = "hide"
-        }
-    )
-    Wait(200)
-    local HorseName = ""
-
-	Citizen.CreateThread(function()
-		AddTextEntry('FMMC_MPM_NA', "Name your horse:")
-		DisplayOnscreenKeyboard(1, "FMMC_MPM_NA", "", "", "", "", "", 30)
-		while (UpdateOnscreenKeyboard() == 0) do
-			DisableAllControlActions(0)
-			Citizen.Wait(0)
-		end
-		if (GetOnscreenKeyboardResult()) then
-            HorseName = GetOnscreenKeyboardResult()
-            TriggerServerEvent('VP:STABLE:BuyHorse', data, HorseName)
-
-            SetNuiFocus(true, true)
-            SendNUIMessage(
-            {
-                action = "show",
-                shopData = getShopData()
-            }
-        )
-
-        Wait(1000)
-        TriggerServerEvent('VP:STABLE:AskForMyHorses')
-		end
-    end)
-end
-
-function CloseStable()
-    local compData = {
-        SaddlesUsing,
-        SaddleclothsUsing,
-        StirrupsUsing,
-        BagsUsing,
-        ManesUsing,
-        HorseTailsUsing,
-        AcsHornUsing,
-        AcsLuggageUsing
-    }
-    local compDataEncoded = json.encode(compData)
-
-    if compDataEncoded ~= "[]" then
-        TriggerServerEvent('VP:STABLE:UpdateHorseComponents', compData, IdMyHorse, MyHorse_entity)
-    end
-end
-
-function InitiateHorse(atCoords)
-    if initializing then
-        return
-    end
-
-    initializing = true
-    if SpawnplayerHorse ~= 0 then
-        DeleteEntity(SpawnplayerHorse)
-        SpawnplayerHorse = 0
-    end
-
-    local player = PlayerPedId()
-    local pCoords = GetEntityCoords(player)
-    local modelHash = GetHashKey(horseModel)
-    if not HasModelLoaded(modelHash) then
-        RequestModel(modelHash)
-        while not HasModelLoaded(modelHash) do
-            Citizen.Wait(10)
-        end
-    end
-
-    local spawnPosition
-    if atCoords == nil then
-        local x, y, z = table.unpack(pCoords)
-        local bool, nodePosition = GetClosestVehicleNode(x, y, z, 1, 3.0, 0.0)
-        local index = 0
-        while index <= 25 do
-            local _bool, _nodePosition = GetNthClosestVehicleNode(x, y, z, index, 1, 3.0, 2.5)
-            if _bool == true or _bool == 1 then
-                bool = _bool
-                nodePosition = _nodePosition
-                index = index + 3
-            else
-                break
-            end
-        end
-        spawnPosition = nodePosition
-    else
-        spawnPosition = atCoords
-    end
-    if spawnPosition == nil then
-        initializing = false
-        return
-    end
-
-    local entity = CreatePed(modelHash, spawnPosition, GetEntityHeading(player), true, true)
-    SetModelAsNoLongerNeeded(modelHash)
-
-    Citizen.InvokeNative(0x9587913B9E772D29, entity, 0)
-    Citizen.InvokeNative(0x4DB9D03AC4E1FA84, entity, -1, -1, 0)
-    Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, entity)
-    Citizen.InvokeNative(0xBCC76708E5677E1D9, entity, 0)
-    Citizen.InvokeNative(0xB8B6430EAD2D2437, entity, GetHashKey("PLAYER_HORSE"))
-    Citizen.InvokeNative(0xFD6943B6DF77E449, entity, false)
-
-    SetPedConfigFlag(entity, 324, true)
-    SetPedConfigFlag(entity, 211, true)
-    SetPedConfigFlag(entity, 208, true)
-    SetPedConfigFlag(entity, 209, true)
-    SetPedConfigFlag(entity, 400, true)
-    SetPedConfigFlag(entity, 297, true)
-    SetPedConfigFlag(entity, 136, false)
-    SetPedConfigFlag(entity, 312, false)
-    SetPedConfigFlag(entity, 113, false)
-    SetPedConfigFlag(entity, 301, false)
-    SetPedConfigFlag(entity, 277, true)
-    SetPedConfigFlag(entity, 319, true)
-    SetPedConfigFlag(entity, 6, true)
-
-    SetAnimalTuningBoolParam(entity, 25, false)
-    SetAnimalTuningBoolParam(entity, 24, false)
-
-    TaskAnimalUnalerted(entity, -1, false, 0, 0)
-    Citizen.InvokeNative(0x283978A15512B2FE, entity, true)
-
-    SpawnplayerHorse = entity
-
-    Citizen.InvokeNative(0x283978A15512B2FE, entity, true)
-    -- SetVehicleHasBeenOwnedByPlayer(playerHorse, true)
-    SetPedNameDebug(entity, horseName)
-    SetPedPromptName(entity, horseName)
-    --CreatePrompts(PromptGetGroupIdForTargetEntity(entity))
-    if horseComponents ~= nil and horseComponents ~= "0" then
-        for _, componentHash in pairs(json.decode(horseComponents)) do
-            NativeSetPedComponentEnabled(entity, tonumber(componentHash))
-        end
-    end
-
-    if horseModel == "A_C_Horse_MP_Mangy_Backup" then
-        NativeSetPedComponentEnabled(entity, 0x106961A8) --sela
-        NativeSetPedComponentEnabled(entity, 0x508B80B9) --blanket
-    end
-
-    TaskGoToEntity(entity, player, -1, 7.2, 2.0, 0, 0)
-    SetPedConfigFlag(entity, 297, true) -- Enable_Horse_Leadin
-    initializing = false
-end
-
-function WhistleHorse()
-    local player = PlayerPedId()
-    if SpawnplayerHorse ~= 0 then
-        if GetScriptTaskStatus(SpawnplayerHorse, 0x4924437D, 0) ~= 0 then
-            local pcoords = GetEntityCoords(player)
-            local hcoords = GetEntityCoords(SpawnplayerHorse)
-            local calldist = #(pcoords - hcoords)
-            if calldist >= 100 then
-                DeleteEntity(SpawnplayerHorse)
-                Wait(1000)
-                SpawnplayerHorse = 0
-            else
-                TaskGoToEntity(SpawnplayerHorse, player, -1, 4, 2.0, 0, 0)
-            end
-        end
-    else
-        TriggerServerEvent('VP:STABLE:GetSelectedHorse')
-        Wait(100)
-        InitiateHorse()
-    end
-end
-
-function fleeHorse(playerHorse)
-    local player = PlayerPedId()
-    TaskAnimalFlee(SpawnplayerHorse, player, -1)
-    Wait(5000)
-    DeleteEntity(SpawnplayerHorse)
-    Wait(1000)
-    SpawnplayerHorse = 0
-end
-
-function createCam(creatorType)
-    for k, v in pairs(cams) do
-        if cams[k].type == creatorType then
-            cam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", cams[k].x, cams[k].y, cams[k].z, cams[k].rx, cams[k].ry, cams[k].rz, cams[k].fov, false, 0) -- CAMERA COORDS
-            SetCamActive(cam, true)
-            RenderScriptCams(true, false, 3000, true, false)
-            createPeds()
-        end
-    end
-end
-
-function interpCamera(cameraName, entity)
-    for k, v in pairs(cameraUsing) do
-        if cameraUsing[k].name == cameraName then
-            tempCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
-            AttachCamToEntity(tempCam, entity, cameraUsing[k].x + CamPos[1], cameraUsing[k].y + CamPos[2], cameraUsing[k].z)
-            SetCamActive(tempCam, true)
-            SetCamRot(tempCam, -30.0, 0, HeadingPoint + 50.0)
-            if InterP then
-                SetCamActiveWithInterp(tempCam, fixedCam, 1200, true, true)
-                InterP = false
-            end
-        end
-    end
-end
-
-RegisterNetEvent('VP:STABLE:ReceiveHorsesData')
-AddEventHandler('VP:STABLE:ReceiveHorsesData', function(dataHorses)
+RegisterNetEvent('oss_stables:ReceiveHorsesData')
+AddEventHandler('oss_stables:ReceiveHorsesData', function(dataHorses)
     SendNUIMessage(
         {
             myHorsesData = dataHorses
@@ -823,19 +833,63 @@ AddEventHandler('VP:STABLE:ReceiveHorsesData', function(dataHorses)
     )
 end)
 
-RegisterNetEvent('VP:STABLE:UpdateHorseComponents')
-AddEventHandler('VP:STABLE:UpdateHorseComponents', function(horseEntity, components)
+RegisterNetEvent('oss_stables:UpdateHorseComponents')
+AddEventHandler('oss_stables:UpdateHorseComponents', function(horseEntity, components)
     for _, value in pairs(components) do
         NativeSetPedComponentEnabled(horseEntity, value)
     end
 end)
 
-RegisterNetEvent('VP:HORSE:SetHorseInfo')
-AddEventHandler('VP:HORSE:SetHorseInfo', function(horse_model, horse_name, horse_components)
+RegisterNetEvent('oss_stables:SetHorseInfo')
+AddEventHandler('oss_stables:SetHorseInfo', function(horse_model, horse_name, horse_components)
     horseModel = horse_model
     horseName = horse_name
     horseComponents = horse_components
 end)
+
+--[[Citizen.CreateThread(function()
+    while true do
+        Wait(1)
+        local player = PlayerPedId()
+        local coords = GetEntityCoords(player)
+        for _, prompt in pairs(prompts) do
+            if PromptIsJustPressed(prompt) then
+                for k, v in pairs(Config.Stables) do
+                    if #(coords - vector3(v.Pos.x, v.Pos.y, v.Pos.z)) < 7 then
+                        HeadingPoint = v.Heading
+                        StablePoint = {v.Pos.x, v.Pos.y, v.Pos.z}
+                        CamPos = {v.SpawnPoint.CamPos.x, v.SpawnPoint.CamPos.y}
+                        SpawnPoint = {x = v.SpawnPoint.Pos.x, y = v.SpawnPoint.Pos.y, z = v.SpawnPoint.Pos.z, h = v.SpawnPoint.Heading}
+                        Wait(300)
+                    end
+                end
+                OpenStable()
+            end
+        end
+    end
+end)]]
+
+--[[Citizen.CreateThread(function()
+    for _, v in pairs(Config.Stables) do
+        blip = N_0x554d9d53f696d002(1664425300, v.Pos.x, v.Pos.y, v.Pos.z)
+        SetBlipSprite(blip, 4221798391, 1)
+        SetBlipScale(blip, 0.2)
+        Citizen.InvokeNative(0x9CB1A1623062F402, blip, "Stable")
+        local prompt = PromptRegisterBegin()
+        PromptSetActiveGroupThisFrame(promptGroup, varStringCasa)
+        PromptSetControlAction(prompt, 0x760A9C6F)
+        PromptSetText(prompt, CreateVarString(10, "LITERAL_STRING", "Open Stable"))
+        PromptSetStandardMode(prompt, true)
+        PromptSetEnabled(prompt, 1)
+        PromptSetVisible(prompt, 1)
+        PromptSetHoldMode(prompt, 1)
+        PromptSetPosition(prompt, v.Pos.x, v.Pos.y, v.Pos.z)
+        N_0x0c718001b77ca468(prompt, 3.0)
+        PromptSetGroup(prompt, promptGroup)
+        PromptRegisterEnd(prompt)
+        prompts[#prompts+1] = prompt
+    end
+end)]]
 
 Citizen.CreateThread(function()
     while true do
@@ -995,11 +1049,10 @@ AddEventHandler('onResourceStop', function(resourceName)
     if (GetCurrentResourceName() ~= resourceName) then
         return
     end
-    if InMenu == true then
-        ClearPedTasksImmediately(PlayerPedId())
-        PromptDelete(OpenShops)
-        PromptDelete(CloseShops)
-    end
+
+    ClearPedTasksImmediately(PlayerPedId())
+    PromptDelete(OpenShops)
+    PromptDelete(CloseShops)
 
     if SpawnplayerHorse then
         DeleteEntity(SpawnplayerHorse)

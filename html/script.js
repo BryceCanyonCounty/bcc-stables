@@ -66,7 +66,7 @@ window.addEventListener('message', function(event) {
                                 Modelhorse = $(this).attr('id');                       
                                 $(this).addClass('selected');
 
-                                $.post('http://LRP_Stable/loadHorse', JSON.stringify({ horseModel: $(this).attr('id') }));
+                                $.post('http://oss_stables/loadHorse', JSON.stringify({ horseModel: $(this).attr('id') }));
                             });                       
                             
                         }, function() {});
@@ -135,8 +135,7 @@ window.addEventListener('message', function(event) {
             `);
             
             $(`#page_myhorses .scroll-container .collapsible #${HorseID}`).hover(function() {  
-                $( this ).click(function() {                    
-                    console.log('clicou') 
+                $( this ).click(function() { 
                     let HorseSEID
                     $(HorseID).addClass("selected");
                     $('.selected').removeClass("selected"); 
@@ -144,7 +143,7 @@ window.addEventListener('message', function(event) {
                     HorseSEID = $(HorseID).attr('id');             
                     $(HorseID).addClass('selected');
 
-                    $.post('http://LRP_Stable/loadMyHorse', JSON.stringify({ IdHorse: HorseID, horseModel: HorseIdModel, HorseComp: componentsh}));
+                    $.post('http://oss_stables/loadMyHorse', JSON.stringify({ IdHorse: HorseID, horseModel: HorseIdModel, HorseComp: componentsh}));
                 });                         
             }, function() {});
         }
@@ -153,7 +152,7 @@ window.addEventListener('message', function(event) {
 });
 
 function confirm(){
-    $.post('http://LRP_Stable/CloseStable')
+    $.post('http://oss_stables/CloseStable')
 
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');
@@ -194,7 +193,7 @@ $(".button-right").on('click', function() {
     var text = titleElement.text();
   //  var component = text.split(' ')[0];
     titleElement.text(component + ' ' + nValue + '/' + max);
-    $.post('http://LRP_Stable/'+component, JSON.stringify({ id: nValue }));
+    $.post('http://oss_stables/'+component, JSON.stringify({ id: nValue }));
 });
 
 $(".button-left").on('click', function() {
@@ -219,7 +218,7 @@ $(".button-left").on('click', function() {
     var text = titleElement.text();
   //  var component = text.split(' ')[0];
     titleElement.text(component + ' ' + nValue + '/' + max);
-    $.post('http://LRP_Stable/'+component, JSON.stringify({ id: nValue }));
+    $.post('http://oss_stables/'+component, JSON.stringify({ id: nValue }));
 });
 
 $(".input-number").on("change paste keyup", function() {
@@ -254,20 +253,20 @@ function buyHorse(Modelhor, price, isGold) {
     $("#creatormenu").fadeOut(500);
 
     if (isGold) {        
-        $.post('http://LRP_Stable/BuyHorse', JSON.stringify({ ModelH: Modelhor, Gold: price, IsGold: isGold }));
+        $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: Modelhor, Gold: price, IsGold: isGold }));
     } else {
-        $.post('http://LRP_Stable/BuyHorse', JSON.stringify({ ModelH: Modelhor, Dollar: price, IsGold: isGold }));    
+        $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: Modelhor, Dollar: price, IsGold: isGold }));    
     }    
 }
 
 
 function SelectHorse(IdHorse) {    
-    $.post('http://LRP_Stable/selectHorse', JSON.stringify({ horseID: IdHorse }))    
+    $.post('http://oss_stables/selectHorse', JSON.stringify({ horseID: IdHorse }))    
 }
 
 
 function SellHorse(IdHorse) {    
-    $.post('http://LRP_Stable/sellHorse', JSON.stringify({ horseID: IdHorse }))
+    $.post('http://oss_stables/sellHorse', JSON.stringify({ horseID: IdHorse }))
 
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');

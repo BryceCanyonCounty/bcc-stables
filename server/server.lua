@@ -3,14 +3,14 @@ TriggerEvent("getCore", function(core)
     VORPcore = core
 end)
 
-RegisterNetEvent('VP:STABLE:BuyHorse')
-AddEventHandler('VP:STABLE:BuyHorse', function(data, name)
+RegisterNetEvent('oss_stables:BuyHorse')
+AddEventHandler('oss_stables:BuyHorse', function(data, name)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.fetchAll('SELECT * FROM horses WHERE identifier = @identifier AND charid = @charid', {
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
         ['@identifier'] = identifier,
         ['@charid'] = charid
     }, function(horses)
@@ -41,7 +41,7 @@ AddEventHandler('VP:STABLE:BuyHorse', function(data, name)
             end
         end
 
-        MySQL.Async.execute('INSERT INTO horses (identifier, charid, name, model) VALUES (@identifier, @charid, @name, @model)', {
+        MySQL.Async.execute('INSERT INTO player_horses (identifier, charid, name, model) VALUES (@identifier, @charid, @name, @model)', {
             ['@identifier'] = identifier,
             ['@charid'] = charid,
             ['@name'] = tostring(name),
@@ -51,8 +51,8 @@ AddEventHandler('VP:STABLE:BuyHorse', function(data, name)
     end)
 end)
 
-RegisterNetEvent('VP:STABLE:UpdateHorseComponents')
-AddEventHandler('VP:STABLE:UpdateHorseComponents', function(components, idhorse, MyHorse_entity)
+RegisterNetEvent('oss_stables:UpdateHorseComponents')
+AddEventHandler('oss_stables:UpdateHorseComponents', function(components, idhorse, MyHorse_entity)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -60,40 +60,40 @@ AddEventHandler('VP:STABLE:UpdateHorseComponents', function(components, idhorse,
     local encodedComponents = json.encode(components)
     local id = idhorse
 
-    MySQL.Async.execute('UPDATE horses SET components = @encodedComponents WHERE identifier = @identifier AND charid = @charid AND id = @id', {
+    MySQL.Async.execute('UPDATE player_horses SET components = @encodedComponents WHERE identifier = @identifier AND charid = @charid AND id = @id', {
         ['@identifier'] = identifier,
         ['@charid'] = charid,
         ['@id'] = id,
         ['@encodedComponents'] = encodedComponents
     }, function(done)
-        TriggerClientEvent('VP:STABLE:UpdateHorseComponents', _source, MyHorse_entity, components)
+        TriggerClientEvent('oss_stables:UpdateHorseComponents', _source, MyHorse_entity, components)
     end)
 end)
 
 
-RegisterNetEvent('VP:STABLE:GetSelectedHorse')
-AddEventHandler('VP:STABLE:GetSelectedHorse', function()
+RegisterNetEvent('oss_stables:GetSelectedHorse')
+AddEventHandler('oss_stables:GetSelectedHorse', function()
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.fetchAll('SELECT * FROM horses WHERE identifier = @identifier AND charid = @charid', {
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
         ['@identifier'] = identifier,
         ['@charid'] = charid
     }, function(horses)
         if #horses ~= 0 then
             for i = 1, #horses do
                 if horses[i].selected == 1 then
-                    TriggerClientEvent('VP:HORSE:SetHorseInfo', _source, horses[i].model, horses[i].name, horses[i].components)
+                    TriggerClientEvent('oss_stables:SetHorseInfo', _source, horses[i].model, horses[i].name, horses[i].components)
                 end
             end
         end
     end)
 end)
 
-RegisterNetEvent('VP:STABLE:AskForMyHorses')
-AddEventHandler('VP:STABLE:AskForMyHorses', function()
+RegisterNetEvent('oss_stables:AskForMyHorses')
+AddEventHandler('oss_stables:AskForMyHorses', function()
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -101,7 +101,7 @@ AddEventHandler('VP:STABLE:AskForMyHorses', function()
     local horseId = nil
 	local components = nil
 
-    MySQL.Async.fetchAll('SELECT * FROM horses WHERE identifier = @identifier AND charid = @charid', {
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
         ['@identifier'] = identifier,
         ['@charid'] = charid
     }, function(horses)
@@ -111,7 +111,7 @@ AddEventHandler('VP:STABLE:AskForMyHorses', function()
             horseId = nil
         end
 
-        MySQL.Async.fetchAll('SELECT * FROM horses WHERE identifier = @identifier AND charid = @charid', {
+        MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
             ['@identifier'] = identifier,
             ['@charid'] = charid
         }, function(components)
@@ -119,26 +119,26 @@ AddEventHandler('VP:STABLE:AskForMyHorses', function()
                 components = components[1].components
             end
         end)
-        TriggerClientEvent('VP:STABLE:ReceiveHorsesData', _source, horses)
+        TriggerClientEvent('oss_stables:ReceiveHorsesData', _source, horses)
     end)
 end)
 
 
 
-RegisterNetEvent('VP:STABLE:SelectHorseWithId')
-AddEventHandler('VP:STABLE:SelectHorseWithId', function(id)
+RegisterNetEvent('oss_stables:SelectHorseWithId')
+AddEventHandler('oss_stables:SelectHorseWithId', function(id)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.fetchAll('SELECT * FROM horses WHERE identifier = @identifier AND charid = @charid', {
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
         ['@identifier'] = identifier,
         ['@charid'] = charid
     }, function(horse)
         for i = 1, #horse do
             local horseID = horse[i].id
-            MySQL.Async.execute('UPDATE horses SET selected = "0" WHERE identifier = @identifier AND charid = @charid AND id = @id', {
+            MySQL.Async.execute('UPDATE player_horses SET selected = "0" WHERE identifier = @identifier AND charid = @charid AND id = @id', {
                 ['@identifier'] = identifier,
                 ['@charid'] = charid,
                 ['@id'] = horseID
@@ -148,34 +148,34 @@ AddEventHandler('VP:STABLE:SelectHorseWithId', function(id)
             Wait(300)
 
             if horse[i].id == id then
-                MySQL.Async.execute('UPDATE horses SET selected = "1" WHERE identifier = @identifier AND charid = @charid AND id = @id', {
+                MySQL.Async.execute('UPDATE player_horses SET selected = "1" WHERE identifier = @identifier AND charid = @charid AND id = @id', {
                     ['@identifier'] = identifier,
                     ['@charid'] = charid,
                     ['@id'] = id
                 }, function(done)
-                    TriggerClientEvent('VP:HORSE:SetHorseInfo', _source, horse[i].model, horse[i].name, horse[i].components)
+                    TriggerClientEvent('oss_stables:SetHorseInfo', _source, horse[i].model, horse[i].name, horse[i].components)
                 end)
             end
         end
     end)
 end)
 
-RegisterNetEvent('VP:STABLE:SellHorseWithId')
-AddEventHandler('VP:STABLE:SellHorseWithId', function(id)
+RegisterNetEvent('oss_stables:SellHorseWithId')
+AddEventHandler('oss_stables:SellHorseWithId', function(id)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
     local modelHorse = nil
 
-    MySQL.Async.fetchAll('SELECT * FROM horses WHERE identifier = @identifier AND charid = @charid', {
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
         ['@identifier'] = identifier,
         ['@charid'] = charid
     }, function(horses)
         for i = 1, #horses do
             if tonumber(horses[i].id) == tonumber(id) then
                 modelHorse = horses[i].model
-                MySQL.Async.execute('DELETE FROM horses WHERE identifier = @identifier AND charid = @charid AND id = @id', {
+                MySQL.Async.execute('DELETE FROM player_horses WHERE identifier = @identifier AND charid = @charid AND id = @id', {
                     ['@identifier'] = identifier,
                     ['@charid'] = charid,
                     ['@id'] = id
