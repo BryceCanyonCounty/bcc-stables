@@ -1,17 +1,12 @@
 Config = {}
 -- Set Language
 Config.defaultlang = "en_lang"
--- Open Boat Shop Menu
+-- Open Stable Menu
 Config.shopKey = 0x760A9C6F --[G]
--- Return Boat to Shop at Prompt
-Config.returnKey = 0xD9D0E1C0 --[spacebar]
--- Allow to Transfer Boats
-Config.transferAllow = true -- If true, Boats Can Be Transferred To Different Shops
--- Boat Shops
+-- Stables
 Config.stables = {
     valentine = {
-        shopName = "Valentine Stable", -- Name of Shop on Menu
-        location = "valentine", -- DON'T CHANGE / Used for Location in Database
+        Name = "Valentine Stable", -- Name of Shop on Menu
         promptName = "Valentine Stable", -- Text Below the Prompt Button
         blipAllowed = true, -- Turns Blips On / Off
         blipName = "Valentine Stable", -- Name of the Blip on the Map
@@ -19,15 +14,14 @@ Config.stables = {
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32", -- Shop Open - Blip Colors Shown Below
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10", -- Shop Closed - Blip Colors Shown Below
         distanceShop = 2.0, -- Distance from NPC to Get Menu Prompt
-        distanceReturn = 6.0, -- Distance from Shop to Get Return Prompt
         npcAllowed = true, -- Turns NPCs On / Off
         npcModel = "A_M_M_UniBoatCrew_01", -- Sets Model for NPCs
+        npcx = -367.73, npcy = 787.72, npcz = 116.26,
         allowedJobs = {}, -- Empty, Everyone Can Use / Insert Job to limit access - ex. "police"
         jobGrade = 0, -- Enter Minimum Rank / Job Grade to Access Shop
         shopHours = false, -- If You Want the Shops to Use Open and Closed Hours
         shopOpen = 7, -- Shop Open Time / 24 Hour Clock
         shopClose = 21, -- Shop Close Time / 24 Hour Clock
-        Pos = vector3(-367.73, 787.72, 116.26),
         Heading = -30.65,
 		SpawnPoint = {
 			Pos = vector3(-372.43, 791.79, 116.13),
@@ -36,8 +30,7 @@ Config.stables = {
         }
     },
     blackwater = {
-        shopName = "Blackwater Stable",
-        location = "blackwater", -- DON'T CHANGE
+        Name = "Blackwater Stable",
         promptName = "Blackwater Stable",
         blipAllowed = true,
         blipName = "Blackwater Stable",
@@ -45,15 +38,14 @@ Config.stables = {
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
         distanceShop = 2.0,
-        distanceReturn = 6.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
+        npcx = -864.84, npcy = -1365.96, npcz = 43.54,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
         shopOpen = 7,
         shopClose = 21,
-        Pos = vector3(-864.84, -1365.96, 43.54),
         Heading = -30.65,
 		SpawnPoint = {
 			Pos = vector3(-867.74, -1361.69, 43.66),
@@ -62,8 +54,7 @@ Config.stables = {
         }
     },
     saintdenis = {
-        shopName = "Saint Denis Stable",
-        location = "saintdenis", -- DON'T CHANGE
+        Name = "Saint Denis Stable",
         promptName = "Saint Denis Stable",
         blipAllowed = true,
         blipName = "Saint Denis Stable",
@@ -71,15 +62,14 @@ Config.stables = {
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
         distanceShop = 2.0,
-        distanceReturn = 6.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
+        npcx = 2503.13, npcy = -1449.08, npcz = 46.3,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
         shopOpen = 7,
         shopClose = 21,
-        Pos = vector3(2503.13, -1449.08, 46.3),
         Heading = -30.65,
 		SpawnPoint = {
 			Pos = vector3(2508.41, -1446.89, 46.4),
@@ -88,8 +78,7 @@ Config.stables = {
         }
     },
     annesburg = {
-        shopName = "Annesburg Stable",
-        location = "annesburg", -- DON'T CHANGE
+        Name = "Annesburg Stable",
         promptName = "Annesburg Stable",
         blipAllowed = true,
         blipName = "Annesburg Stable",
@@ -97,15 +86,14 @@ Config.stables = {
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
         distanceShop = 2.0,
-        distanceReturn = 6.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
+        npcx = 2972.35, npcy = 1425.35, npcz = 44.67,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
         shopOpen = 7,
         shopClose = 21,
-        Pos = vector3(2972.35, 1425.35, 44.67),
         Heading = -30.65,
 		SpawnPoint = {
 			Pos = vector3(2970.43, 1429.35, 44.7),
@@ -114,8 +102,7 @@ Config.stables = {
         }
     },
     rhodes = {
-        shopName = "Rhodes Stable",
-        location = "rhodes", -- DON'T CHANGE
+        Name = "Rhodes Stable",
         promptName = "Rhodes Stable",
         blipAllowed = true,
         blipName = "Rhodes Stable",
@@ -123,15 +110,14 @@ Config.stables = {
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
         distanceShop = 2.0,
-        distanceReturn = 6.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
+        npcx = 1321.46, npcy = -1358.66, npcz = 78.39,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
         shopOpen = 7,
         shopClose = 21,
-        Pos = vector3(1321.46, -1358.66, 78.39),
         Heading = -30.65,
 		SpawnPoint = {
 			Pos = vector3(1318.74, -1354.64, 78.18),
@@ -140,8 +126,7 @@ Config.stables = {
         }
     },
     tumbleweed = {
-        shopName = "Tumbleweed Stable",
-        location = "tumbleweed", -- DON'T CHANGE
+        Name = "Tumbleweed Stable",
         promptName = "Tumbleweed Stable",
         blipAllowed = true,
         blipName = "Tumbleweed Stable",
@@ -149,15 +134,14 @@ Config.stables = {
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
         distanceShop = 2.0,
-        distanceReturn = 6.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
+        npcx = -5519.43, npcy = -3043.45, npcz = -2.39,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
         shopOpen = 7,
         shopClose = 21,
-        Pos = vector3(-5519.43, -3043.45, -2.39),
         Heading = 0.0,
 		SpawnPoint = {
 			Pos = vector3(-5522.14, -3039.16, -2.29),
