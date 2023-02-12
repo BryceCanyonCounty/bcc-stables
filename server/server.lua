@@ -123,8 +123,6 @@ AddEventHandler('oss_stables:AskForMyHorses', function()
     end)
 end)
 
-
-
 RegisterNetEvent('oss_stables:SelectHorseWithId')
 AddEventHandler('oss_stables:SelectHorseWithId', function(id)
     local _source = source
@@ -197,7 +195,6 @@ AddEventHandler('oss_stables:SellHorseWithId', function(id)
     end)
 end)
 
--- Check Player Job and Job Grade
 RegisterServerEvent('oss_stables:getPlayerJob')
 AddEventHandler('oss_stables:getPlayerJob', function()
     local _source = source

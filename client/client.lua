@@ -11,23 +11,23 @@ local PlayerJob
 local JobName
 local JobGrade
 
-cam = nil
-zoom = 4.0
-offset = 0.2
+Cam = nil
+Zoom = 4.0
+Offset = 0.2
 local InterP = true
-local adding = true
-local showroomHorse_entity
-local showroomHorse_model
+local Adding = true
+local ShowroomHorse_entity
+local ShowroomHorse_model
 local MyHorse_entity
 local IdMyHorse
-local saddlecloths = {}
-local acshorn = {}
-local bags = {}
-local horsetails = {}
-local manes = {}
-local saddles = {}
-local stirrups = {}
-local acsluggage = {}
+local Saddlecloths = {}
+local Acshorn = {}
+local Bags = {}
+local Horsetails = {}
+local Manes = {}
+local Saddles = {}
+local Stirrups = {}
+local Acsluggage = {}
 local SpawnPoint = {}
 local StablePoint = {}
 local HeadingPoint
@@ -360,14 +360,6 @@ end
 
 local function CloseStable()
     local dados = {
-        -- ['saddles'] = SaddlesUsing,
-        -- ['saddlescloths'] = SaddleclothsUsing,
-        -- ['stirrups'] = StirrupsUsing,
-        -- ['bags'] = BagsUsing,
-        -- ['manes'] = ManesUsing,
-        -- ['horsetails'] = HorseTailsUsing,
-        -- ['acshorn'] = AcsHornUsing,
-        -- ['ascluggage'] = AcsLuggageUsing
         SaddlesUsing,
         SaddleclothsUsing,
         StirrupsUsing,
@@ -520,8 +512,8 @@ end
 function createCam(creatorType)
     for k, v in pairs(cams) do
         if cams[k].type == creatorType then
-            cam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", cams[k].x, cams[k].y, cams[k].z, cams[k].rx, cams[k].ry, cams[k].rz, cams[k].fov, false, 0) -- CAMERA COORDS
-            SetCamActive(cam, true)
+            Cam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", cams[k].x, cams[k].y, cams[k].z, cams[k].rx, cams[k].ry, cams[k].rz, cams[k].fov, false, 0) -- CAMERA COORDS
+            SetCamActive(Cam, true)
             RenderScriptCams(true, false, 3000, true, false)
             createPeds()
         end
@@ -553,8 +545,8 @@ RegisterNUICallback("rotate", function(data, cb)
 end)
 
 RegisterNUICallback("Saddles", function(data)
-    zoom = 4.0
-    offset = 0.2
+    Zoom = 4.0
+    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         SaddlesUsing = num
@@ -563,15 +555,15 @@ RegisterNUICallback("Saddles", function(data)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
     else
         local num = tonumber(data.id)
-        hash = ("0x" .. saddles[num])
+        hash = ("0x" .. Saddles[num])
         setcloth(hash)
-        SaddlesUsing = ("0x" .. saddles[num])
+        SaddlesUsing = ("0x" .. Saddles[num])
     end
 end)
 
 RegisterNUICallback("Saddlecloths", function(data)
-    zoom = 4.0
-    offset = 0.2
+    Zoom = 4.0
+    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         SaddleclothsUsing = num
@@ -580,15 +572,15 @@ RegisterNUICallback("Saddlecloths", function(data)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
     else
         local num = tonumber(data.id)
-        hash = ("0x" .. saddlecloths[num])
+        hash = ("0x" .. Saddlecloths[num])
         setcloth(hash)
-        SaddleclothsUsing = ("0x" .. saddlecloths[num])
+        SaddleclothsUsing = ("0x" .. Saddlecloths[num])
     end
 end)
 
 RegisterNUICallback("Stirrups", function(data)
-    zoom = 4.0
-    offset = 0.2
+    Zoom = 4.0
+    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         StirrupsUsing = num
@@ -597,15 +589,15 @@ RegisterNUICallback("Stirrups", function(data)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
     else
         local num = tonumber(data.id)
-        hash = ("0x" .. stirrups[num])
+        hash = ("0x" .. Stirrups[num])
         setcloth(hash)
-        StirrupsUsing = ("0x" .. stirrups[num])
+        StirrupsUsing = ("0x" .. Stirrups[num])
     end
 end)
 
 RegisterNUICallback("Bags", function(data)
-    zoom = 4.0
-    offset = 0.2
+    Zoom = 4.0
+    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         BagsUsing = num
@@ -614,15 +606,15 @@ RegisterNUICallback("Bags", function(data)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
     else
         local num = tonumber(data.id)
-        hash = ("0x" .. bags[num])
+        hash = ("0x" .. Bags[num])
         setcloth(hash)
-        BagsUsing = ("0x" .. bags[num])
+        BagsUsing = ("0x" .. Bags[num])
     end
 end)
 
 RegisterNUICallback("Manes", function(data)
-    zoom = 4.0
-    offset = 0.2
+    Zoom = 4.0
+    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         ManesUsing = num
@@ -631,15 +623,15 @@ RegisterNUICallback("Manes", function(data)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
     else
         local num = tonumber(data.id)
-        hash = ("0x" .. manes[num])
+        hash = ("0x" .. Manes[num])
         setcloth(hash)
-        ManesUsing = ("0x" .. manes[num])
+        ManesUsing = ("0x" .. Manes[num])
     end
 end)
 
 RegisterNUICallback("HorseTails", function(data)
-    zoom = 4.0
-    offset = 0.2
+    Zoom = 4.0
+    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         HorseTailsUsing = num
@@ -648,15 +640,15 @@ RegisterNUICallback("HorseTails", function(data)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
     else
         local num = tonumber(data.id)
-        hash = ("0x" .. horsetails[num])
+        hash = ("0x" .. Horsetails[num])
         setcloth(hash)
-        HorseTailsUsing = ("0x" .. horsetails[num])
+        HorseTailsUsing = ("0x" .. Horsetails[num])
     end
 end)
 
 RegisterNUICallback("AcsHorn", function(data)
-    zoom = 4.0
-    offset = 0.2
+    Zoom = 4.0
+    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         AcsHornUsing = num
@@ -665,15 +657,15 @@ RegisterNUICallback("AcsHorn", function(data)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
     else
         local num = tonumber(data.id)
-        hash = ("0x" .. acshorn[num])
+        hash = ("0x" .. Acshorn[num])
         setcloth(hash)
-        AcsHornUsing = ("0x" .. acshorn[num])
+        AcsHornUsing = ("0x" .. Acshorn[num])
     end
 end)
 
 RegisterNUICallback("AcsLuggage", function(data)
-    zoom = 4.0
-    offset = 0.2
+    Zoom = 4.0
+    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         AcsLuggageUsing = num
@@ -682,9 +674,9 @@ RegisterNUICallback("AcsLuggage", function(data)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
     else
         local num = tonumber(data.id)
-        hash = ("0x" .. acsluggage[num])
+        hash = ("0x" .. Acsluggage[num])
         setcloth(hash)
-        AcsLuggageUsing = ("0x" .. acsluggage[num])
+        AcsLuggageUsing = ("0x" .. Acsluggage[num])
     end
 end)
 
@@ -693,7 +685,7 @@ RegisterNUICallback("selectHorse", function(data)
 end)
 
 RegisterNUICallback("sellHorse", function(data)
-    DeleteEntity(showroomHorse_entity)
+    DeleteEntity(ShowroomHorse_entity)
     TriggerServerEvent('oss_stables:SellHorseWithId', tonumber(data.horseID))
     TriggerServerEvent('oss_stables:AskForMyHorses')
     alreadySentShopData = false
@@ -711,7 +703,7 @@ end)
 RegisterNUICallback("loadHorse", function(data)
     local horseModel = data.horseModel
 
-    if showroomHorse_model == horseModel then
+    if ShowroomHorse_model == horseModel then
         return
     end
 
@@ -731,32 +723,32 @@ RegisterNUICallback("loadHorse", function(data)
         end
     end
 
-    if showroomHorse_entity ~= nil then    
-        DeleteEntity(showroomHorse_entity)
-        showroomHorse_entity = nil
+    if ShowroomHorse_entity ~= nil then    
+        DeleteEntity(ShowroomHorse_entity)
+        ShowroomHorse_entity = nil
     end
 
-    showroomHorse_model = horseModel
-    showroomHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
-    Citizen.InvokeNative(0x283978A15512B2FE, showroomHorse_entity, true) -- _SET_RANDOM_OUTFIT_VARIATION
-    Citizen.InvokeNative(0x58A850EAEE20FAA3, showroomHorse_entity) -- PLACE_OBJECT_ON_GROUND_PROPERLY
-    NetworkSetEntityInvisibleToNetwork(showroomHorse_entity, true)
-    SetVehicleHasBeenOwnedByPlayer(showroomHorse_entity, true)
+    ShowroomHorse_model = horseModel
+    ShowroomHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
+    Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- _SET_RANDOM_OUTFIT_VARIATION
+    Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PLACE_OBJECT_ON_GROUND_PROPERLY
+    NetworkSetEntityInvisibleToNetwork(ShowroomHorse_entity, true)
+    SetVehicleHasBeenOwnedByPlayer(ShowroomHorse_entity, true)
     -- SetModelAsNoLongerNeeded(modelHash)
-    interpCamera("Horse", showroomHorse_entity)
+    interpCamera("Horse", ShowroomHorse_entity)
 end)
 
 RegisterNUICallback("loadMyHorse", function(data)
     local horseModel = data.horseModel
     IdMyHorse = data.IdHorse
 
-    if showroomHorse_model == horseModel then
+    if ShowroomHorse_model == horseModel then
         return
     end
 
-    if showroomHorse_entity ~= nil then
-        DeleteEntity(showroomHorse_entity)
-        showroomHorse_entity = nil
+    if ShowroomHorse_entity ~= nil then
+        DeleteEntity(ShowroomHorse_entity)
+        ShowroomHorse_entity = nil
     end
 
     if MyHorse_entity ~= nil then
@@ -764,9 +756,9 @@ RegisterNUICallback("loadMyHorse", function(data)
         MyHorse_entity = nil
     end
 
-    showroomHorse_model = horseModel
+    ShowroomHorse_model = horseModel
 
-    local modelHash = GetHashKey(showroomHorse_model)
+    local modelHash = GetHashKey(ShowroomHorse_model)
 
     if not HasModelLoaded(modelHash) then
         RequestModel(modelHash)
@@ -809,10 +801,10 @@ RegisterNUICallback("CloseStable", function()
     )
     SetEntityVisible(player, true)
 
-    showroomHorse_model = nil
+    ShowroomHorse_model = nil
 
-    if showroomHorse_entity ~= nil then
-        DeleteEntity(showroomHorse_entity)
+    if ShowroomHorse_entity ~= nil then
+        DeleteEntity(ShowroomHorse_entity)
     end
 
     if MyHorse_entity ~= nil then
@@ -820,7 +812,7 @@ RegisterNUICallback("CloseStable", function()
     end
 
     DestroyAllCams(true)
-    showroomHorse_entity = nil
+    ShowroomHorse_entity = nil
     CloseStable()
 end)
 
@@ -938,28 +930,28 @@ Citizen.CreateThread(function()
 end)
 
 Citizen.CreateThread(function()
-	while adding do
+	while Adding do
 		Wait(0)
 		for _, v in ipairs(HorseComp) do
 			if v.category == "Saddlecloths" then
-				saddlecloths[#saddlecloths+1] = v.Hash
+				Saddlecloths[#Saddlecloths+1] = v.Hash
 			elseif v.category == "AcsHorn" then
-				acshorn[#acshorn+1] = v.Hash
+				Acshorn[#Acshorn+1] = v.Hash
 			elseif v.category == "Bags" then
-				bags[#bags+1] = v.Hash
+				Bags[#Bags+1] = v.Hash
 			elseif v.category == "HorseTails" then
-				horsetails[#horsetails+1] = v.Hash
+				Horsetails[#Horsetails+1] = v.Hash
 			elseif v.category == "Manes" then
-				manes[#manes+1] = v.Hash
+				Manes[#Manes+1] = v.Hash
 			elseif v.category == "Saddles" then
-				saddles[#saddles+1] = v.Hash
+				Saddles[#Saddles+1] = v.Hash
 			elseif v.category == "Stirrups" then
-				stirrups[#stirrups+1] = v.Hash
+				Stirrups[#Stirrups+1] = v.Hash
 			elseif v.category == "AcsLuggage" then
-				acsluggage[#acsluggage+1] = v.Hash
+				Acsluggage[#Acsluggage+1] = v.Hash
 			end
 		end
-		adding = false
+		Adding = false
 	end
 end)
 

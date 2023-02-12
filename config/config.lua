@@ -13,10 +13,10 @@ Config.stables = {
         blipSprite = 1938782895,
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32", -- Shop Open - Blip Colors Shown Below
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10", -- Shop Closed - Blip Colors Shown Below
-        distanceShop = 2.0, -- Distance from NPC to Get Menu Prompt
+        distanceShop = 3.0, -- Distance from NPC to Get Menu Prompt
         npcAllowed = true, -- Turns NPCs On / Off
         npcModel = "A_M_M_UniBoatCrew_01", -- Sets Model for NPCs
-        npcx = -367.73, npcy = 787.72, npcz = 116.26,
+        npcx = -367.73, npcy = 787.72, npcz = 115.26,
         allowedJobs = {}, -- Empty, Everyone Can Use / Insert Job to limit access - ex. "police"
         jobGrade = 0, -- Enter Minimum Rank / Job Grade to Access Shop
         shopHours = false, -- If You Want the Shops to Use Open and Closed Hours
@@ -37,10 +37,10 @@ Config.stables = {
         blipSprite = 1938782895,
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
-        distanceShop = 2.0,
+        distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = -864.84, npcy = -1365.96, npcz = 43.54,
+        npcx = -864.84, npcy = -1365.96, npcz = 42.54,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -61,10 +61,10 @@ Config.stables = {
         blipSprite = 1938782895,
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
-        distanceShop = 2.0,
+        distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 2503.13, npcy = -1449.08, npcz = 46.3,
+        npcx = 2503.13, npcy = -1449.08, npcz = 45.3,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -85,10 +85,10 @@ Config.stables = {
         blipSprite = 1938782895,
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
-        distanceShop = 2.0,
+        distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 2972.35, npcy = 1425.35, npcz = 44.67,
+        npcx = 2972.35, npcy = 1425.35, npcz = 43.67,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -109,10 +109,10 @@ Config.stables = {
         blipSprite = 1938782895,
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
-        distanceShop = 2.0,
+        distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 1321.46, npcy = -1358.66, npcz = 78.39,
+        npcx = 1321.46, npcy = -1358.66, npcz = 77.39,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -133,10 +133,10 @@ Config.stables = {
         blipSprite = 1938782895,
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
         blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
-        distanceShop = 2.0,
+        distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = -5519.43, npcy = -3043.45, npcz = -2.39,
+        npcx = -5519.43, npcy = -3043.45, npcz = -3.39,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
