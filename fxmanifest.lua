@@ -15,7 +15,19 @@ server_scripts {
 }
 
 shared_scripts {
-    'config.lua',
+    'config/config.lua',
+	'config/horse_comp.lua',
     'locale.lua',
     'languages/*.lua'
+}
+
+ui_page {
+	'html/index.html'
+}
+
+files {
+	'html/*',
+	'html/css/*',
+	'html/fonts/*',
+	'html/img/*'
 }
