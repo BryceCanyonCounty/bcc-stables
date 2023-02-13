@@ -38,7 +38,6 @@ local HorseModel
 local HorseName
 local HorseComponents = {}
 local Initializing = false
-local AlreadySentShopData = false
 local SaddlesUsing = nil
 local SaddleclothsUsing = nil
 local StirrupsUsing = nil
@@ -184,8 +183,9 @@ Citizen.CreateThread(function()
                                 StablePoint = {shopConfig.stablex, shopConfig.stabley, shopConfig.stablez}
                                 CamPos = {shopConfig.SpawnPoint.CamPos.x, shopConfig.SpawnPoint.CamPos.y}
                                 SpawnPoint = {x = shopConfig.SpawnPoint.Pos.x, y = shopConfig.SpawnPoint.Pos.y, z = shopConfig.SpawnPoint.Pos.z, h = shopConfig.SpawnPoint.Heading}
-                                Wait(300)
-
+                                DoScreenFadeOut(500)
+                                Wait(500)
+                                DoScreenFadeIn(500)
                                 OpenStable()
                             end
                         end
@@ -244,25 +244,16 @@ function OpenStable()
 
     createCamera(player)
 
-    if not AlreadySentShopData then
-        SendNUIMessage(
-            {
-                action = "show",
-                shopData = getShopData()
-            }
-        )
-    else
-        SendNUIMessage(
-            {
-                action = "show"
-            }
-        )
-    end
+    SendNUIMessage(
+        {
+            action = "show",
+            shopData = getShopData()
+        }
+    )
     TriggerServerEvent('oss_stables:AskForMyHorses')
 end
 
 function getShopData()
-    AlreadySentShopData = true
     local ret = Config.Horses
     return ret
 end
@@ -794,7 +785,6 @@ RegisterNUICallback("sellHorse", function(data)
     DeleteEntity(ShowroomHorse_entity)
     TriggerServerEvent('oss_stables:SellHorseWithId', tonumber(data.horseID))
     TriggerServerEvent('oss_stables:AskForMyHorses')
-    AlreadySentShopData = false
     Wait(300)
 
     SendNUIMessage(
