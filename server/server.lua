@@ -3,6 +3,37 @@ TriggerEvent("getCore", function(core)
     VORPcore = core
 end)
 
+RegisterNetEvent('oss_stables:AskForMyHorses')
+AddEventHandler('oss_stables:AskForMyHorses', function()
+    local _source = source
+    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local identifier = Character.identifier
+    local charid = Character.charIdentifier
+    local horseId = nil
+	local components = nil
+
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
+        ['@identifier'] = identifier,
+        ['@charid'] = charid
+    }, function(horses)
+        if horses[1] then
+            horseId = horses[1].id
+        else
+            horseId = nil
+        end
+
+        MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
+            ['@identifier'] = identifier,
+            ['@charid'] = charid
+        }, function(components)
+            if components[1] then
+                components = components[1].components
+            end
+        end)
+        TriggerClientEvent('oss_stables:ReceiveHorsesData', _source, horses)
+    end)
+end)
+
 RegisterNetEvent('oss_stables:BuyHorse')
 AddEventHandler('oss_stables:BuyHorse', function(data, name)
     local _source = source
@@ -51,78 +82,6 @@ AddEventHandler('oss_stables:BuyHorse', function(data, name)
     end)
 end)
 
-RegisterNetEvent('oss_stables:UpdateHorseComponents')
-AddEventHandler('oss_stables:UpdateHorseComponents', function(components, idhorse, MyHorse_entity)
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
-    local identifier = Character.identifier
-    local charid = Character.charIdentifier
-    local encodedComponents = json.encode(components)
-    local id = idhorse
-
-    MySQL.Async.execute('UPDATE player_horses SET components = @encodedComponents WHERE identifier = @identifier AND charid = @charid AND id = @id', {
-        ['@identifier'] = identifier,
-        ['@charid'] = charid,
-        ['@id'] = id,
-        ['@encodedComponents'] = encodedComponents
-    }, function(done)
-        TriggerClientEvent('oss_stables:UpdateHorseComponents', _source, MyHorse_entity, components)
-    end)
-end)
-
-
-RegisterNetEvent('oss_stables:GetSelectedHorse')
-AddEventHandler('oss_stables:GetSelectedHorse', function()
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
-    local identifier = Character.identifier
-    local charid = Character.charIdentifier
-
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
-        ['@identifier'] = identifier,
-        ['@charid'] = charid
-    }, function(horses)
-        if #horses ~= 0 then
-            for i = 1, #horses do
-                if horses[i].selected == 1 then
-                    TriggerClientEvent('oss_stables:SetHorseInfo', _source, horses[i].model, horses[i].name, horses[i].components)
-                end
-            end
-        end
-    end)
-end)
-
-RegisterNetEvent('oss_stables:AskForMyHorses')
-AddEventHandler('oss_stables:AskForMyHorses', function()
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
-    local identifier = Character.identifier
-    local charid = Character.charIdentifier
-    local horseId = nil
-	local components = nil
-
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
-        ['@identifier'] = identifier,
-        ['@charid'] = charid
-    }, function(horses)
-        if horses[1] then
-            horseId = horses[1].id
-        else
-            horseId = nil
-        end
-
-        MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
-            ['@identifier'] = identifier,
-            ['@charid'] = charid
-        }, function(components)
-            if components[1] then
-                components = components[1].components
-            end
-        end)
-        TriggerClientEvent('oss_stables:ReceiveHorsesData', _source, horses)
-    end)
-end)
-
 RegisterNetEvent('oss_stables:SelectHorseWithId')
 AddEventHandler('oss_stables:SelectHorseWithId', function(id)
     local _source = source
@@ -155,6 +114,46 @@ AddEventHandler('oss_stables:SelectHorseWithId', function(id)
                 end)
             end
         end
+    end)
+end)
+
+RegisterNetEvent('oss_stables:GetSelectedHorse')
+AddEventHandler('oss_stables:GetSelectedHorse', function()
+    local _source = source
+    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local identifier = Character.identifier
+    local charid = Character.charIdentifier
+
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
+        ['@identifier'] = identifier,
+        ['@charid'] = charid
+    }, function(horses)
+        if #horses ~= 0 then
+            for i = 1, #horses do
+                if horses[i].selected == 1 then
+                    TriggerClientEvent('oss_stables:SetHorseInfo', _source, horses[i].model, horses[i].name, horses[i].components)
+                end
+            end
+        end
+    end)
+end)
+
+RegisterNetEvent('oss_stables:UpdateHorseComponents')
+AddEventHandler('oss_stables:UpdateHorseComponents', function(components, idhorse, MyHorse_entity)
+    local _source = source
+    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local identifier = Character.identifier
+    local charid = Character.charIdentifier
+    local encodedComponents = json.encode(components)
+    local id = idhorse
+
+    MySQL.Async.execute('UPDATE player_horses SET components = @encodedComponents WHERE identifier = @identifier AND charid = @charid AND id = @id', {
+        ['@identifier'] = identifier,
+        ['@charid'] = charid,
+        ['@id'] = id,
+        ['@encodedComponents'] = encodedComponents
+    }, function(done)
+        TriggerClientEvent('oss_stables:UpdateHorseComponents', _source, MyHorse_entity, components)
     end)
 end)
 

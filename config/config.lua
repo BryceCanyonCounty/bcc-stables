@@ -16,7 +16,8 @@ Config.stables = {
         distanceShop = 3.0, -- Distance from NPC to Get Menu Prompt
         npcAllowed = true, -- Turns NPCs On / Off
         npcModel = "A_M_M_UniBoatCrew_01", -- Sets Model for NPCs
-        npcx = -367.73, npcy = 787.72, npcz = 115.26,
+        npcx = -365.08, npcy = 791.21, npcz = 115.18, npch = 179.76,
+		stablex = -367.73, stabley = 787.72, stablez = 116.26,
         allowedJobs = {}, -- Empty, Everyone Can Use / Insert Job to limit access - ex. "police"
         jobGrade = 0, -- Enter Minimum Rank / Job Grade to Access Shop
         shopHours = false, -- If You Want the Shops to Use Open and Closed Hours
@@ -40,7 +41,8 @@ Config.stables = {
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = -864.84, npcy = -1365.96, npcz = 42.54,
+        npcx = -871.0, npcy = -1369.63, npcz = 42.53, npch = 6.64,
+		stablex = -864.84, stabley = -1365.96, stablez = 43.54,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -64,7 +66,8 @@ Config.stables = {
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 2503.13, npcy = -1449.08, npcz = 45.3,
+        npcx = 2512.33, npcy = -1457.1, npcz = 45.31, npch = 99.45,
+		stablex = 2503.13, stabley = -1449.08, stablez = 46.3,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -88,7 +91,8 @@ Config.stables = {
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 2972.35, npcy = 1425.35, npcz = 43.67,
+        npcx = 2973.51, npcy = 1427.27, npcz = 43.71, npch = 192.53,
+		stablex = 2972.35, stabley = 1425.35, stablez = 44.67,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -112,7 +116,8 @@ Config.stables = {
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 1321.46, npcy = -1358.66, npcz = 77.39,
+        npcx = 1319.5, npcy = -1360.52, npcz = 77.21, npch = 351.46,
+		stablex = 1321.46, stabley = -1358.66, stablez = 78.39,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -136,7 +141,8 @@ Config.stables = {
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = -5519.43, npcy = -3043.45, npcz = -3.39,
+        npcx = -5515.2, npcy = -3040.17, npcz = -3.39, npch = 180.76,
+		stablex = -5519.43, stabley = -3043.45, stablez = -2.39,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
