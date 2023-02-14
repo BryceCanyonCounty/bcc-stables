@@ -116,8 +116,9 @@ Citizen.CreateThread(function()
                                     StablePoint = {shopConfig.stablex, shopConfig.stabley, shopConfig.stablez}
                                     CamPos = {shopConfig.SpawnPoint.CamPos.x, shopConfig.SpawnPoint.CamPos.y}
                                     SpawnPoint = {x = shopConfig.SpawnPoint.Pos.x, y = shopConfig.SpawnPoint.Pos.y, z = shopConfig.SpawnPoint.Pos.z, h = shopConfig.SpawnPoint.Heading}
-                                    Wait(300)
-
+                                    DoScreenFadeOut(500)
+                                    Wait(500)
+                                    DoScreenFadeIn(500)
                                     OpenStable()
                                 end
                             end
@@ -133,7 +134,7 @@ Citizen.CreateThread(function()
 
                                 if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
 
-                                    TriggerServerEvent("oss_stables:getPlayerJob")
+                                    TriggerServerEvent("oss_stables:GetPlayerJob")
                                     Wait(200)
                                     if PlayerJob then
                                         if CheckJob(shopConfig.allowedJobs, PlayerJob) then
@@ -142,17 +143,18 @@ Citizen.CreateThread(function()
                                                 StablePoint = {shopConfig.stablex, shopConfig.stabley, shopConfig.stablez}
                                                 CamPos = {shopConfig.SpawnPoint.CamPos.x, shopConfig.SpawnPoint.CamPos.y}
                                                 SpawnPoint = {x = shopConfig.SpawnPoint.Pos.x, y = shopConfig.SpawnPoint.Pos.y, z = shopConfig.SpawnPoint.Pos.z, h = shopConfig.SpawnPoint.Heading}
-                                                Wait(300)
-
+                                                DoScreenFadeOut(500)
+                                                Wait(500)
+                                                DoScreenFadeIn(500)
                                                 OpenStable()
                                             else
-                                                VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade,5000)
+                                                VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                             end
                                         else
-                                            VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade,5000)
+                                            VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                         end
                                     else
-                                        VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade,5000)
+                                        VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                     end
                                 end
                             end
@@ -186,6 +188,7 @@ Citizen.CreateThread(function()
                                 DoScreenFadeOut(500)
                                 Wait(500)
                                 DoScreenFadeIn(500)
+                                DisplayRadar(false)
                                 OpenStable()
                             end
                         end
@@ -201,7 +204,7 @@ Citizen.CreateThread(function()
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
 
-                                TriggerServerEvent("oss_stables:getPlayerJob")
+                                TriggerServerEvent("oss_stables:GetPlayerJob")
                                 Wait(200)
                                 if PlayerJob then
                                     if CheckJob(shopConfig.allowedJobs, PlayerJob) then
@@ -210,17 +213,18 @@ Citizen.CreateThread(function()
                                             StablePoint = {shopConfig.stablex, shopConfig.stabley, shopConfig.stablez}
                                             CamPos = {shopConfig.SpawnPoint.CamPos.x, shopConfig.SpawnPoint.CamPos.y}
                                             SpawnPoint = {x = shopConfig.SpawnPoint.Pos.x, y = shopConfig.SpawnPoint.Pos.y, z = shopConfig.SpawnPoint.Pos.z, h = shopConfig.SpawnPoint.Heading}
-                                            Wait(300)
-
+                                            DoScreenFadeOut(500)
+                                            Wait(500)
+                                            DoScreenFadeIn(500)
                                             OpenStable()
                                         else
-                                            VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade,5000)
+                                            VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                         end
                                     else
-                                        VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade,5000)
+                                        VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                     end
                                 else
-                                    VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade,5000)
+                                    VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                 end
                             end
                         end
@@ -250,7 +254,7 @@ function OpenStable()
             shopData = getShopData()
         }
     )
-    TriggerServerEvent('oss_stables:AskForMyHorses')
+    TriggerServerEvent('oss_stables:GetMyHorses')
 end
 
 function getShopData()
@@ -339,7 +343,7 @@ function SetHorseName(data)
         )
 
         Wait(1000)
-        TriggerServerEvent('oss_stables:AskForMyHorses')
+        TriggerServerEvent('oss_stables:GetMyHorses')
 		end
     end)
 end
@@ -394,7 +398,7 @@ RegisterNUICallback("loadMyHorse", function(data)
 end)
 
 RegisterNUICallback("selectHorse", function(data)
-    TriggerServerEvent('oss_stables:SelectHorseWithId', tonumber(data.horseID))
+    TriggerServerEvent('oss_stables:SelectHorse', tonumber(data.horseID))
 end)
 
 RegisterNetEvent('oss_stables:SetHorseInfo')
@@ -445,6 +449,7 @@ RegisterNUICallback("CloseStable", function()
 
     DestroyAllCams(true)
     ShowroomHorse_entity = nil
+    DisplayRadar(true)
     StableClose()
 end)
 
@@ -462,12 +467,12 @@ function StableClose()
     local compDataEncoded = json.encode(compData)
 
     if compDataEncoded ~= "[]" then
-        TriggerServerEvent('oss_stables:UpdateHorseComponents', compData, IdMyHorse, MyHorse_entity)
+        TriggerServerEvent('oss_stables:UpdateComponents', compData, IdMyHorse, MyHorse_entity)
     end
 end
 
-RegisterNetEvent('oss_stables:UpdateHorseComponents')
-AddEventHandler('oss_stables:UpdateHorseComponents', function(horseEntity, components)
+RegisterNetEvent('oss_stables:SetComponents')
+AddEventHandler('oss_stables:SetComponents', function(horseEntity, components)
     for _, value in pairs(components) do
         NativeSetPedComponentEnabled(horseEntity, value)
     end
@@ -783,8 +788,8 @@ end
 
 RegisterNUICallback("sellHorse", function(data)
     DeleteEntity(ShowroomHorse_entity)
-    TriggerServerEvent('oss_stables:SellHorseWithId', tonumber(data.horseID))
-    TriggerServerEvent('oss_stables:AskForMyHorses')
+    TriggerServerEvent('oss_stables:SellHorse', tonumber(data.horseID))
+    TriggerServerEvent('oss_stables:GetMyHorses')
     Wait(300)
 
     SendNUIMessage(
@@ -793,7 +798,7 @@ RegisterNUICallback("sellHorse", function(data)
             shopData = getShopData()
         }
     )
-    TriggerServerEvent('oss_stables:AskForMyHorses')
+    TriggerServerEvent('oss_stables:GetMyHorses')
 end)
 
 Citizen.CreateThread(function()
@@ -970,8 +975,8 @@ function CheckJob(allowedJob, playerJob)
     return false
 end
 
-RegisterNetEvent("oss_stables:sendPlayerJob")
-AddEventHandler("oss_stables:sendPlayerJob", function(Job, grade)
+RegisterNetEvent("oss_stables:SendPlayerJob")
+AddEventHandler("oss_stables:SendPlayerJob", function(Job, grade)
     PlayerJob = Job
     JobGrade = grade
 end)
@@ -1000,6 +1005,6 @@ AddEventHandler('onResourceStop', function(resourceName)
             SetEntityAsNoLongerNeeded(shopConfig.NPC)
         end
     end
-    SetNuiFocus(false, false)
     SendNUIMessage({action = "hide"})
+    SetNuiFocus(false, false)
 end)

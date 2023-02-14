@@ -3,33 +3,18 @@ TriggerEvent("getCore", function(core)
     VORPcore = core
 end)
 
-RegisterNetEvent('oss_stables:AskForMyHorses')
-AddEventHandler('oss_stables:AskForMyHorses', function()
+RegisterNetEvent('oss_stables:GetMyHorses')
+AddEventHandler('oss_stables:GetMyHorses', function()
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
-    local horseId = nil
-	local components = nil
 
     MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
         ['@identifier'] = identifier,
         ['@charid'] = charid
     }, function(horses)
-        if horses[1] then
-            horseId = horses[1].id
-        else
-            horseId = nil
-        end
 
-        MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
-            ['@identifier'] = identifier,
-            ['@charid'] = charid
-        }, function(components)
-            if components[1] then
-                components = components[1].components
-            end
-        end)
         TriggerClientEvent('oss_stables:ReceiveHorsesData', _source, horses)
     end)
 end)
@@ -46,7 +31,7 @@ AddEventHandler('oss_stables:BuyHorse', function(data, name)
         ['@charid'] = charid
     }, function(horses)
         if #horses >= 3 then
-            VORPcore.NotifyRightTip(_source, "You can have a maximum of 3 horses!", 5000)
+            VORPcore.NotifyRightTip(_source, _U("horseLimit"), 5000)
             return
         end
         Wait(200)
@@ -57,7 +42,7 @@ AddEventHandler('oss_stables:BuyHorse', function(data, name)
             if charGold >= goldPrice then
                 Character.removeCurrency(1, goldPrice)
             else
-                VORPcore.NotifyRightTip(_source, "You don't have enough gold", 5000)
+                VORPcore.NotifyRightTip(_source, _U("shortGold"), 5000)
                 return
             end
         else
@@ -67,7 +52,7 @@ AddEventHandler('oss_stables:BuyHorse', function(data, name)
             if charCash >= cashPrice then
                 Character.removeCurrency(0, cashPrice)
             else
-                VORPcore.NotifyRightTip(_source, "You don't have enough money", 5000)
+                VORPcore.NotifyRightTip(_source, _U("shortCash"), 5000)
                 return
             end
         end
@@ -82,8 +67,8 @@ AddEventHandler('oss_stables:BuyHorse', function(data, name)
     end)
 end)
 
-RegisterNetEvent('oss_stables:SelectHorseWithId')
-AddEventHandler('oss_stables:SelectHorseWithId', function(id)
+RegisterNetEvent('oss_stables:SelectHorse')
+AddEventHandler('oss_stables:SelectHorse', function(id)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -138,8 +123,8 @@ AddEventHandler('oss_stables:GetSelectedHorse', function()
     end)
 end)
 
-RegisterNetEvent('oss_stables:UpdateHorseComponents')
-AddEventHandler('oss_stables:UpdateHorseComponents', function(components, idhorse, MyHorse_entity)
+RegisterNetEvent('oss_stables:UpdateComponents')
+AddEventHandler('oss_stables:UpdateComponents', function(components, idhorse, MyHorse_entity)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -153,12 +138,12 @@ AddEventHandler('oss_stables:UpdateHorseComponents', function(components, idhors
         ['@id'] = id,
         ['@encodedComponents'] = encodedComponents
     }, function(done)
-        TriggerClientEvent('oss_stables:UpdateHorseComponents', _source, MyHorse_entity, components)
+        TriggerClientEvent('oss_stables:SetComponents', _source, MyHorse_entity, components)
     end)
 end)
 
-RegisterNetEvent('oss_stables:SellHorseWithId')
-AddEventHandler('oss_stables:SellHorseWithId', function(id)
+RegisterNetEvent('oss_stables:SellHorse')
+AddEventHandler('oss_stables:SellHorse', function(id)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -181,12 +166,12 @@ AddEventHandler('oss_stables:SellHorseWithId', function(id)
             end
         end
 
-        for k,v in pairs(Config.Horses) do
-            for models,values in pairs(v) do
+        for _,horseConfig in pairs(Config.Horses) do
+            for models,values in pairs(horseConfig) do
                 if models ~= "name" then
                     if models == modelHorse then
                         Character.addCurrency(0, tonumber(values[3]*0.6))
-                        VORPcore.NotifyRightTip(_source, "You sold a horse", 5000)
+                        VORPcore.NotifyRightTip(_source, _U("soldHorse"), 5000)
                     end
                 end
             end
@@ -194,14 +179,14 @@ AddEventHandler('oss_stables:SellHorseWithId', function(id)
     end)
 end)
 
-RegisterServerEvent('oss_stables:getPlayerJob')
-AddEventHandler('oss_stables:getPlayerJob', function()
+RegisterServerEvent('oss_stables:GetPlayerJob')
+AddEventHandler('oss_stables:GetPlayerJob', function()
     local _source = source
     if _source then
         local Character = VORPcore.getUser(_source).getUsedCharacter
         local CharacterJob = Character.job
         local CharacterGrade = Character.jobGrade
 
-        TriggerClientEvent('oss_stables:sendPlayerJob', _source, CharacterJob, CharacterGrade)
+        TriggerClientEvent('oss_stables:SendPlayerJob', _source, CharacterJob, CharacterGrade)
     end
 end)
