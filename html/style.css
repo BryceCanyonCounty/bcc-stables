@@ -16,7 +16,6 @@ body {
     display: block;
     height: 100%;
     z-index: 999;
-    min-width: ;
 }
 
 * {
@@ -118,11 +117,15 @@ button {
 
 .header-text {
     position: relative;
-    padding: 30px 20px;
+    padding: 20px 20px;
+    margin-bottom: 10px;
     font-size: 2.0em;
     color: white;
     font-family: 'crock';
     text-align: center;
+    background: url('img/toastred.png');
+    background-position: center;
+    background-size: 100% 100%;
 }
 
 .modal {
@@ -206,8 +209,8 @@ button {
     overflow: hidden;
     position: absolute;
     height: 80%;
-    right: 2%;
-    top: 10%;
+    left: 2%;
+    top: 5%;
     width: 420px;
     color: #e7e7e7 !important;
     background: url('img/bgPanel.png');
