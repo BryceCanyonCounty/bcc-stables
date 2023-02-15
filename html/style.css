@@ -198,8 +198,6 @@ button {
     line-height: 0.5vw;
 }
 
-.container {}
-
 #clothes-container,
 #creator-container,
 #barber-container,
@@ -485,13 +483,13 @@ h6 {
 .confirm-button{
     height: 25px;
     width: 40%;
-    background: url('img/toast.png') !important;
+    background: url('img/input.png') !important;
     background-size: 100% 100%!important;
     transition: background-color .2s ease-out;
 }
 
 .confirm-button:hover{
-    background: url('img/toastg.png') !important;
+    background: url('img/borderinput.png') !important;
     transition: background-color .2s ease-out;
     background-size: 100% 100% !important;
 }
