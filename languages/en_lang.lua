@@ -8,6 +8,7 @@ Locales["en_lang"] = {
     shortGold = "You don't have enough gold",
     shortCash = "You don't have enough money",
     needJob = "To use this stable you need job: ~o~",
-    horseLimit = "You can have a maximum of 3 horses!",
-    soldHorse = "You sold a horse"
+    horseLimit = "You can have a maximum of ~o~",
+    horses = "~q~ horses!",
+    soldHorse = "You sold a horse for: $~t6~"
 }

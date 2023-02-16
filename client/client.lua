@@ -10,6 +10,7 @@ local ShopPrompt2 = GetRandomIntInRange(0, 0xffffff)
 local PlayerJob
 local JobName
 local JobGrade
+local InMenu = false
 
 Zoom = 4.0
 Offset = 0.2
@@ -60,7 +61,7 @@ Citizen.CreateThread(function()
         local dead = IsEntityDead(player)
         local hour = GetClockHours()
 
-        if not dead then
+        if InMenu == false and not dead then
             for shopId, shopConfig in pairs(Config.stables) do
                 if shopConfig.shopHours then
                     if hour >= shopConfig.shopClose or hour < shopConfig.shopOpen then
@@ -239,6 +240,7 @@ Citizen.CreateThread(function()
 end)
 
 function OpenStable()
+    InMenu = true
     local playerHorse = MyHorse_entity
     local player = PlayerPedId()
 
@@ -301,8 +303,8 @@ RegisterNUICallback("loadHorse", function(data)
 
     ShowroomHorse_model = horseModel
     ShowroomHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
-    Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- _SET_RANDOM_OUTFIT_VARIATION
-    Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PLACE_OBJECT_ON_GROUND_PROPERLY
+    Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
+    Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
     NetworkSetEntityInvisibleToNetwork(ShowroomHorse_entity, true)
     SetVehicleHasBeenOwnedByPlayer(ShowroomHorse_entity, true)
     -- SetModelAsNoLongerNeeded(modelHash)
@@ -378,8 +380,8 @@ RegisterNUICallback("loadMyHorse", function(data)
     end
 
     MyHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
-    Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true)
-    Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity)
+    Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true) -- SetRandomOutfitVariation
+    Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity) -- PlaceObjectOnGroundProperly
     NetworkSetEntityInvisibleToNetwork(MyHorse_entity, true)
     SetVehicleHasBeenOwnedByPlayer(MyHorse_entity, true)
     local componentsHorse = json.decode(data.HorseComp)
@@ -388,12 +390,12 @@ RegisterNUICallback("loadMyHorse", function(data)
         for _, Key in pairs(componentsHorse) do
             local model2 = GetHashKey(tonumber(Key))
             if not HasModelLoaded(model2) then
-                Citizen.InvokeNative(0xFA28FE3A6246FC30, model2)
+                Citizen.InvokeNative(0xFA28FE3A6246FC30, model2) -- RequestModel
             end
-            Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(Key), true, true, true)
+            Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(Key), true, true, true) -- ApplyShopItemToPed
         end
     end
-        -- SetModelAsNoLongerNeeded(modelHash)
+
     interpCamera("Horse", MyHorse_entity)
 end)
 
@@ -450,6 +452,7 @@ RegisterNUICallback("CloseStable", function()
     DestroyAllCams(true)
     ShowroomHorse_entity = nil
     DisplayRadar(true)
+    InMenu = false
     StableClose()
 end)
 
@@ -479,18 +482,17 @@ AddEventHandler('oss_stables:SetComponents', function(horseEntity, components)
 end)
 
 function NativeSetPedComponentEnabled(ped, component)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, component, true, true, true)
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, component, true, true, true) -- ApplyShopItemToPed
 end
 
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
-        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- Control =  H
+        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- Control =  H / IsDisabledControlJustPressed
 			WhistleHorse()
 			Citizen.Wait(10000) --Flood Protection? i think yes zoot
         end
-        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x4216AF06) then -- Control = Horse Flee            
-         --   local horseCheck = Citizen.InvokeNative(0x7912F7FC4F6264B6, PlayerPedId(), myHorse[4])            
+        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x4216AF06) then -- Control = Horse Flee / IsDisabledControlJustPressed
 			if SpawnplayerHorse ~= 0 then
 				fleeHorse(SpawnplayerHorse)
 			end
@@ -572,19 +574,19 @@ function InitiateHorse(atCoords)
     local entity = CreatePed(modelHash, spawnPosition, GetEntityHeading(player), true, true)
     SetModelAsNoLongerNeeded(modelHash)
 
-    Citizen.InvokeNative(0x9587913B9E772D29, entity, 0)
-    Citizen.InvokeNative(0x4DB9D03AC4E1FA84, entity, -1, -1, 0)
-    Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, entity)
-    Citizen.InvokeNative(0xBCC76708E5677E1D9, entity, 0)
+    Citizen.InvokeNative(0x9587913B9E772D29, entity, 0) -- PlaceEntityOnGroundProperly
+    Citizen.InvokeNative(0x4DB9D03AC4E1FA84, entity, -1, -1, 0) -- SetPedWrithingDuration
+    Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, entity) -- BlipAddForEntity
+    --Citizen.InvokeNative(0xBCC76708E5677E1D9, entity, 0)
     Citizen.InvokeNative(0xB8B6430EAD2D2437, entity, GetHashKey("PLAYER_HORSE"))
-    Citizen.InvokeNative(0xFD6943B6DF77E449, entity, false)
+    Citizen.InvokeNative(0xFD6943B6DF77E449, entity, false) -- SetPedCanBeLassoed
 
     SetPedConfigFlag(entity, 324, true)
     SetPedConfigFlag(entity, 211, true)
     SetPedConfigFlag(entity, 208, true)
     SetPedConfigFlag(entity, 209, true)
     SetPedConfigFlag(entity, 400, true)
-    SetPedConfigFlag(entity, 297, true)
+    SetPedConfigFlag(entity, 297, true) -- Enable_Horse_Leadin
     SetPedConfigFlag(entity, 136, false)
     SetPedConfigFlag(entity, 312, false)
     SetPedConfigFlag(entity, 113, false)
@@ -597,15 +599,13 @@ function InitiateHorse(atCoords)
     SetAnimalTuningBoolParam(entity, 24, false)
 
     TaskAnimalUnalerted(entity, -1, false, 0, 0)
-    Citizen.InvokeNative(0x283978A15512B2FE, entity, true)
+    Citizen.InvokeNative(0x283978A15512B2FE, entity, true) -- SetRandomOutfitVariation
 
     SpawnplayerHorse = entity
 
-    Citizen.InvokeNative(0x283978A15512B2FE, entity, true)
-    -- SetVehicleHasBeenOwnedByPlayer(playerHorse, true)
     SetPedNameDebug(entity, HorseName)
     SetPedPromptName(entity, HorseName)
-    --CreatePrompts(PromptGetGroupIdForTargetEntity(entity))
+
     if HorseComponents ~= nil and HorseComponents ~= "0" then
         for _, componentHash in pairs(json.decode(HorseComponents)) do
             NativeSetPedComponentEnabled(entity, tonumber(componentHash))
@@ -618,16 +618,16 @@ function InitiateHorse(atCoords)
     end
 
     TaskGoToEntity(entity, player, -1, 7.2, 2.0, 0, 0)
-    SetPedConfigFlag(entity, 297, true) -- Enable_Horse_Leadin
+    --SetPedConfigFlag(entity, 297, true)
     Initializing = false
 end
 
 Citizen.CreateThread(function()
 	while true do
-		local getHorseMood = Citizen.InvokeNative(0x42688E94E96FD9B4, SpawnplayerHorse, 3, 0, Citizen.ResultAsFloat())
+		local getHorseMood = Citizen.InvokeNative(0x42688E94E96FD9B4, SpawnplayerHorse, 3, 0, Citizen.ResultAsFloat()) -- GetPedMotivation
 		if getHorseMood >= 0.60 then
-		    Citizen.InvokeNative(0x06D26A96CA1BCA75, SpawnplayerHorse, 3, PlayerPedId())
-		    Citizen.InvokeNative(0xA1EB5D029E0191D3, SpawnplayerHorse, 3, 0.99)
+		    Citizen.InvokeNative(0x06D26A96CA1BCA75, SpawnplayerHorse, 3, PlayerPedId()) -- SetPedMotivation
+		    Citizen.InvokeNative(0xA1EB5D029E0191D3, SpawnplayerHorse, 3, 0.99) -- SetPedMotivationModifier
 		end
 		Citizen.Wait(30000)
 	end
@@ -666,8 +666,8 @@ RegisterNUICallback("Saddlecloths", function(data)
         num = 0
         SaddleclothsUsing = num
         local playerHorse = MyHorse_entity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- HAT REMOVE
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Saddlecloths[num])
@@ -683,8 +683,8 @@ RegisterNUICallback("Stirrups", function(data)
         num = 0
         StirrupsUsing = num
         local playerHorse = MyHorse_entity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xDA6DADCA, 0) -- HAT REMOVE
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xDA6DADCA, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Stirrups[num])
@@ -700,8 +700,8 @@ RegisterNUICallback("Bags", function(data)
         num = 0
         BagsUsing = num
         local playerHorse = MyHorse_entity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x80451C25, 0) -- HAT REMOVE
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x80451C25, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Bags[num])
@@ -717,8 +717,8 @@ RegisterNUICallback("Manes", function(data)
         num = 0
         ManesUsing = num
         local playerHorse = MyHorse_entity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xAA0217AB, 0) -- HAT REMOVE
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xAA0217AB, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Manes[num])
@@ -734,8 +734,8 @@ RegisterNUICallback("HorseTails", function(data)
         num = 0
         HorseTailsUsing = num
         local playerHorse = MyHorse_entity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- HAT REMOVE
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Horsetails[num])
@@ -751,8 +751,8 @@ RegisterNUICallback("AcsHorn", function(data)
         num = 0
         AcsHornUsing = num
         local playerHorse = MyHorse_entity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x5447332, 0) -- HAT REMOVE
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x5447332, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Acshorn[num])
@@ -768,8 +768,8 @@ RegisterNUICallback("AcsLuggage", function(data)
         num = 0
         AcsLuggageUsing = num
         local playerHorse = MyHorse_entity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xEFB31921, 0) -- HAT REMOVE
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xEFB31921, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Acsluggage[num])
@@ -781,9 +781,9 @@ end)
 function setcloth(hash)
     local model2 = GetHashKey(tonumber(hash))
     if not HasModelLoaded(model2) then
-        Citizen.InvokeNative(0xFA28FE3A6246FC30, model2)
+        Citizen.InvokeNative(0xFA28FE3A6246FC30, model2) -- RequestModel
     end
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(hash), true, true, true)
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
 end
 
 RegisterNUICallback("sellHorse", function(data)
@@ -986,6 +986,15 @@ AddEventHandler('onResourceStop', function(resourceName)
         return
     end
 
+    if InMenu == true then
+        SetNuiFocus(false, false)
+        SendNUIMessage(
+            {
+                action = "hide"
+            }
+        )
+    end
+
     ClearPedTasksImmediately(PlayerPedId())
     PromptDelete(OpenShops)
     PromptDelete(CloseShops)
@@ -1005,6 +1014,4 @@ AddEventHandler('onResourceStop', function(resourceName)
             SetEntityAsNoLongerNeeded(shopConfig.NPC)
         end
     end
-    SendNUIMessage({action = "hide"})
-    SetNuiFocus(false, false)
 end)

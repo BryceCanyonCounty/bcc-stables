@@ -1,11 +1,9 @@
 $('#creatormenu').fadeOut(0);
 
-
 window.addEventListener('message', function(event) {
     if (event.data.action == "show") {
         $("#creatormenu").fadeIn(500);
        
-
         if (event.data.shopData) {
             for (const [index, table] of Object.entries(event.data.shopData)) {
                 var horseCategory = table.name
@@ -29,18 +27,13 @@ window.addEventListener('message', function(event) {
                         let Modelhorse
                         var HorseName = horseData[0];
                         var priceGold = horseData[1];
-                        var priceDolar = horseData[2];
-                        var BuyModel = null;
-
-                        // priceGold = '';
-                        // priceDolar = '';
+                        var priceCash = horseData[2];
                      
-
                         $(`#page_shop .scroll-container .collapsible #${index} .collapsible-body`).append(`
 
-                            <div id="${_}" onhover="loadHorse(this)" class="col s12 panel item">
+                            <div id="${_}" onhover="loadHorse(this)" class="col s12 panel item1">
 
-                                <div class="col s6 panel-col item">
+                                <div class="col s6 panel-col item2">
                                     <h6 class="grey-text title" style="color:white;">${HorseName}</h6>
                                 </div>          
 
@@ -48,8 +41,8 @@ window.addEventListener('message', function(event) {
                                     <button class="btn-small"  onclick="buyHorse('${_}', ${priceGold}, true)">                                                
                                         <img src="img/gold.png"><span class="horse-price">${priceGold}</span>
                                     </button>                                          
-                                    <button class="btn-small"  onclick="buyHorse('${_}', ${priceDolar}, false)">
-                                        <img src="img/money.png"><span class="horse-price">${priceDolar}</span>
+                                    <button class="btn-small"  onclick="buyHorse('${_}', ${priceCash}, false)">
+                                        <img src="img/money.png"><span class="horse-price">${priceCash}</span>
                                     </button>
                                 </div>
                                 
@@ -59,7 +52,6 @@ window.addEventListener('message', function(event) {
                         $(`#page_shop .scroll-container .collapsible #${index} .collapsible-body #${_}`).hover(function() {                       
                             $( this ).click(function() {                        
                              
-
                                 $(Modelhorse).addClass("selected");
                                 $('.selected').removeClass("selected"); 
 
@@ -70,13 +62,9 @@ window.addEventListener('message', function(event) {
                             });                       
                             
                         }, function() {});
-
-
                     }
                 }
-
             }
-
             
             $('#page_myhorses .scroll-container .collapsible').html('');
             $('#page_myhorses .scroll-container .collapsible').append(`
@@ -96,14 +84,12 @@ window.addEventListener('message', function(event) {
         }
     }
 
-    
     if (event.data.EnableCustom == "true") {
         $('#button-customization').removeClass("disabled");
     } else {
         $('#button-customization').addClass("disabled");
     }
     
-
     if (event.data.myHorsesData) {
 
         $('#page_myhorses .scroll-container .collapsible').html('');
@@ -113,8 +99,7 @@ window.addEventListener('message', function(event) {
             let HorseName = tab.name;
             let HorseID = tab.id;
             let HorseIdModel = tab.model;
-            let componentsh = tab.components;
-            let selectedh = tab.selected;         
+            let componentsh = tab.components;      
 
             $('#page_myhorses .scroll-container .collapsible').append(`
                 <li>
@@ -123,11 +108,11 @@ window.addEventListener('message', function(event) {
                             <h6 class="grey-text">${HorseName}</h6>
                         </div>
                     </div>
-                    <div class="collapsible-body col s12 panel item" id="${HorseID}">
-                        <div class="col s6 panel-col item" onclick="SelectHorse(${HorseID})">
+                    <div class="collapsible-body col s12 panel item1" id="${HorseID}">
+                        <div class="col s6 panel-col item2" onclick="SelectHorse(${HorseID})">
                             <h6 class="grey-text title">Select</h6>
                         </div>
-                        <div class="col s6 panel-col item" onclick="SellHorse(${HorseID})">
+                        <div class="col s6 panel-col item2" onclick="SellHorse(${HorseID})">
                             <h6 class="grey-text title">Sell</h6>
                         </div>
                     </div>
@@ -136,11 +121,8 @@ window.addEventListener('message', function(event) {
             
             $(`#page_myhorses .scroll-container .collapsible #${HorseID}`).hover(function() {  
                 $( this ).click(function() { 
-                    let HorseSEID
                     $(HorseID).addClass("selected");
-                    $('.selected').removeClass("selected"); 
-
-                    HorseSEID = $(HorseID).attr('id');             
+                    $('.selected').removeClass("selected");             
                     $(HorseID).addClass('selected');
 
                     $.post('http://oss_stables/loadMyHorse', JSON.stringify({ IdHorse: HorseID, horseModel: HorseIdModel, HorseComp: componentsh}));
@@ -201,7 +183,6 @@ $(".button-left").on('click', function() {
     var component = $(inputElement).attr('id');
 
     var value = Number($(inputElement).attr('value'));
-    // value = Number(String.split(value, '/')[0]);
 
     var nValue = value - 1;
 
@@ -216,7 +197,7 @@ $(".button-left").on('click', function() {
 
     var titleElement = $(this).parent().parent().find('.grey-text');
     var text = titleElement.text();
-  //  var component = text.split(' ')[0];
+
     titleElement.text(component + ' ' + nValue + '/' + max);
     $.post('http://oss_stables/'+component, JSON.stringify({ id: nValue }));
 });
@@ -259,11 +240,9 @@ function buyHorse(Modelhor, price, isGold) {
     }    
 }
 
-
 function SelectHorse(IdHorse) {    
     $.post('http://oss_stables/selectHorse', JSON.stringify({ horseID: IdHorse }))    
 }
-
 
 function SellHorse(IdHorse) {    
     $.post('http://oss_stables/sellHorse', JSON.stringify({ horseID: IdHorse }))

@@ -3,10 +3,12 @@ Config = {}
 Config.defaultlang = "en_lang"
 -- Open Stable Menu
 Config.shopKey = 0x760A9C6F --[G]
+-- Max Number of Horses per Player
+Config.maxHorses = 5 -- Default: 3
 -- Stables
 Config.stables = {
     valentine = {
-        Name = "Valentine Stable", -- Name of Shop on Menu
+        shopName = "Valentine Stable", -- Name of Shop on Menu
         promptName = "Valentine Stable", -- Text Below the Prompt Button
         blipAllowed = true, -- Turns Blips On / Off
         blipName = "Valentine Stable", -- Name of the Blip on the Map
@@ -30,8 +32,33 @@ Config.stables = {
 			Heading = 182.3
         }
     },
+	strawberry = {
+        shopName = "Strawberry Stable", -- Name of Shop on Menu
+        promptName = "Strawberry Stable", -- Text Below the Prompt Button
+        blipAllowed = true, -- Turns Blips On / Off
+        blipName = "Strawberry Stable", -- Name of the Blip on the Map
+        blipSprite = 1938782895,
+        blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32", -- Shop Open - Blip Colors Shown Below
+        blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10", -- Shop Closed - Blip Colors Shown Below
+        distanceShop = 3.0, -- Distance from NPC to Get Menu Prompt
+        npcAllowed = true, -- Turns NPCs On / Off
+        npcModel = "A_M_M_UniBoatCrew_01", -- Sets Model for NPCs
+        npcx = -1818.45, npcy = -564.83, npcz = 155.06, npch = 347.22,
+		stablex = -367.73, stabley = 787.72, stablez = 116.26,
+        allowedJobs = {}, -- Empty, Everyone Can Use / Insert Job to limit access - ex. "police"
+        jobGrade = 0, -- Enter Minimum Rank / Job Grade to Access Shop
+        shopHours = false, -- If You Want the Shops to Use Open and Closed Hours
+        shopOpen = 7, -- Shop Open Time / 24 Hour Clock
+        shopClose = 21, -- Shop Close Time / 24 Hour Clock
+        Heading = -30.65,
+		SpawnPoint = {
+			Pos = vector3(-1820.26, -555.84, 155.16),
+			CamPos = {x=1, y=-3, z=0},
+			Heading = 163.01
+        }
+    },
     blackwater = {
-        Name = "Blackwater Stable",
+        shopName = "Blackwater Stable",
         promptName = "Blackwater Stable",
         blipAllowed = true,
         blipName = "Blackwater Stable",
@@ -56,7 +83,7 @@ Config.stables = {
         }
     },
     saintdenis = {
-        Name = "Saint Denis Stable",
+        shopName = "Saint Denis Stable",
         promptName = "Saint Denis Stable",
         blipAllowed = true,
         blipName = "Saint Denis Stable",
@@ -81,7 +108,7 @@ Config.stables = {
         }
     },
     annesburg = {
-        Name = "Annesburg Stable",
+        shopName = "Annesburg Stable",
         promptName = "Annesburg Stable",
         blipAllowed = true,
         blipName = "Annesburg Stable",
@@ -106,7 +133,7 @@ Config.stables = {
         }
     },
     rhodes = {
-        Name = "Rhodes Stable",
+        shopName = "Rhodes Stable",
         promptName = "Rhodes Stable",
         blipAllowed = true,
         blipName = "Rhodes Stable",
@@ -131,7 +158,7 @@ Config.stables = {
         }
     },
     tumbleweed = {
-        Name = "Tumbleweed Stable",
+        shopName = "Tumbleweed Stable",
         promptName = "Tumbleweed Stable",
         blipAllowed = true,
         blipName = "Tumbleweed Stable",
