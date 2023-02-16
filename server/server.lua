@@ -25,13 +25,14 @@ AddEventHandler('oss_stables:BuyHorse', function(data, name)
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
+    local maxHorses = Config.maxHorses
 
     MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = @identifier AND charid = @charid', {
         ['@identifier'] = identifier,
         ['@charid'] = charid
     }, function(horses)
-        if #horses >= 3 then
-            VORPcore.NotifyRightTip(_source, _U("horseLimit"), 5000)
+        if #horses >= maxHorses then
+            VORPcore.NotifyRightTip(_source, _U("horseLimit") .. maxHorses .. _U("horses"), 5000)
             return
         end
         Wait(200)
@@ -170,8 +171,9 @@ AddEventHandler('oss_stables:SellHorse', function(id)
             for models,values in pairs(horseConfig) do
                 if models ~= "name" then
                     if models == modelHorse then
-                        Character.addCurrency(0, tonumber(values[3]*0.6))
-                        VORPcore.NotifyRightTip(_source, _U("soldHorse"), 5000)
+                        local sellPrice = tonumber(values[3]*0.6)
+                        Character.addCurrency(0, sellPrice)
+                        VORPcore.NotifyRightTip(_source, _U("soldHorse") .. sellPrice, 5000)
                     end
                 end
             end
