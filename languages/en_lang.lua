@@ -1,7 +1,8 @@
 ---------------------------------- ENGLISH -------------------------------------------
 Locales["en_lang"] = {
 
-    shopPrompt = "Press",
+    shopPrompt = "Menu",
+    returnPrompt = "Return",
     closed = "~e~CLOSED ~o~",
     am = ":00~q~AM to ~o~",
     pm = ":00~q~PM",
@@ -10,5 +11,7 @@ Locales["en_lang"] = {
     needJob = "To use this stable you need job: ~o~",
     horseLimit = "You can have a maximum of ~o~",
     horses = "~q~ horses!",
-    soldHorse = "You sold a horse for: $~t6~"
+    soldHorse = "You sold a horse for: $~t6~",
+    horseReturned = "Your horse has been returned",
+    noHorse = "You don't have a horse to return"
 }

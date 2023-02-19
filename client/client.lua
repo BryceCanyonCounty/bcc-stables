@@ -1,16 +1,12 @@
 local VORPcore = {}
-TriggerEvent("getCore", function(core)
-    VORPcore = core
-end)
-
-local OpenShops
-local CloseShops
-local ShopPrompt1 = GetRandomIntInRange(0, 0xffffff)
-local ShopPrompt2 = GetRandomIntInRange(0, 0xffffff)
+local VORPutils = {}
 local PlayerJob
 local JobName
 local JobGrade
 local InMenu = false
+local OpenShop
+local ReturnShop
+local ClosedShop
 
 Zoom = 4.0
 Offset = 0.2
@@ -48,10 +44,22 @@ local HorseTailsUsing = nil
 local AcsHornUsing = nil
 local AcsLuggageUsing = nil
 
+TriggerEvent("getCore", function(core)
+    VORPcore = core
+end)
+
+TriggerEvent("getUtils", function(utils)
+    VORPutils = utils
+end)
+
 -- Start Stables
 Citizen.CreateThread(function()
-    ShopOpen()
-    ShopClosed()
+    local PromptOpen = VORPutils.Prompts:SetupPromptGroup()
+    OpenShop = PromptOpen:RegisterPrompt(_U("shopPrompt"), Config.shopKey, 1, 1, true, 'click')
+    ReturnShop = PromptOpen:RegisterPrompt(_U("returnPrompt"), Config.returnKey, 1, 1, true, 'click')
+
+    local PromptClosed = VORPutils.Prompts:SetupPromptGroup()
+    ClosedShop = PromptClosed:RegisterPrompt(_U("shopPrompt"), Config.shopKey, 1, 1, true, 'click')
 
     while true do
         Citizen.Wait(0)
@@ -72,9 +80,7 @@ Citizen.CreateThread(function()
                             Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorClosed)) -- BlipAddModifier
                         end
                         if shopConfig.NPC then
-                            DeleteEntity(shopConfig.NPC)
-                            DeletePed(shopConfig.NPC)
-                            SetEntityAsNoLongerNeeded(shopConfig.NPC)
+                            shopConfig.NPC:Remove()
                             shopConfig.NPC = nil
                         end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
@@ -84,9 +90,9 @@ Citizen.CreateThread(function()
                         if (distanceShop <= shopConfig.distanceShop) then
                             sleep = false
                             local shopClosed = CreateVarString(10, 'LITERAL_STRING', _U("closed") .. shopConfig.shopOpen .. _U("am") .. shopConfig.shopClose .. _U("pm"))
-                            PromptSetActiveGroupThisFrame(ShopPrompt2, shopClosed)
+                            PromptClosed:ShowGroup(shopClosed)
 
-                            if Citizen.InvokeNative(0xC92AC953F0A982AE, CloseShops) then -- UiPromptHasStandardModeCompleted
+                            if ClosedShop:HasCompleted() then
 
                                 Wait(100)
                                 VORPcore.NotifyRightTip(_U("closed") .. shopConfig.shopOpen .. _U("am") .. shopConfig.shopClose .. _U("pm"), 3000)
@@ -110,9 +116,9 @@ Citizen.CreateThread(function()
                             if (distanceShop <= shopConfig.distanceShop) then
                                 sleep = false
                                 local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopConfig.promptName)
-                                PromptSetActiveGroupThisFrame(ShopPrompt1, shopOpen)
+                                PromptOpen:ShowGroup(shopOpen)
 
-                                if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
+                                if OpenShop:HasCompleted() then
                                     HeadingPoint = shopConfig.Heading
                                     StablePoint = {shopConfig.stablex, shopConfig.stabley, shopConfig.stablez}
                                     CamPos = {shopConfig.SpawnPoint.CamPos.x, shopConfig.SpawnPoint.CamPos.y}
@@ -121,6 +127,9 @@ Citizen.CreateThread(function()
                                     Wait(500)
                                     DoScreenFadeIn(500)
                                     OpenStable()
+                                end
+                                if ReturnShop:HasCompleted() then
+                                    returnHorse()
                                 end
                             end
                         else
@@ -131,9 +140,9 @@ Citizen.CreateThread(function()
                             if (distanceShop <= shopConfig.distanceShop) then
                                 sleep = false
                                 local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopConfig.promptName)
-                                PromptSetActiveGroupThisFrame(ShopPrompt1, shopOpen)
+                                PromptOpen:ShowGroup(shopOpen)
 
-                                if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
+                                if OpenShop:HasCompleted() then
 
                                     TriggerServerEvent("oss_stables:GetPlayerJob")
                                     Wait(200)
@@ -148,6 +157,24 @@ Citizen.CreateThread(function()
                                                 Wait(500)
                                                 DoScreenFadeIn(500)
                                                 OpenStable()
+                                            else
+                                                VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
+                                            end
+                                        else
+                                            VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
+                                        end
+                                    else
+                                        VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
+                                    end
+                                end
+                                if ReturnShop:HasCompleted() then
+
+                                    TriggerServerEvent("oss_stables:GetPlayerJob")
+                                    Wait(200)
+                                    if PlayerJob then
+                                        if CheckJob(shopConfig.allowedJobs, PlayerJob) then
+                                            if tonumber(shopConfig.jobGrade) <= tonumber(JobGrade) then
+                                                returnHorse()
                                             else
                                                 VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                             end
@@ -179,9 +206,9 @@ Citizen.CreateThread(function()
                         if (distanceShop <= shopConfig.distanceShop) then
                             sleep = false
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopConfig.promptName)
-                            PromptSetActiveGroupThisFrame(ShopPrompt1, shopOpen)
+                            PromptOpen:ShowGroup(shopOpen)
 
-                            if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
+                            if OpenShop:HasCompleted() then -- UiPromptHasStandardModeCompleted
                                 HeadingPoint = shopConfig.Heading
                                 StablePoint = {shopConfig.stablex, shopConfig.stabley, shopConfig.stablez}
                                 CamPos = {shopConfig.SpawnPoint.CamPos.x, shopConfig.SpawnPoint.CamPos.y}
@@ -192,6 +219,9 @@ Citizen.CreateThread(function()
                                 DisplayRadar(false)
                                 OpenStable()
                             end
+                            if ReturnShop:HasCompleted() then
+                                returnHorse()
+                            end
                         end
                     else
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
@@ -201,9 +231,9 @@ Citizen.CreateThread(function()
                         if (distanceShop <= shopConfig.distanceShop) then
                             sleep = false
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopConfig.promptName)
-                            PromptSetActiveGroupThisFrame(ShopPrompt1, shopOpen)
+                            PromptOpen:ShowGroup(shopOpen)
 
-                            if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
+                            if OpenShop:HasCompleted() then -- UiPromptHasStandardModeCompleted
 
                                 TriggerServerEvent("oss_stables:GetPlayerJob")
                                 Wait(200)
@@ -218,6 +248,24 @@ Citizen.CreateThread(function()
                                             Wait(500)
                                             DoScreenFadeIn(500)
                                             OpenStable()
+                                        else
+                                            VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
+                                        end
+                                    else
+                                        VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
+                                    end
+                                else
+                                    VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
+                                end
+                            end
+                            if ReturnShop:HasCompleted() then
+
+                                TriggerServerEvent("oss_stables:GetPlayerJob")
+                                Wait(200)
+                                if PlayerJob then
+                                    if CheckJob(shopConfig.allowedJobs, PlayerJob) then
+                                        if tonumber(shopConfig.jobGrade) <= tonumber(JobGrade) then
+                                            returnHorse()
                                         else
                                             VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                         end
@@ -582,18 +630,18 @@ function InitiateHorse(atCoords)
     Citizen.InvokeNative(0xFD6943B6DF77E449, entity, false) -- SetPedCanBeLassoed
 
     SetPedConfigFlag(entity, 324, true)
-    SetPedConfigFlag(entity, 211, true)
+    SetPedConfigFlag(entity, 211, true) -- PCF_GiveAmbientDefaultTaskIfMissionPed
     SetPedConfigFlag(entity, 208, true)
     SetPedConfigFlag(entity, 209, true)
     SetPedConfigFlag(entity, 400, true)
-    SetPedConfigFlag(entity, 297, true) -- Enable_Horse_Leadin
-    SetPedConfigFlag(entity, 136, false)
-    SetPedConfigFlag(entity, 312, false)
-    SetPedConfigFlag(entity, 113, false)
-    SetPedConfigFlag(entity, 301, false)
+    SetPedConfigFlag(entity, 297, true) -- PCF_ForceInteractionLockonOnTargetPed
+    SetPedConfigFlag(entity, 136, false) -- (for horse) disable mount
+    SetPedConfigFlag(entity, 312, false) -- PCF_DisableHorseGunshotFleeResponse
+    SetPedConfigFlag(entity, 113, false) -- PCF_DisableShockingEvents
+    SetPedConfigFlag(entity, 301, false) -- PCF_DisableInteractionLockonOnTargetPed
     SetPedConfigFlag(entity, 277, true)
-    SetPedConfigFlag(entity, 319, true)
-    SetPedConfigFlag(entity, 6, true)
+    SetPedConfigFlag(entity, 319, true) -- PCF_EnableAsVehicleTransitionDestination
+    SetPedConfigFlag(entity, 6, true) -- PCF_DontInfluenceWantedLevel
 
     SetAnimalTuningBoolParam(entity, 25, false)
     SetAnimalTuningBoolParam(entity, 24, false)
@@ -612,13 +660,7 @@ function InitiateHorse(atCoords)
         end
     end
 
-    if HorseModel == "A_C_Horse_MP_Mangy_Backup" then
-        NativeSetPedComponentEnabled(entity, 0x106961A8) --sela
-        NativeSetPedComponentEnabled(entity, 0x508B80B9) --blanket
-    end
-
     TaskGoToEntity(entity, player, -1, 7.2, 2.0, 0, 0)
-    --SetPedConfigFlag(entity, 297, true)
     Initializing = false
 end
 
@@ -636,7 +678,7 @@ end)
 function fleeHorse(playerHorse)
     local player = PlayerPedId()
     TaskAnimalFlee(SpawnplayerHorse, player, -1)
-    Wait(5000)
+    Wait(10000)
     DeleteEntity(SpawnplayerHorse)
     Wait(1000)
     SpawnplayerHorse = 0
@@ -801,6 +843,17 @@ RegisterNUICallback("sellHorse", function(data)
     TriggerServerEvent('oss_stables:GetMyHorses')
 end)
 
+function returnHorse()
+    if SpawnplayerHorse == 0 then
+        VORPcore.NotifyRightTip(_U("noHorse"), 5000)
+
+    elseif SpawnplayerHorse ~=0 then
+        DeleteEntity(SpawnplayerHorse)
+        SpawnplayerHorse = 0
+        VORPcore.NotifyRightTip(_U("horseReturned"), 5000)
+    end
+end
+
 Citizen.CreateThread(function()
 	while Adding do
 		Wait(0)
@@ -833,8 +886,6 @@ function createCamera(entity)
     SetCamRot(groundCam, -20.0, 0.0, HeadingPoint + 20)
     SetCamActive(groundCam, true)
     RenderScriptCams(true, false, 1, true, true)
-    --Wait(3000)
-    -- last camera, create interpolate
     FixedCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
     SetCamCoord(FixedCam, StablePoint[1] + 0.5, StablePoint[2] - 3.6, StablePoint[3] +1.8)
     SetCamRot(FixedCam, -20.0, 0, HeadingPoint + 50.0)
@@ -899,72 +950,22 @@ function rotation(dir)
     SetEntityHeading(playerHorse, pedRot % 360)
 end
 
--- Menu Prompts
-function ShopOpen()
-    local str = _U("shopPrompt")
-    OpenShops = PromptRegisterBegin()
-    PromptSetControlAction(OpenShops, Config.shopKey)
-    str = CreateVarString(10, 'LITERAL_STRING', str)
-    PromptSetText(OpenShops, str)
-    PromptSetEnabled(OpenShops, 1)
-    PromptSetVisible(OpenShops, 1)
-    PromptSetStandardMode(OpenShops, 1)
-    PromptSetGroup(OpenShops, ShopPrompt1)
-    Citizen.InvokeNative(0xC5F428EE08FA7F2C, OpenShops, true) -- UiPromptSetUrgentPulsingEnabled
-    PromptRegisterEnd(OpenShops)
-end
-
-function ShopClosed()
-    local str = _U("shopPrompt")
-    CloseShops = PromptRegisterBegin()
-    PromptSetControlAction(CloseShops, Config.shopKey)
-    str = CreateVarString(10, 'LITERAL_STRING', str)
-    PromptSetText(CloseShops, str)
-    PromptSetEnabled(CloseShops, 1)
-    PromptSetVisible(CloseShops, 1)
-    PromptSetStandardMode(CloseShops, 1)
-    PromptSetGroup(CloseShops, ShopPrompt2)
-    Citizen.InvokeNative(0xC5F428EE08FA7F2C, CloseShops, true) -- UiPromptSetUrgentPulsingEnabled
-    PromptRegisterEnd(CloseShops)
-end
-
--- Blips
 function AddBlip(shopId)
     local shopConfig = Config.stables[shopId]
-    if shopConfig.blipAllowed then
-        shopConfig.BlipHandle = N_0x554d9d53f696d002(1664425300, shopConfig.npcx, shopConfig.npcy, shopConfig.npcz) -- BlipAddForCoords
-        SetBlipSprite(shopConfig.BlipHandle, shopConfig.blipSprite, 1)
-        SetBlipScale(shopConfig.BlipHandle, 0.2)
-        Citizen.InvokeNative(0x9CB1A1623062F402, shopConfig.BlipHandle, shopConfig.blipName) -- SetBlipName
-    end
-end
-
--- NPCs
-function LoadModel(npcModel)
-    local model = GetHashKey(npcModel)
-    RequestModel(model)
-    while not HasModelLoaded(model) do
-        RequestModel(model)
-        Citizen.Wait(100)
-    end
+    local blip = VORPutils.Blips:SetBlip(shopConfig.blipName, shopConfig.blipSprite, 0.2, shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
+    Config.stables[shopId].BlipHandle = blip
 end
 
 function SpawnNPC(shopId)
     local shopConfig = Config.stables[shopId]
-    LoadModel(shopConfig.npcModel)
-    if shopConfig.npcAllowed then
-        local npc = CreatePed(shopConfig.npcModel, shopConfig.npcx, shopConfig.npcy, shopConfig.npcz, shopConfig.npch, false, true, true, true)
-        Citizen.InvokeNative(0x283978A15512B2FE, npc, true) -- SetRandomOutfitVariation
-        SetEntityCanBeDamaged(npc, false)
-        SetEntityInvincible(npc, true)
-        Wait(500)
-        FreezeEntityPosition(npc, true)
-        SetBlockingOfNonTemporaryEvents(npc, true)
-        Config.stables[shopId].NPC = npc
-    end
+    local npc = VORPutils.Peds:Create(shopConfig.npcModel, shopConfig.npcx, shopConfig.npcy, shopConfig.npcz - 1, shopConfig.npch, 'world', false)
+    npc:Freeze(true)
+    npc:Invincible(true)
+    npc:CanBeDamaged(false)
+    SetBlockingOfNonTemporaryEvents(npc, true)
+    Config.stables[shopId].NPC = npc
 end
 
--- Check if Player has Job
 function CheckJob(allowedJob, playerJob)
     for _, jobAllowed in pairs(allowedJob) do
         JobName = jobAllowed
@@ -996,8 +997,9 @@ AddEventHandler('onResourceStop', function(resourceName)
     end
 
     ClearPedTasksImmediately(PlayerPedId())
-    PromptDelete(OpenShops)
-    PromptDelete(CloseShops)
+    OpenShop:DeletePrompt()
+    ReturnShop:DeletePrompt()
+    ClosedShop:DeletePrompt()
 
     if SpawnplayerHorse then
         DeleteEntity(SpawnplayerHorse)
@@ -1006,12 +1008,10 @@ AddEventHandler('onResourceStop', function(resourceName)
 
     for _, shopConfig in pairs(Config.stables) do
         if shopConfig.BlipHandle then
-            RemoveBlip(shopConfig.BlipHandle)
+            shopConfig.BlipHandle:Remove()
         end
         if shopConfig.NPC then
-            DeleteEntity(shopConfig.NPC)
-            DeletePed(shopConfig.NPC)
-            SetEntityAsNoLongerNeeded(shopConfig.NPC)
+            shopConfig.NPC:Remove()
         end
     end
 end)
