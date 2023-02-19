@@ -25,9 +25,9 @@ window.addEventListener('message', function(event) {
                 for (const [_, horseData] of Object.entries(table)) {
                     if (_ != 'name') {
                         let Modelhorse
-                        var HorseName = horseData[0];
-                        var priceGold = horseData[1];
-                        var priceCash = horseData[2];
+                        var HorseName = horseData.version;
+                        var priceCash = horseData.cashPrice;
+                        var priceGold = horseData.goldPrice;
                      
                         $(`#page_shop .scroll-container .collapsible #${index} .collapsible-body`).append(`
 
@@ -37,13 +37,13 @@ window.addEventListener('message', function(event) {
                                     <h6 class="grey-text title" style="color:white;">${HorseName}</h6>
                                 </div>          
 
-                                <div class="buy-buttons">                                       
-                                    <button class="btn-small"  onclick="buyHorse('${_}', ${priceGold}, true)">                                                
+                                <div class="buy-buttons">     
+                                    <button class="btn-small"  onclick="buyHorse('${_}', ${priceCash}, true)">
+                                        <img src="img/money.png"><span class="horse-price">${priceCash}</span>
+                                    </button>                                  
+                                    <button class="btn-small"  onclick="buyHorse('${_}', ${priceGold}, false)">                                                
                                         <img src="img/gold.png"><span class="horse-price">${priceGold}</span>
                                     </button>                                          
-                                    <button class="btn-small"  onclick="buyHorse('${_}', ${priceCash}, false)">
-                                        <img src="img/money.png"><span class="horse-price">${priceCash}</span>
-                                    </button>
                                 </div>
                                 
                             </div>
@@ -78,7 +78,6 @@ window.addEventListener('message', function(event) {
             `);
             $('.collapsible').collapsible();
         }
-
         if (event.data.action == "hide") {
             $("#creatormenu").fadeOut(500);
         }
@@ -130,7 +129,6 @@ window.addEventListener('message', function(event) {
             }, function() {});
         }
     }
-
 });
 
 function confirm(){
@@ -227,16 +225,16 @@ $(".input-number").on("change paste keyup", function() {
 
 });
 
-function buyHorse(Modelhor, price, isGold) {        
+function buyHorse(Modelhor, price, isCash) {        
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');
     $('#page_shop .scroll-container .collapsible').html('');
     $("#creatormenu").fadeOut(500);
 
-    if (isGold) {        
-        $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: Modelhor, Gold: price, IsGold: isGold }));
+    if (isCash) {        
+        $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: Modelhor, Cash: price, IsCash: isCash }));
     } else {
-        $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: Modelhor, Dollar: price, IsGold: isGold }));    
+        $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: Modelhor, Gold: price, IsCash: isCash }));    
     }    
 }
 
