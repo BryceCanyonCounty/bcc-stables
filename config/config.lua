@@ -10,7 +10,6 @@ Config.maxHorses = 5 -- Default: 5
 -- Stables
 Config.stables = {
     valentine = {
-        shopName = "Valentine Stable", -- Name of Shop on Menu
         promptName = "Valentine Stable", -- Text Below the Prompt Button
         blipAllowed = true, -- Turns Blips On / Off
         blipName = "Valentine Stable", -- Name of the Blip on the Map
@@ -35,7 +34,6 @@ Config.stables = {
         }
     },
     blackwater = {
-        shopName = "Blackwater Stable",
         promptName = "Blackwater Stable",
         blipAllowed = true,
         blipName = "Blackwater Stable",
@@ -60,7 +58,6 @@ Config.stables = {
         }
     },
     saintdenis = {
-        shopName = "Saint Denis Stable",
         promptName = "Saint Denis Stable",
         blipAllowed = true,
         blipName = "Saint Denis Stable",
@@ -85,7 +82,6 @@ Config.stables = {
         }
     },
     annesburg = {
-        shopName = "Annesburg Stable",
         promptName = "Annesburg Stable",
         blipAllowed = true,
         blipName = "Annesburg Stable",
@@ -110,7 +106,6 @@ Config.stables = {
         }
     },
     rhodes = {
-        shopName = "Rhodes Stable",
         promptName = "Rhodes Stable",
         blipAllowed = true,
         blipName = "Rhodes Stable",
@@ -135,7 +130,6 @@ Config.stables = {
         }
     },
     tumbleweed = {
-        shopName = "Tumbleweed Stable",
         promptName = "Tumbleweed Stable",
         blipAllowed = true,
         blipName = "Tumbleweed Stable",
