@@ -355,7 +355,6 @@ RegisterNUICallback("loadHorse", function(data)
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
     NetworkSetEntityInvisibleToNetwork(ShowroomHorse_entity, true)
     SetVehicleHasBeenOwnedByPlayer(ShowroomHorse_entity, true)
-    -- SetModelAsNoLongerNeeded(modelHash)
     interpCamera("Horse", ShowroomHorse_entity)
 end)
 
@@ -691,7 +690,7 @@ RegisterNUICallback("Saddles", function(data)
         num = 0
         SaddlesUsing = num
         local playerHorse = MyHorse_entity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xBAA7E618, 0) -- HAT REMOVE
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xBAA7E618, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
     else
         local num = tonumber(data.id)
