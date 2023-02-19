@@ -1,7 +1,7 @@
 # Stables
 
 #### Important
-This is an open project. If you would like to contribute please submit a PR.
+This is a "work in progress" and an open project. If you would like to contribute please submit a PR.
 
 #### Description
 Stables script for RedM servers using the [VORP framework](https://github.com/VORPCORE). There are 6 stables configured, more stable locations may be added using the `config.lua` file.
@@ -14,7 +14,7 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Blips can change color reflecting if stable is open or closed
 - Stable access can be limited by job and jobgrade
 - Max player horses is set in the config (default: 5)
-- Return horse at stable or using the flee button in the horse menu
+- Return horse at stable (when open) or using the flee button in the horse menu
 
 #### Configuration
 Settings can be changed in the `config.lua` file. Here is an example of one stable:
