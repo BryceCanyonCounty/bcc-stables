@@ -624,7 +624,7 @@ function InitiateHorse(atCoords)
     Citizen.InvokeNative(0x9587913B9E772D29, entity, 0) -- PlaceEntityOnGroundProperly
     Citizen.InvokeNative(0x4DB9D03AC4E1FA84, entity, -1, -1, 0) -- SetPedWrithingDuration
     Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, entity) -- BlipAddForEntity
-    --Citizen.InvokeNative(0xBCC76708E5677E1D9, entity, 0)
+    Citizen.InvokeNative(0xBCC76708E5677E1D, entity, 0) -- SetHorseTamingState?
     Citizen.InvokeNative(0xB8B6430EAD2D2437, entity, GetHashKey("PLAYER_HORSE"))
     Citizen.InvokeNative(0xFD6943B6DF77E449, entity, false) -- SetPedCanBeLassoed
 
