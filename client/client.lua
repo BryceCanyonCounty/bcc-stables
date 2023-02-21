@@ -10,7 +10,6 @@ local ClosedShop
 
 Zoom = 4.0
 Offset = 0.2
-local Cam = nil
 local FixedCam
 local InterP = true
 local Adding = true
@@ -357,6 +356,21 @@ RegisterNUICallback("loadHorse", function(data)
     SetVehicleHasBeenOwnedByPlayer(ShowroomHorse_entity, true)
     interpCamera("Horse", ShowroomHorse_entity)
 end)
+
+RegisterNUICallback("rotate", function(data, cb)
+    if (data["key"] == "left") then
+        rotation(20)
+    else
+        rotation(-20)
+    end
+    cb("ok")
+end)
+
+function rotation(dir)
+    local playerHorse = MyHorse_entity
+    local pedRot = GetEntityHeading(playerHorse) + dir
+    SetEntityHeading(playerHorse, pedRot % 360)
+end
 
 RegisterNUICallback("BuyHorse", function(data)
     SetHorseName(data)
@@ -880,29 +894,18 @@ Citizen.CreateThread(function()
 end)
 
 function createCamera(entity)
-    local groundCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
+    local groundCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
     SetCamCoord(groundCam, StablePoint[1] + 0.5, StablePoint[2] - 3.6, StablePoint[3] )
     SetCamRot(groundCam, -20.0, 0.0, HeadingPoint + 20)
     SetCamActive(groundCam, true)
     RenderScriptCams(true, false, 1, true, true)
-    FixedCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
+    FixedCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
     SetCamCoord(FixedCam, StablePoint[1] + 0.5, StablePoint[2] - 3.6, StablePoint[3] +1.8)
     SetCamRot(FixedCam, -20.0, 0, HeadingPoint + 50.0)
     SetCamActive(FixedCam, true)
     SetCamActiveWithInterp(FixedCam, groundCam, 3900, true, true)
     Wait(3900)
     DestroyCam(groundCam)
-end
-
-function createCam(creatorType)
-    for k, v in pairs(cams) do
-        if cams[k].type == creatorType then
-            Cam = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", cams[k].x, cams[k].y, cams[k].z, cams[k].rx, cams[k].ry, cams[k].rz, cams[k].fov, false, 0) -- CAMERA COORDS
-            SetCamActive(Cam, true)
-            RenderScriptCams(true, false, 3000, true, false)
-            createPeds()
-        end
-    end
 end
 
 function interpCamera(cameraName, entity)
@@ -932,21 +935,6 @@ function interpCamera(cameraName, entity)
             end
         end
     end
-end
-
-RegisterNUICallback("rotate", function(data, cb)
-    if (data["key"] == "left") then
-        rotation(20)
-    else
-        rotation(-20)
-    end
-    cb("ok")
-end)
-
-function rotation(dir)
-    local playerHorse = MyHorse_entity
-    local pedRot = GetEntityHeading(playerHorse) + dir
-    SetEntityHeading(playerHorse, pedRot % 360)
 end
 
 function AddBlip(shopId)
