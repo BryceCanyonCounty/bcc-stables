@@ -65,22 +65,11 @@ window.addEventListener('message', function(event) {
                     }
                 }
             }
-            
-            $('#page_myhorses .scroll-container .collapsible').html('');
-            $('#page_myhorses .scroll-container .collapsible').append(`
-                <li>
-                    <div class="collapsible-header col s12 panel ">
-                        <div class="col s12 panel-title">
-                            <h6 class="grey-text">YOU DON'T OWN HORSES</h6>
-                        </div>
-                    </div>
-                </li>
-            `);
-            $('.collapsible').collapsible();
         }
-        if (event.data.action == "hide") {
-            $("#creatormenu").fadeOut(500);
-        }
+    }
+
+    if (event.data.action == "hide") {
+        $("#creatormenu").fadeOut(500);
     }
 
     if (event.data.EnableCustom == "true") {
@@ -98,7 +87,7 @@ window.addEventListener('message', function(event) {
             let HorseName = tab.name;
             let HorseID = tab.id;
             let HorseIdModel = tab.model;
-            let componentsh = tab.components;      
+            let componentsh = tab.components;
 
             $('#page_myhorses .scroll-container .collapsible').append(`
                 <li>
@@ -127,6 +116,7 @@ window.addEventListener('message', function(event) {
                     $.post('http://oss_stables/loadMyHorse', JSON.stringify({ IdHorse: HorseID, horseModel: HorseIdModel, HorseComp: componentsh}));
                 });                         
             }, function() {});
+            $('.collapsible').collapsible();
         }
     }
 });
@@ -138,6 +128,12 @@ function confirm(){
     $('#page_myhorses .scroll-container .collapsible').html('');
     $('#page_shop .scroll-container .collapsible').html('');
     $("#creatormenu").fadeOut(500);
+}
+
+function rotate(){
+    $.post('http://oss_stables/rotate')
+
+    $('#button-customization').addClass("disabled");
 }
 
 var currentPage = 'page_myhorses';
