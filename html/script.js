@@ -65,12 +65,15 @@ window.addEventListener('message', function(event) {
                     }
                 }
             }
+            $('#page_myhorses .scroll-container .collapsible').html('');
+            $('.collapsible').collapsible();
+        }
+        if (event.data.action == "hide") {
+            $("#creatormenu").fadeOut(500);
         }
     }
 
-    if (event.data.action == "hide") {
-        $("#creatormenu").fadeOut(500);
-    }
+    
 
     if (event.data.EnableCustom == "true") {
         $('#button-customization').removeClass("disabled");
@@ -79,8 +82,6 @@ window.addEventListener('message', function(event) {
     }
     
     if (event.data.myHorsesData) {
-
-        $('#page_myhorses .scroll-container .collapsible').html('');
 
         for (const [ind, tab] of Object.entries(event.data.myHorsesData)) {
         
@@ -116,7 +117,6 @@ window.addEventListener('message', function(event) {
                     $.post('http://oss_stables/loadMyHorse', JSON.stringify({ IdHorse: HorseID, horseModel: HorseIdModel, HorseComp: componentsh}));
                 });                         
             }, function() {});
-            $('.collapsible').collapsible();
         }
     }
 });
