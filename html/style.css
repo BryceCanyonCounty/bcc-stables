@@ -120,7 +120,7 @@ button {
     padding: 20px 20px;
     margin-bottom: 10px;
     font-size: 2.0em;
-    color: white;
+    color: #f0f0f0;
     font-family: 'crock';
     text-align: center;
     background: url('img/toastred.png');
@@ -253,9 +253,10 @@ button {
     border-radius: 0px;
     height: 5vh;
     border: 0px #fff solid;
-    font-family: 'crock';
-    font-weight: 600;
-    color: white;
+    font-family: 'robotoslab';
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    color: #f0f0f0;
     background: transparent;
 }
 
@@ -272,7 +273,7 @@ button {
 h6 {
     color: #e7e7e7;
     font-weight: 400 !important;
-    font-family: 'crock';
+    font-family: 'robotoslab';
 }
 
 .input-number,
@@ -399,10 +400,22 @@ h6 {
     background-size: 100% 100%;
 }
 
-.item1, .item2 {
+.item {
     display: flex;
     justify-content: center;
     padding: 3px 3px !important;
+}
+
+.item1,
+.item2 {
+    display: flex;
+    justify-content: center;
+    padding: 3px 3px !important;
+}
+
+.item2:hover{
+    background-image: url('img/borderinput.png');
+    background-size: 100% 100%;
 }
 
 .button-left{
@@ -411,11 +424,6 @@ h6 {
 
 .button-right{
 	height:46px !important;
-}
-
-.item2:hover{
-    background-image: url('img/borderinput.png');
-    background-size: 100% 100%;
 }
 
 .waves-effect {
@@ -440,13 +448,15 @@ h6 {
 
 .btn,
 .btn-large,
-.btn-small {
+.btn-small,
+.btn-small-cash,
+.btn-small-gold{
     display:flex !important;
     flex-direction: row !important;
     justify-content: center;
     align-items: center;
     text-decoration: none;
-    color: #fff;
+    color: #f0f0f0;
     user-select: none;
     text-align: center;
     letter-spacing: .5px;
@@ -474,22 +484,29 @@ h6 {
     border-radius: 10px;
 }
 
-.confirm{
+.buttons{
     width:100%;
-    height:30px;
+    height:35px;
     text-align: center;
+    margin: 0 auto;
 }
 
-.confirm-button{
-    height: 25px;
+.action-button{
+    font-family: 'robotoslab';
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    padding: 7px 0px;
     width: 40%;
+    text-align: center;
+    color: #f0f0f0;
     background: url('img/input.png') !important;
     background-size: 100% 100%!important;
     transition: background-color .2s ease-out;
+    display: inline-block;
 }
 
-.confirm-button:hover{
-    background: url('img/borderinput.png') !important;
+.action-button:hover{
+    background: url('img/toast.png') !important;
     transition: background-color .2s ease-out;
     background-size: 100% 100% !important;
 }
