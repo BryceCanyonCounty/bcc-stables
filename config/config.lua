@@ -8,7 +8,7 @@ Config.returnKey = 0xD9D0E1C0 --[spacebar]
 -- Max Number of Horses per Player
 Config.maxHorses = 5 -- Default: 5
 -- Stables
-Config.stables = {
+Config.stables = { -- Original 7 Stable Locations
     valentine = {
         promptName = "Valentine Stable", -- Text Below the Prompt Button
         blipAllowed = true, -- Turns Blips On / Off
@@ -19,19 +19,90 @@ Config.stables = {
         distanceShop = 3.0, -- Distance from NPC to Get Menu Prompt
         npcAllowed = true, -- Turns NPCs On / Off
         npcModel = "A_M_M_UniBoatCrew_01", -- Sets Model for NPCs
-        npcx = -365.08, npcy = 791.21, npcz = 116.18, npch = 179.76, -- Location for NPC
-		stablex = -367.73, stabley = 787.72, stablez = 116.26,
-        allowedJobs = {}, -- Empty, Everyone Can Use / Insert Job to limit access - ex. "police"
+        npcx = -365.08, npcy = 791.21, npcz = 116.18, npch = 179.76, -- Location for NPC and Stable
+		horseCamx = -368.48, horseCamy = 789.89, horseCamz = 116.16, -- Camera Location to View Horse When In-Menu
+		spawnPointx = -371.35, spawnPointy = 786.71, spawnPointz = 116.17, spawnPointh = 269.3, -- Location for Horse Preview When In-Menu
+        allowedJobs = {}, -- If Empty, Everyone Can Use / Insert Job to limit access - ex. "police"
         jobGrade = 0, -- Enter Minimum Rank / Job Grade to Access Shop
         shopHours = false, -- If You Want the Shops to Use Open and Closed Hours
         shopOpen = 7, -- Shop Open Time / 24 Hour Clock
         shopClose = 21, -- Shop Close Time / 24 Hour Clock
-        Heading = -30.65,
-		SpawnPoint = {
-			Pos = vector3(-372.43, 791.79, 116.13),
-			CamPos = {x=1, y=-3, z=0},
-			Heading = 182.3
-        }
+    },
+	strawberry = {
+        promptName = "Strawberry Stable",
+        blipAllowed = true,
+        blipName = "Strawberry Stable",
+        blipSprite = "blip_shop_horse",
+        blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
+        blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
+        distanceShop = 3.0,
+        npcAllowed = true,
+        npcModel = "A_M_M_UniBoatCrew_01",
+        npcx = -1817.85, npcy = -564.86, npcz = 156.06, npch = 335.86,
+		horseCamx = -1822.55, horseCamy = -563.93, horseCamz = 156.13,
+		spawnPointx = -1823.94, spawnPointy = -560.85, spawnPointz = 156.06, spawnPointh = 257.86,
+        allowedJobs = {},
+        jobGrade = 0,
+        shopHours = false,
+        shopOpen = 7,
+        shopClose = 21,
+    },
+	vanhorn = {
+        promptName = "Van Horn Stable",
+        blipAllowed = true,
+        blipName = "Van Horn Stable",
+        blipSprite = "blip_shop_horse",
+        blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
+        blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
+        distanceShop = 3.0,
+        npcAllowed = true,
+        npcModel = "A_M_M_UniBoatCrew_01",
+        npcx = 2967.53, npcy = 792.71, npcz = 51.4, npch = 353.62,
+		horseCamx = 2970.67, horseCamy = 793.65, horseCamz = 51.4,
+		spawnPointx = 2971.66, spawnPointy = 796.82, spawnPointz = 51.4, spawnPointh = 96.54,
+        allowedJobs = {},
+        jobGrade = 0,
+        shopHours = false,
+        shopOpen = 7,
+        shopClose = 21,
+    },
+	lemoyne = {
+        promptName = "Lemoyne Stable",
+        blipAllowed = true,
+        blipName = "Lemoyne Stable",
+        blipSprite = "blip_shop_horse",
+        blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
+        blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
+        distanceShop = 3.0,
+        npcAllowed = true,
+        npcModel = "A_M_M_UniBoatCrew_01",
+        npcx = 1210.73, npcy = -189.78, npcz = 101.39, npch = 107.52,
+		horseCamx = 1211.89, horseCamy = -192.76, horseCamz = 101.46,
+		spawnPointx = 1210.5, spawnPointy = -196.25, spawnPointz = 101.38, spawnPointh = 15.61,
+        allowedJobs = {},
+        jobGrade = 0,
+        shopHours = false,
+        shopOpen = 7,
+        shopClose = 21,
+    },
+	saintdenis = {
+        promptName = "Saint Denis Stable",
+        blipAllowed = true,
+        blipName = "Saint Denis Stable",
+        blipSprite = "blip_shop_horse",
+        blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
+        blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
+        distanceShop = 3.0,
+        npcAllowed = true,
+        npcModel = "A_M_M_UniBoatCrew_01",
+        npcx = 2505.53, npcy = -1453.93, npcz = 46.32, npch = 99.45,
+		horseCamx = 2505.65, horseCamy = -1441.49, horseCamz = 46.29,
+		spawnPointx = 2502.59, spawnPointy = -1438.62, spawnPointz = 46.32, spawnPointh = 182.93,
+        allowedJobs = {},
+        jobGrade = 0,
+        shopHours = false,
+        shopOpen = 7,
+        shopClose = 21,
     },
     blackwater = {
         promptName = "Blackwater Stable",
@@ -44,90 +115,13 @@ Config.stables = {
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
         npcx = -871.0, npcy = -1369.63, npcz = 43.53, npch = 6.64,
-		stablex = -864.84, stabley = -1365.96, stablez = 43.54,
+		horseCamx = -867.11, horseCamy = -1368.86, horseCamz = 43.54,
+		spawnPointx = -864.7, spawnPointy = -1366.19, spawnPointz = 43.55, spawnPointh = 88.47,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
         shopOpen = 7,
         shopClose = 21,
-        Heading = -30.65,
-		SpawnPoint = {
-			Pos = vector3(-867.74, -1361.69, 43.66),
-			CamPos = {x=1, y=-3, z=0},
-			Heading = 178.59
-        }
-    },
-    saintdenis = {
-        promptName = "Saint Denis Stable",
-        blipAllowed = true,
-        blipName = "Saint Denis Stable",
-        blipSprite = "blip_shop_horse",
-        blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
-        blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
-        distanceShop = 3.0,
-        npcAllowed = true,
-        npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 2512.33, npcy = -1457.1, npcz = 46.31, npch = 99.45,
-		stablex = 2503.13, stabley = -1449.08, stablez = 46.3,
-        allowedJobs = {},
-        jobGrade = 0,
-        shopHours = false,
-        shopOpen = 7,
-        shopClose = 21,
-        Heading = -30.65,
-		SpawnPoint = {
-			Pos = vector3(2508.41, -1446.89, 46.4),
-			CamPos = {x=1, y=-3, z=0},
-			Heading = 87.88
-        }
-    },
-    annesburg = {
-        promptName = "Annesburg Stable",
-        blipAllowed = true,
-        blipName = "Annesburg Stable",
-        blipSprite = "blip_shop_horse",
-        blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
-        blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
-        distanceShop = 3.0,
-        npcAllowed = true,
-        npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 2973.51, npcy = 1427.27, npcz = 44.71, npch = 192.53,
-		stablex = 2972.35, stabley = 1425.35, stablez = 44.67,
-        allowedJobs = {},
-        jobGrade = 0,
-        shopHours = false,
-        shopOpen = 7,
-        shopClose = 21,
-        Heading = -30.65,
-		SpawnPoint = {
-			Pos = vector3(2970.43, 1429.35, 44.7),
-			CamPos = {x=1, y=-3, z=0},
-			Heading = 223.94
-        }
-    },
-    rhodes = {
-        promptName = "Rhodes Stable",
-        blipAllowed = true,
-        blipName = "Rhodes Stable",
-        blipSprite = "blip_shop_horse",
-        blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32",
-        blipColorClosed = "BLIP_MODIFIER_MP_COLOR_10",
-        distanceShop = 3.0,
-        npcAllowed = true,
-        npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 1319.5, npcy = -1360.52, npcz = 78.21, npch = 351.46,
-		stablex = 1321.46, stabley = -1358.66, stablez = 78.39,
-        allowedJobs = {},
-        jobGrade = 0,
-        shopHours = false,
-        shopOpen = 7,
-        shopClose = 21,
-        Heading = -30.65,
-		SpawnPoint = {
-			Pos = vector3(1318.74, -1354.64, 78.18),
-			CamPos = {x=1, y=-3, z=0},
-			Heading = 249.45
-        }
     },
     tumbleweed = {
         promptName = "Tumbleweed Stable",
@@ -140,22 +134,17 @@ Config.stables = {
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
         npcx = -5515.2, npcy = -3040.17, npcz = -2.39, npch = 180.76,
-		stablex = -5519.43, stabley = -3043.45, stablez = -2.39,
+		horseCamx = -5521.37, horseCamy = -3041.23, horseCamz = -2.39,
+		spawnPointx = -5524.48, spawnPointy = -3044.31, spawnPointz = -2.39, spawnPointh = 263.98,
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
         shopOpen = 7,
         shopClose = 21,
-        Heading = 0.0,
-		SpawnPoint = {
-			Pos = vector3(-5522.14, -3039.16, -2.29),
-			CamPos = {x=1, y=-3, z=0},
-			Heading = 189.93
-        }
     }
 }
 
-Config.Horses = { -- Gold to Dollar Ratio Based on 1899 Gold Price / sellPrice is 60% of cashPrice
+Config.Horses = { -- Gold to Dollar Ratio Based on 1899 Gold Price / sellPrice is 60% of cashPrice / Cash Price is Regular Game Price
 	{
 		name = "Arabian",
 		["a_c_horse_arabian_white"] = {version = "White", cashPrice = 1500, goldPrice = 72, sellPrice = 900},

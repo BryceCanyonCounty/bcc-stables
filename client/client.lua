@@ -7,14 +7,10 @@ local InMenu = false
 local OpenShop
 local ReturnShop
 local ClosedShop
-
-Zoom = 4.0
-Offset = 0.2
-local FixedCam
-local InterP = true
 local Adding = true
 local ShowroomHorse_entity
 local ShowroomHorse_model
+local SpawnPoint = {}
 local MyHorse_entity
 local IdMyHorse
 local Saddlecloths = {}
@@ -25,10 +21,6 @@ local Manes = {}
 local Saddles = {}
 local Stirrups = {}
 local Acsluggage = {}
-local SpawnPoint = {}
-local StablePoint = {}
-local HeadingPoint
-local CamPos = {}
 local SpawnplayerHorse = 0
 local HorseModel
 local HorseName
@@ -118,17 +110,11 @@ Citizen.CreateThread(function()
                                 PromptOpen:ShowGroup(shopOpen)
 
                                 if OpenShop:HasCompleted() then
-                                    HeadingPoint = shopConfig.Heading
-                                    StablePoint = {shopConfig.stablex, shopConfig.stabley, shopConfig.stablez}
-                                    CamPos = {shopConfig.SpawnPoint.CamPos.x, shopConfig.SpawnPoint.CamPos.y}
-                                    SpawnPoint = {x = shopConfig.SpawnPoint.Pos.x, y = shopConfig.SpawnPoint.Pos.y, z = shopConfig.SpawnPoint.Pos.z, h = shopConfig.SpawnPoint.Heading}
-                                    DoScreenFadeOut(500)
-                                    Wait(500)
-                                    DoScreenFadeIn(500)
-                                    OpenStable()
+                                    DisplayRadar(false)
+                                    OpenStable(shopId)
                                 end
                                 if ReturnShop:HasCompleted() then
-                                    returnHorse()
+                                    returnHorse(shopId)
                                 end
                             end
                         else
@@ -148,14 +134,8 @@ Citizen.CreateThread(function()
                                     if PlayerJob then
                                         if CheckJob(shopConfig.allowedJobs, PlayerJob) then
                                             if tonumber(shopConfig.jobGrade) <= tonumber(JobGrade) then
-                                                HeadingPoint = shopConfig.Heading
-                                                StablePoint = {shopConfig.stablex, shopConfig.stabley, shopConfig.stablez}
-                                                CamPos = {shopConfig.SpawnPoint.CamPos.x, shopConfig.SpawnPoint.CamPos.y}
-                                                SpawnPoint = {x = shopConfig.SpawnPoint.Pos.x, y = shopConfig.SpawnPoint.Pos.y, z = shopConfig.SpawnPoint.Pos.z, h = shopConfig.SpawnPoint.Heading}
-                                                DoScreenFadeOut(500)
-                                                Wait(500)
-                                                DoScreenFadeIn(500)
-                                                OpenStable()
+                                                DisplayRadar(false)
+                                                OpenStable(shopId)
                                             else
                                                 VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                             end
@@ -173,7 +153,7 @@ Citizen.CreateThread(function()
                                     if PlayerJob then
                                         if CheckJob(shopConfig.allowedJobs, PlayerJob) then
                                             if tonumber(shopConfig.jobGrade) <= tonumber(JobGrade) then
-                                                returnHorse()
+                                                returnHorse(shopId)
                                             else
                                                 VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                             end
@@ -207,19 +187,12 @@ Citizen.CreateThread(function()
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopConfig.promptName)
                             PromptOpen:ShowGroup(shopOpen)
 
-                            if OpenShop:HasCompleted() then -- UiPromptHasStandardModeCompleted
-                                HeadingPoint = shopConfig.Heading
-                                StablePoint = {shopConfig.stablex, shopConfig.stabley, shopConfig.stablez}
-                                CamPos = {shopConfig.SpawnPoint.CamPos.x, shopConfig.SpawnPoint.CamPos.y}
-                                SpawnPoint = {x = shopConfig.SpawnPoint.Pos.x, y = shopConfig.SpawnPoint.Pos.y, z = shopConfig.SpawnPoint.Pos.z, h = shopConfig.SpawnPoint.Heading}
-                                DoScreenFadeOut(500)
-                                Wait(500)
-                                DoScreenFadeIn(500)
+                            if OpenShop:HasCompleted() then
                                 DisplayRadar(false)
-                                OpenStable()
+                                OpenStable(shopId)
                             end
                             if ReturnShop:HasCompleted() then
-                                returnHorse()
+                                returnHorse(shopId)
                             end
                         end
                     else
@@ -239,14 +212,8 @@ Citizen.CreateThread(function()
                                 if PlayerJob then
                                     if CheckJob(shopConfig.allowedJobs, PlayerJob) then
                                         if tonumber(shopConfig.jobGrade) <= tonumber(JobGrade) then
-                                            HeadingPoint = shopConfig.Heading
-                                            StablePoint = {shopConfig.stablex, shopConfig.stabley, shopConfig.stablez}
-                                            CamPos = {shopConfig.SpawnPoint.CamPos.x, shopConfig.SpawnPoint.CamPos.y}
-                                            SpawnPoint = {x = shopConfig.SpawnPoint.Pos.x, y = shopConfig.SpawnPoint.Pos.y, z = shopConfig.SpawnPoint.Pos.z, h = shopConfig.SpawnPoint.Heading}
-                                            DoScreenFadeOut(500)
-                                            Wait(500)
-                                            DoScreenFadeIn(500)
-                                            OpenStable()
+                                            DisplayRadar(false)
+                                            OpenStable(shopId)
                                         else
                                             VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                         end
@@ -264,7 +231,7 @@ Citizen.CreateThread(function()
                                 if PlayerJob then
                                     if CheckJob(shopConfig.allowedJobs, PlayerJob) then
                                         if tonumber(shopConfig.jobGrade) <= tonumber(JobGrade) then
-                                            returnHorse()
+                                            returnHorse(shopId)
                                         else
                                             VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                         end
@@ -286,17 +253,15 @@ Citizen.CreateThread(function()
     end
 end)
 
-function OpenStable()
+function OpenStable(shopId)
     InMenu = true
-    local playerHorse = MyHorse_entity
-    local player = PlayerPedId()
 
-    SetEntityHeading(playerHorse, 334)
+    local shopConfig = Config.stables[shopId]
+    SpawnPoint = {x = shopConfig.spawnPointx, y = shopConfig.spawnPointy, z = shopConfig.spawnPointz, h = shopConfig.spawnPointh}
+
+    createCamera(shopId)
+
     SetNuiFocus(true, true)
-    InterP = true
-
-    createCamera(player)
-
     SendNUIMessage(
         {
             action = "show",
@@ -352,18 +317,15 @@ RegisterNUICallback("loadHorse", function(data)
     ShowroomHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
     Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
+    Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShowroomHorse_entity, true) -- FreezeEntityPosition
+    SetPedConfigFlag(entity, 113, false) -- PCF_DisableShockingEvents
     NetworkSetEntityInvisibleToNetwork(ShowroomHorse_entity, true)
     SetVehicleHasBeenOwnedByPlayer(ShowroomHorse_entity, true)
-    interpCamera("Horse", ShowroomHorse_entity)
 end)
 
-RegisterNUICallback("rotate", function(data, cb)
-    if (data["key"] == "left") then
-        rotation(20)
-    else
-        rotation(-20)
-    end
-    cb("ok")
+RegisterNUICallback("rotate", function()
+
+        rotation(-22.5)
 end)
 
 function rotation(dir)
@@ -443,6 +405,8 @@ RegisterNUICallback("loadMyHorse", function(data)
     MyHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity) -- PlaceObjectOnGroundProperly
+    Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShowroomHorse_entity, true) -- FreezeEntityPosition
+    SetPedConfigFlag(entity, 113, false) -- PCF_DisableShockingEvents
     NetworkSetEntityInvisibleToNetwork(MyHorse_entity, true)
     SetVehicleHasBeenOwnedByPlayer(MyHorse_entity, true)
     local componentsHorse = json.decode(data.HorseComp)
@@ -456,8 +420,6 @@ RegisterNUICallback("loadMyHorse", function(data)
             Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(Key), true, true, true) -- ApplyShopItemToPed
         end
     end
-
-    interpCamera("Horse", MyHorse_entity)
 end)
 
 RegisterNUICallback("selectHorse", function(data)
@@ -598,7 +560,6 @@ function InitiateHorse(atCoords)
     local player = PlayerPedId()
     local pCoords = GetEntityCoords(player)
     local modelHash = GetHashKey(HorseModel)
-
     if not HasModelLoaded(modelHash) then
         RequestModel(modelHash)
         while not HasModelLoaded(modelHash) do
@@ -607,15 +568,13 @@ function InitiateHorse(atCoords)
     end
 
     local spawnPosition
-
     if atCoords == nil then
         local x, y, z = table.unpack(pCoords)
-        local bool, nodePosition = GetClosestVehicleNode(x, y, z, 1, 3.0, 0.0)
+        local nodePosition = GetClosestVehicleNode(x, y, z, 1, 3.0, 0.0)
         local index = 0
         while index <= 25 do
             local _bool, _nodePosition = GetNthClosestVehicleNode(x, y, z, index, 1, 3.0, 2.5)
             if _bool == true or _bool == 1 then
-                bool = _bool
                 nodePosition = _nodePosition
                 index = index + 3
             else
@@ -677,17 +636,6 @@ function InitiateHorse(atCoords)
     Initializing = false
 end
 
-Citizen.CreateThread(function()
-	while true do
-		local getHorseMood = Citizen.InvokeNative(0x42688E94E96FD9B4, SpawnplayerHorse, 3, 0, Citizen.ResultAsFloat()) -- GetPedMotivation
-		if getHorseMood >= 0.60 then
-		    Citizen.InvokeNative(0x06D26A96CA1BCA75, SpawnplayerHorse, 3, PlayerPedId()) -- SetPedMotivation
-		    Citizen.InvokeNative(0xA1EB5D029E0191D3, SpawnplayerHorse, 3, 0.99) -- SetPedMotivationModifier
-		end
-		Citizen.Wait(30000)
-	end
-end)
-
 function fleeHorse(playerHorse)
     local player = PlayerPedId()
     TaskAnimalFlee(SpawnplayerHorse, player, -1)
@@ -698,14 +646,12 @@ function fleeHorse(playerHorse)
 end
 
 RegisterNUICallback("Saddles", function(data)
-    Zoom = 4.0
-    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         SaddlesUsing = num
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xBAA7E618, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- Actually remove the component
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Saddles[num])
@@ -715,14 +661,12 @@ RegisterNUICallback("Saddles", function(data)
 end)
 
 RegisterNUICallback("Saddlecloths", function(data)
-    Zoom = 4.0
-    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         SaddleclothsUsing = num
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Saddlecloths[num])
@@ -732,14 +676,12 @@ RegisterNUICallback("Saddlecloths", function(data)
 end)
 
 RegisterNUICallback("Stirrups", function(data)
-    Zoom = 4.0
-    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         StirrupsUsing = num
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xDA6DADCA, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Stirrups[num])
@@ -749,14 +691,12 @@ RegisterNUICallback("Stirrups", function(data)
 end)
 
 RegisterNUICallback("Bags", function(data)
-    Zoom = 4.0
-    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         BagsUsing = num
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x80451C25, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Bags[num])
@@ -766,14 +706,12 @@ RegisterNUICallback("Bags", function(data)
 end)
 
 RegisterNUICallback("Manes", function(data)
-    Zoom = 4.0
-    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         ManesUsing = num
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xAA0217AB, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Manes[num])
@@ -783,14 +721,12 @@ RegisterNUICallback("Manes", function(data)
 end)
 
 RegisterNUICallback("HorseTails", function(data)
-    Zoom = 4.0
-    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         HorseTailsUsing = num
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Horsetails[num])
@@ -800,14 +736,12 @@ RegisterNUICallback("HorseTails", function(data)
 end)
 
 RegisterNUICallback("AcsHorn", function(data)
-    Zoom = 4.0
-    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         AcsHornUsing = num
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x5447332, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Acshorn[num])
@@ -817,14 +751,12 @@ RegisterNUICallback("AcsHorn", function(data)
 end)
 
 RegisterNUICallback("AcsLuggage", function(data)
-    Zoom = 4.0
-    Offset = 0.2
     if tonumber(data.id) == 0 then
         num = 0
         AcsLuggageUsing = num
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xEFB31921, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation / Actually remove the component
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
         hash = ("0x" .. Acsluggage[num])
@@ -856,7 +788,7 @@ RegisterNUICallback("sellHorse", function(data)
     TriggerServerEvent('oss_stables:GetMyHorses')
 end)
 
-function returnHorse()
+function returnHorse(shopId)
     if SpawnplayerHorse == 0 then
         VORPcore.NotifyRightTip(_U("noHorse"), 5000)
 
@@ -893,48 +825,16 @@ Citizen.CreateThread(function()
 	end
 end)
 
-function createCamera(entity)
-    local groundCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
-    SetCamCoord(groundCam, StablePoint[1] + 0.5, StablePoint[2] - 3.6, StablePoint[3] )
-    SetCamRot(groundCam, -20.0, 0.0, HeadingPoint + 20)
-    SetCamActive(groundCam, true)
-    RenderScriptCams(true, false, 1, true, true)
-    FixedCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
-    SetCamCoord(FixedCam, StablePoint[1] + 0.5, StablePoint[2] - 3.6, StablePoint[3] +1.8)
-    SetCamRot(FixedCam, -20.0, 0, HeadingPoint + 50.0)
-    SetCamActive(FixedCam, true)
-    SetCamActiveWithInterp(FixedCam, groundCam, 3900, true, true)
-    Wait(3900)
-    DestroyCam(groundCam)
-end
-
-function interpCamera(cameraName, entity)
-    local cameraUsing = {
-        {
-            name = "Horse",
-            x = 0.2,
-            y = 0.0,
-            z = 1.8
-        },
-        {
-            name = "Olhos",
-            x = 0.0,
-            y = -0.4,
-            z = 0.65
-        }
-    }
-    for k, _ in pairs(cameraUsing) do
-        if cameraUsing[k].name == cameraName then
-            tempCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
-            AttachCamToEntity(tempCam, entity, cameraUsing[k].x + CamPos[1], cameraUsing[k].y + CamPos[2], cameraUsing[k].z)
-            SetCamActive(tempCam, true)
-            SetCamRot(tempCam, -30.0, 0, HeadingPoint + 50.0)
-            if InterP then
-                SetCamActiveWithInterp(tempCam, FixedCam, 1200, true, true)
-                InterP = false
-            end
-        end
-    end
+function createCamera(shopId)
+    local shopConfig = Config.stables[shopId]
+    local horseCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+    SetCamCoord(horseCam, shopConfig.horseCamx, shopConfig.horseCamy, shopConfig.horseCamz + 1.2 )
+    SetCamActive(horseCam, true)
+    PointCamAtCoord(horseCam, SpawnPoint.x - 0.5, SpawnPoint.y, SpawnPoint.z)
+    DoScreenFadeOut(500)
+    Wait(500)
+    DoScreenFadeIn(500)
+    RenderScriptCams(true, false, 0, 0, 0)
 end
 
 function AddBlip(shopId)
