@@ -1,7 +1,7 @@
 # Stables
 
 #### Important
-This is a "work in progress" and an open project. If you would like to contribute please submit a PR.
+This is a "work in progress".
 
 #### Description
 Stables script for RedM servers using the [VORP framework](https://github.com/VORPCORE). Using the 7 original stable locations from the game. More stable locations may be added using the `config.lua` file.
