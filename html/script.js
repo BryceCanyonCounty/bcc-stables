@@ -31,13 +31,13 @@ window.addEventListener('message', function(event) {
                      
                         $(`#page_shop .scroll-container .collapsible #${index} .collapsible-body`).append(`
 
-                            <div id="${_}" onhover="loadHorse(this)" class="col s12 panel item1">
+                            <div id="${_}" onhover="loadHorse(this)" class="col s12 panel item">
 
                                 <div class="col s6 panel-col item2">
                                     <h6 class="grey-text title" style="color:white;">${HorseName}</h6>
                                 </div>          
 
-                                <div class="buy-buttons">     
+                                <div class="buy-buttons">
                                     <button class="btn-small"  onclick="buyHorse('${_}', ${priceCash}, true)">
                                         <img src="img/money.png"><span class="horse-price">${priceCash}</span>
                                     </button>                                  
@@ -73,8 +73,6 @@ window.addEventListener('message', function(event) {
         }
     }
 
-    
-
     if (event.data.EnableCustom == "true") {
         $('#button-customization').removeClass("disabled");
     } else {
@@ -97,7 +95,7 @@ window.addEventListener('message', function(event) {
                             <h6 class="grey-text">${HorseName}</h6>
                         </div>
                     </div>
-                    <div class="collapsible-body col s12 panel item1" id="${HorseID}">
+                    <div class="collapsible-body col s12 panel item" id="${HorseID}">
                         <div class="col s6 panel-col item2" onclick="SelectHorse(${HorseID})">
                             <h6 class="grey-text title">Select</h6>
                         </div>
