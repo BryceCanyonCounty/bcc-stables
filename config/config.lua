@@ -309,12 +309,10 @@ Config.Horses = { -- Gold to Dollar Ratio Based on 1899 Gold Price / sellPrice i
 	},
 	{
 		name = "Other",
-		["a_c_horse_gang_dutch"] = {version = "Gang Dutch", cashPrice = 3000, goldPrice = 145, sellPrice = 1800},
 		["a_c_horsemule_01"] = {version = "Mule", cashPrice = 15, goldPrice = 1, sellPrice = 9},
 		["a_c_horsemulepainted_01"] = {version = "Zebra", cashPrice = 15, goldPrice = 1, sellPrice = 9},
 		["a_c_donkey_01"] = {version = "Donkey", cashPrice = 15, goldPrice = 1, sellPrice = 9},
 		["a_c_horse_mp_mangy_backup"] = {version = "Mangy", cashPrice = 15, goldPrice = 1, sellPrice = 9},
-		["a_c_horse_eagleflies"] = {version = "Eagle Flies", cashPrice = 15, goldPrice = 1, sellPrice = 9},
 	}
 }
 
