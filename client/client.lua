@@ -112,8 +112,8 @@ Citizen.CreateThread(function()
                                 if OpenShop:HasCompleted() then
                                     DisplayRadar(false)
                                     OpenStable(shopId)
-                                end
-                                if ReturnShop:HasCompleted() then
+
+                                elseif ReturnShop:HasCompleted() then
                                     returnHorse(shopId)
                                 end
                             end
@@ -145,8 +145,7 @@ Citizen.CreateThread(function()
                                     else
                                         VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                     end
-                                end
-                                if ReturnShop:HasCompleted() then
+                                elseif ReturnShop:HasCompleted() then
 
                                     TriggerServerEvent("oss_stables:GetPlayerJob")
                                     Wait(200)
@@ -190,8 +189,8 @@ Citizen.CreateThread(function()
                             if OpenShop:HasCompleted() then
                                 DisplayRadar(false)
                                 OpenStable(shopId)
-                            end
-                            if ReturnShop:HasCompleted() then
+
+                            elseif ReturnShop:HasCompleted() then
                                 returnHorse(shopId)
                             end
                         end
@@ -205,7 +204,7 @@ Citizen.CreateThread(function()
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopConfig.promptName)
                             PromptOpen:ShowGroup(shopOpen)
 
-                            if OpenShop:HasCompleted() then -- UiPromptHasStandardModeCompleted
+                            if OpenShop:HasCompleted() then
 
                                 TriggerServerEvent("oss_stables:GetPlayerJob")
                                 Wait(200)
@@ -223,8 +222,7 @@ Citizen.CreateThread(function()
                                 else
                                     VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                 end
-                            end
-                            if ReturnShop:HasCompleted() then
+                            elseif ReturnShop:HasCompleted() then
 
                                 TriggerServerEvent("oss_stables:GetPlayerJob")
                                 Wait(200)
@@ -262,12 +260,11 @@ function OpenStable(shopId)
     createCamera(shopId)
 
     SetNuiFocus(true, true)
-    SendNUIMessage(
-        {
-            action = "show",
-            shopData = getShopData()
-        }
-    )
+    SendNUIMessage({
+        action = "show",
+        shopData = getShopData(),
+        customize = false
+    })
     TriggerServerEvent('oss_stables:GetMyHorses')
 end
 
@@ -278,11 +275,9 @@ end
 
 RegisterNetEvent('oss_stables:ReceiveHorsesData')
 AddEventHandler('oss_stables:ReceiveHorsesData', function(dataHorses)
-    SendNUIMessage(
-        {
-            myHorsesData = dataHorses
-        }
-    )
+    SendNUIMessage({
+        myHorsesData = dataHorses
+    })
 end)
 
 RegisterNUICallback("loadHorse", function(data)
@@ -308,7 +303,7 @@ RegisterNUICallback("loadHorse", function(data)
         end
     end
 
-    if ShowroomHorse_entity ~= nil then    
+    if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
         ShowroomHorse_entity = nil
     end
@@ -318,14 +313,17 @@ RegisterNUICallback("loadHorse", function(data)
     Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShowroomHorse_entity, true) -- FreezeEntityPosition
-    SetPedConfigFlag(entity, 113, false) -- PCF_DisableShockingEvents
-    NetworkSetEntityInvisibleToNetwork(ShowroomHorse_entity, true)
-    SetVehicleHasBeenOwnedByPlayer(ShowroomHorse_entity, true)
+    SetPedConfigFlag(ShowroomHorse_entity, 113, true) -- PCF_DisableShockingEvents
+    --NetworkSetEntityInvisibleToNetwork(ShowroomHorse_entity, true)
+
+    SendNUIMessage({
+        customize = false
+    })
 end)
 
 RegisterNUICallback("rotate", function()
 
-        rotation(-22.5)
+        rotation(-20)
 end)
 
 function rotation(dir)
@@ -340,11 +338,9 @@ end)
 
 function SetHorseName(data)
     SetNuiFocus(false, false)
-    SendNUIMessage(
-        {
-            action = "hide"
-        }
-    )
+    SendNUIMessage({
+        action = "hide"
+    })
     Wait(200)
     local horseName = ""
 
@@ -360,12 +356,10 @@ function SetHorseName(data)
             TriggerServerEvent('oss_stables:BuyHorse', data, horseName)
 
             SetNuiFocus(true, true)
-            SendNUIMessage(
-            {
+            SendNUIMessage({
                 action = "show",
                 shopData = getShopData()
-            }
-        )
+            })
 
         Wait(1000)
         TriggerServerEvent('oss_stables:GetMyHorses')
@@ -374,7 +368,7 @@ function SetHorseName(data)
 end
 
 RegisterNUICallback("loadMyHorse", function(data)
-    local horseModel = data.horseModel
+    local horseModel = data.HorseModel
     IdMyHorse = data.IdHorse
 
     if ShowroomHorse_model == horseModel then
@@ -405,12 +399,15 @@ RegisterNUICallback("loadMyHorse", function(data)
     MyHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity) -- PlaceObjectOnGroundProperly
-    Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShowroomHorse_entity, true) -- FreezeEntityPosition
-    SetPedConfigFlag(entity, 113, false) -- PCF_DisableShockingEvents
-    NetworkSetEntityInvisibleToNetwork(MyHorse_entity, true)
-    SetVehicleHasBeenOwnedByPlayer(MyHorse_entity, true)
-    local componentsHorse = json.decode(data.HorseComp)
+    Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyHorse_entity, true) -- FreezeEntityPosition
+    SetPedConfigFlag(entity, 113, true) -- PCF_DisableShockingEvents
+    --NetworkSetEntityInvisibleToNetwork(MyHorse_entity, true)
 
+    SendNUIMessage({
+        customize = true
+    })
+
+    local componentsHorse = json.decode(data.HorseComp)
     if componentsHorse ~= '[]' then
         for _, Key in pairs(componentsHorse) do
             local model2 = GetHashKey(tonumber(Key))
@@ -433,33 +430,32 @@ AddEventHandler('oss_stables:SetHorseInfo', function(horse_model, horse_name, ho
     HorseComponents = horse_components
 end)
 
-Citizen.CreateThread(function()
+--[[Citizen.CreateThread(function()
     while true do
     Citizen.Wait(100)
         if MyHorse_entity ~= nil then
             SendNUIMessage(
                 {
-                    EnableCustom = "true"
+                    customize = true
                 }
             )
         else
             SendNUIMessage(
                 {
-                    EnableCustom = "false"
+                    customize = false
                 }
             )
         end
     end
-end)
+end)]]
 
 RegisterNUICallback("CloseStable", function()
     local player = PlayerPedId()
     SetNuiFocus(false, false)
-    SendNUIMessage(
-        {
-            action = "hide"
-        }
-    )
+    SendNUIMessage({
+        action = "hide",
+        customize = false
+    })
     SetEntityVisible(player, true)
 
     ShowroomHorse_model = nil
@@ -600,6 +596,10 @@ function InitiateHorse(atCoords)
     Citizen.InvokeNative(0xBCC76708E5677E1D, entity, 0) -- SetHorseTamingState?
     Citizen.InvokeNative(0xB8B6430EAD2D2437, entity, GetHashKey("PLAYER_HORSE"))
     Citizen.InvokeNative(0xFD6943B6DF77E449, entity, false) -- SetPedCanBeLassoed
+    Citizen.InvokeNative(0xC80A74AC829DDD92, entity, GetPedRelationshipGroupHash(entity)) -- SetPedRelationshipGroupHash
+    Citizen.InvokeNative(0xBF25EB89375A37AD, 1, GetPedRelationshipGroupHash(entity), "PLAYER") -- SetRelationshipBetweenGroups
+    --Citizen.InvokeNative(0x931B241409216C1F, player, entity, true) -- SetPedOwnsAnimal
+    SetVehicleHasBeenOwnedByPlayer(entity, true)
 
     SetPedConfigFlag(entity, 324, true)
     SetPedConfigFlag(entity, 211, true) -- PCF_GiveAmbientDefaultTaskIfMissionPed
@@ -614,6 +614,7 @@ function InitiateHorse(atCoords)
     SetPedConfigFlag(entity, 277, true)
     SetPedConfigFlag(entity, 319, true) -- PCF_EnableAsVehicleTransitionDestination
     SetPedConfigFlag(entity, 6, true) -- PCF_DontInfluenceWantedLevel
+    SetPedConfigFlag(entity, 546, true) -- IgnoreOwnershipForHorseFeedAndBrush
 
     SetAnimalTuningBoolParam(entity, 25, false)
     SetAnimalTuningBoolParam(entity, 24, false)
