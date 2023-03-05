@@ -34,8 +34,8 @@ window.addEventListener('message', function(event) {
                     const priceGold  = horseData.goldPrice;
                     $(`#page_shop .scroll-container .collapsible #${index} .collapsible-body`).append(`
                         <div id="${_}" onhover="loadHorse(this)" class="col s12 panel item">
-                            <div class="col s6 panel-col item2">
-                                <h6 class="grey-text title" style="color:white;">${horseColor}</h6>
+                            <div class="col s6 panel-col item">
+                                <h6 class="grey-text title">${horseColor}</h6>
                             </div>          
                             <div class="buy-buttons">
                                 <button class="btn-small"  onclick="buyHorse('${_}', ${priceCash}, true)">
@@ -76,10 +76,10 @@ window.addEventListener('message', function(event) {
                         </div>
                     </div>
                     <div class="collapsible-body col s12 panel item" id="${horseID}">
-                        <div class="col s6 panel-col item2" onclick="SelectHorse(${horseID})">
+                        <div class="col s6 panel-col item" onclick="SelectHorse(${horseID})">
                             <h6 class="grey-text title">Select</h6>
                         </div>
-                        <div class="col s6 panel-col item2" onclick="SellHorse(${horseID})">
+                        <div class="col s6 panel-col item" onclick="SellHorse(${horseID})">
                             <h6 class="grey-text title">Sell</h6>
                         </div>
                     </div>
@@ -152,41 +152,41 @@ function SellHorse(IdHorse) {
 };
 
 $(".button-right").on('click', function() {
-    var inputElement = $(this).parent().find('input');
-    var component = $(inputElement).attr('id');
-    var value = Number($(inputElement).attr('value'));
-    var nValue = value + 1;
-    var min = $(inputElement).attr('min');
-    var max = $(inputElement).attr('max');
+    const inputElement = $(this).parent().find('input');
+    const component = $(inputElement).attr('id');
+    const value = Number($(inputElement).attr('value'));
+    const nValue = value + 1;
+    const min = $(inputElement).attr('min');
+    const max = $(inputElement).attr('max');
     if (nValue > max) {
         nValue = min;
     };
     $(inputElement).attr('value', nValue);
-    var titleElement = $(this).parent().parent().find('.grey-text');
+    const titleElement = $(this).parent().parent().find('.grey-text');
     titleElement.text(component + ' ' + nValue + '/' + max);
     $.post('http://oss_stables/'+ component, JSON.stringify({id: nValue}));
 });
 
 $(".button-left").on('click', function() {
-    var inputElement = $(this).parent().find('input');
-    var component = $(inputElement).attr('id');
-    var value = Number($(inputElement).attr('value'));
-    var nValue = value - 1;
-    var min = $(inputElement).attr('min');
-    var max = $(inputElement).attr('max');
+    const inputElement = $(this).parent().find('input');
+    const component = $(inputElement).attr('id');
+    const value = Number($(inputElement).attr('value'));
+    const nValue = value - 1;
+    const min = $(inputElement).attr('min');
+    const max = $(inputElement).attr('max');
     if (nValue < min) {
         nValue = max;
     };
     $(inputElement).attr('value', nValue);
-    var titleElement = $(this).parent().parent().find('.grey-text');
+    const titleElement = $(this).parent().parent().find('.grey-text');
     titleElement.text(component + ' ' + nValue + '/' + max);
     $.post('http://oss_stables/'+ component, JSON.stringify({id: nValue}));
 });
 
 $(".input-number").on("change paste keyup", function() {
-    var min = Number($(this).attr('min'));
-    var max = Number($(this).attr('max'));
-    var value = $(this).val();
+    const min = Number($(this).attr('min'));
+    const max = Number($(this).attr('max'));
+    const value = $(this).val();
     if (value == '' || value < min) {
         value = min;
         $(this).val(value);
@@ -195,8 +195,8 @@ $(".input-number").on("change paste keyup", function() {
         value = max;
         $(this).val(value);
     };
-    var titleElement = $(this).parent().parent().find('.grey-text');
-    var text = titleElement.text();    
-    var component = text.split(' ')[0];
+    const titleElement = $(this).parent().parent().find('.grey-text');
+    const text = titleElement.text();    
+    const component = text.split(' ')[0];
     titleElement.text(component + ' ' + value + '/' + max);
 });
