@@ -13,7 +13,7 @@ window.addEventListener('message', function(event) {
 
     if (shopData) {
         for (const [index, table] of Object.entries(shopData)) {
-            const horseBreed = table.breed
+            const horseBreed = table.breed;
             if ($(`#page_shop .scroll-container .collapsible #${index}`).length <= 0) {
                 $('#page_shop .scroll-container .collapsible').append(`
                     <li id="${index}">
@@ -96,44 +96,25 @@ window.addEventListener('message', function(event) {
     };
 });
 
-function confirm(){
-    $.post('http://oss_stables/CloseStable')
+let currentPage = 'page_myhorses';
+
+function confirm() {
+    $.post('http://oss_stables/CloseStable');
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');
     $('#page_shop .scroll-container .collapsible').html('');
     $("#creatormenu").fadeOut(500);
-}
+    resetMenu();
+};
 
-function rotate(){
-    $.post('http://oss_stables/rotate')
-   //$('#button-customization').addClass("disabled");
-}
+function resetMenu() {
+    $(`#${currentPage}`).hide();
+    currentPage = 'page_myhorses';
+    $('#page_myhorses').show();
+    $('.menu-selectb.active').removeClass('active');
+    $('#button-myhorses.menu-selectb').addClass('active');
+};
 
-function buyHorse(Modelhor, price, isCash) {        
-    $('#button-customization').addClass("disabled");
-    $('#page_myhorses .scroll-container .collapsible').html('');
-    $('#page_shop .scroll-container .collapsible').html('');
-    $("#creatormenu").fadeOut(500);
-    if (isCash) {        
-        $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: Modelhor, Cash: price, IsCash: isCash }));
-    } else {
-        $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: Modelhor, Gold: price, IsCash: isCash }));    
-    }    
-}
-
-function SelectHorse(IdHorse) {    
-    $.post('http://oss_stables/selectHorse', JSON.stringify({ horseID: IdHorse }))    
-}
-
-function SellHorse(IdHorse) {    
-    $.post('http://oss_stables/sellHorse', JSON.stringify({ horseID: IdHorse }))
-    $('#button-customization').addClass("disabled");
-    $('#page_myhorses .scroll-container .collapsible').html('');
-    $('#page_shop .scroll-container .collapsible').html('');
-    $("#creatormenu").fadeOut(500);
-}
-
-var currentPage = 'page_myhorses';
 $('.menu-selectb').on('click', function() {
     $(`#${currentPage}`).hide();
     currentPage = $(this).data('target');
@@ -141,6 +122,34 @@ $('.menu-selectb').on('click', function() {
     $('.menu-selectb.active').removeClass('active');
     $(this).addClass('active');
 });
+
+function SelectHorse(IdHorse) {    
+    $.post('http://oss_stables/selectHorse', JSON.stringify({horseID: IdHorse}));
+};
+
+function rotate() {
+    $.post('http://oss_stables/rotate');
+};
+
+function buyHorse(modelH, price, isCash) {        
+    $('#button-customization').addClass("disabled");
+    $('#page_myhorses .scroll-container .collapsible').html('');
+    $('#page_shop .scroll-container .collapsible').html('');
+    $("#creatormenu").fadeOut(500);
+    if (isCash) {        
+        $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: modelH, Cash: price, IsCash: isCash }));
+    } else {
+        $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: modelH, Gold: price, IsCash: isCash }));
+    };    
+};
+
+function SellHorse(IdHorse) {    
+    $.post('http://oss_stables/sellHorse', JSON.stringify({horseID: IdHorse}));
+    $('#button-customization').addClass("disabled");
+    $('#page_myhorses .scroll-container .collapsible').html('');
+    $('#page_shop .scroll-container .collapsible').html('');
+    $("#creatormenu").fadeOut(500);
+};
 
 $(".button-right").on('click', function() {
     var inputElement = $(this).parent().find('input');
@@ -151,12 +160,11 @@ $(".button-right").on('click', function() {
     var max = $(inputElement).attr('max');
     if (nValue > max) {
         nValue = min;
-    }
+    };
     $(inputElement).attr('value', nValue);
     var titleElement = $(this).parent().parent().find('.grey-text');
-    var text = titleElement.text();
     titleElement.text(component + ' ' + nValue + '/' + max);
-    $.post('http://oss_stables/'+component, JSON.stringify({ id: nValue }));
+    $.post('http://oss_stables/'+ component, JSON.stringify({id: nValue}));
 });
 
 $(".button-left").on('click', function() {
@@ -168,12 +176,11 @@ $(".button-left").on('click', function() {
     var max = $(inputElement).attr('max');
     if (nValue < min) {
         nValue = max;
-    }
+    };
     $(inputElement).attr('value', nValue);
     var titleElement = $(this).parent().parent().find('.grey-text');
-    var text = titleElement.text();
     titleElement.text(component + ' ' + nValue + '/' + max);
-    $.post('http://oss_stables/'+component, JSON.stringify({ id: nValue }));
+    $.post('http://oss_stables/'+ component, JSON.stringify({id: nValue}));
 });
 
 $(".input-number").on("change paste keyup", function() {
@@ -183,11 +190,11 @@ $(".input-number").on("change paste keyup", function() {
     if (value == '' || value < min) {
         value = min;
         $(this).val(value);
-    }
+    };
     if (value > max) {
         value = max;
         $(this).val(value);
-    }
+    };
     var titleElement = $(this).parent().parent().find('.grey-text');
     var text = titleElement.text();    
     var component = text.split(' ')[0];
