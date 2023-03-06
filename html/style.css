@@ -1,12 +1,10 @@
 @font-face {
     font-family: 'crock';
-    font-style: normal;
     src: url('fonts/crock.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'robotoslab';
-    font-style: normal;
     src: url('fonts/robotoslab.ttf') format('truetype');
 }
 
@@ -27,76 +25,19 @@ div {
     display: block;
 }
 
-.scroll-container::-webkit-scrollbar {
-    width: 0.5em;
-}
-
-.scroll-container::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-}
-
-.scroll-container::-webkit-scrollbar-thumb {
-    outline: 1px solid #313131;
-    border-radius: 5px;
-}
-
-input {
-    border: 0 !important;
-}
-
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    margin: 0;
-}
-
-input[type='number']::-webkit-input-placeholder {
-    color: #a0a0a0;
-}
-
-input[type='number']:-webkit-autofill {
-    color: black !important;
-    background-color: transparent !important;
-}
-
-input[type='number'] {
-    font-family: 'robotoslab';
-    padding: 9px 25px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -webkit-transition: all .33s;
-    -o-transition: all .33s;
-    transition: all .33s;
-    box-shadow: none !important;
-    color: #f0f0f0;
-    background-color: transparent;
-    background-image: url('img/inputb.png');
-    background-position: left center;
-    background-repeat: no-repeat;
+#creator-container {
+    padding-bottom: 40px;
+    border-radius: 2px;
+    overflow: hidden;
+    position: absolute;
+    height: 80%;
+    left: 2%;
+    top: 5%;
+    width: 420px;
+    color: #e7e7e7 !important;
+    /*background: url('img/bgPanel.png');*/
+    background-color: #000;
     background-size: 100% 100%;
-}
-
-input[type='number']:focus {
-    color: #f0f0f0;
-}
-
-input[type='number']:hover {
-    color: #f0f0f0;
-}
-
-input[type=number]:active {
-    border-bottom-color: rgba(45, 146, 235, 0.9) !important;
-}
-
-.input-number {
-    text-align: center;
-    font-family: 'crock' !important;
-    background-image: url('img/input.png') !important;
-    background-position: left center;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    margin: auto  !important;
 }
 
 #head {
@@ -120,18 +61,51 @@ input[type=number]:active {
     background-size: 100% 100%;
 }
 
-#creator-container {
-    padding-bottom: 40px;
-    border-radius: 2px;
-    overflow: hidden;
-    position: absolute;
-    height: 80%;
-    left: 2%;
-    top: 5%;
-    width: 420px;
-    color: #e7e7e7 !important;
-    background: url('img/bgPanel.png');
+#button_menu {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-radius: 0px;
+    padding: 0px 20px;
+    height: 5vh;
+    background: url('img/input.png');
+    background-position: center;
+    background-size: 95% 100%;
+}
+
+.menu-selectb {
+    flex-grow: 1;
+    border-radius: 0px;
+    height: 5vh;
+    border: 0px #fff solid;
+    font-family: 'robotoslab';
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    color: #f0f0f0;
+    background: transparent;
+}
+
+.menu-selectb:hover {
+    background: url('img/buttonv.png');
     background-size: 100% 100%;
+}
+
+.menu-selectb.active {
+    background: url('img/buttonv.png');
+    background-size: 100% 100%;
+}
+
+.scroll-container::-webkit-scrollbar {
+    width: 0.5em;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+    outline: 1px solid #313131;
+    border-radius: 5px;
 }
 
 .scroll-container {
@@ -300,40 +274,6 @@ button {
 	height:46px !important;
 }
 
-#button_menu {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    border-radius: 0px;
-    padding: 0px 20px;
-    height: 5vh;
-    background: url('img/input.png');
-    background-position: center;
-    background-size: 95% 100%;
-}
-
-.menu-selectb {
-    flex-grow: 1;
-    border-radius: 0px;
-    height: 5vh;
-    border: 0px #fff solid;
-    font-family: 'robotoslab';
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    color: #f0f0f0;
-    background: transparent;
-}
-
-.menu-selectb:hover {
-    background: url('img/buttonv.png');
-    background-size: 100% 100%;
-}
-
-.menu-selectb.active {
-    background: url('img/buttonv.png');
-    background-size: 100% 100%;
-}
-
 .btn,
 .btn-small {
     display:flex !important;
@@ -429,4 +369,63 @@ ul:not(.browser-default)>li {
 .disabled {
     opacity: 0.2;
     pointer-events: none;
+}
+
+input {
+    border: 0 !important;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    margin: 0;
+}
+
+input[type='number']::-webkit-input-placeholder {
+    color: #a0a0a0;
+}
+
+input[type='number']:-webkit-autofill {
+    color: black !important;
+    background-color: transparent !important;
+}
+
+input[type='number'] {
+    font-family: 'robotoslab';
+    padding: 9px 25px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -webkit-transition: all .33s;
+    -o-transition: all .33s;
+    transition: all .33s;
+    box-shadow: none !important;
+    color: #f0f0f0;
+    background-color: transparent;
+    background-image: url('img/inputb.png');
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+input[type='number']:focus {
+    color: #f0f0f0;
+}
+
+input[type='number']:hover {
+    color: #f0f0f0;
+}
+
+input[type=number]:active {
+    border-bottom-color: rgba(45, 146, 235, 0.9) !important;
+}
+
+.input-number {
+    text-align: center;
+    font-family: 'crock' !important;
+    background-image: url('img/input.png') !important;
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    margin: auto  !important;
 }
