@@ -75,11 +75,6 @@ button {
     background: url('img/buttonv.png');
     background-size: 100% 100%;
 }
-
-.menucam {
-    display: flex;
-    justify-content: left;
-}
 .buy-buttons {
     display:flex ;
 
@@ -326,6 +321,12 @@ h6 {
     font-weight: 400;
     text-align: center;
 }
+
+/*.panel-title:hover {
+    background: url('img/toastred.png');
+    background-size: 100% 100%;
+    background-position: center;
+}*/
 
 .grey-text {
     margin: auto;
@@ -631,7 +632,6 @@ input[type=range]::-ms-thumb {
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.5;
     padding: 1rem;

@@ -70,7 +70,7 @@ window.addEventListener('message', function(event) {
             const components = tab.components;
             $('#page_myhorses .scroll-container .collapsible').append(`
                 <li>
-                    <div id="heads" class="collapsible-header col s12 panel" style="background-color: transparent; border: 0;">
+                    <div id="heads" class="collapsible-header col s12 panel">
                         <div class="col s12 panel-title">
                             <h6 class="grey-text">${horseName}</h6>
                         </div>
