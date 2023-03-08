@@ -110,7 +110,8 @@ button {
 }
 
 .scroll-container::-webkit-scrollbar {
-    width: 0.5em;
+    display: none;
+    /*width: 0.5em;*/
 }
 
 .scroll-container::-webkit-scrollbar-track {
@@ -227,12 +228,6 @@ button {
     font-weight: 400;
     text-align: center;
 }
-
-/*.panel-title:hover {
-    background: url('img/toastred.png');
-    background-size: 100% 100%;
-    background-position: center;
-}*/
 
 .panel-title .grey-text {
     margin: 0;
@@ -387,7 +382,14 @@ h6 {
     padding-left: 30px;
     font-size: 1.1em;
     font-weight: 400;
-    line-height: 110%;
+}
+
+.grey-text-count.title {
+    color: #f0f0f0;
+    text-align: center;
+    margin: auto;
+    font-size: 1em;
+    font-weight: 400;
 }
 
 ul:not(.browser-default)>li {
@@ -451,6 +453,30 @@ input[type=number]:active {
 .input-number {
     text-align: center;
     font-family: 'crock' !important;
+    background-image: url('img/input.png') !important;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    margin: auto  !important;
+}
+
+.col.s6.panel-col.item-cust {
+    display: flex;
+    justify-content: left;
+    padding: 3px 3px !important;
+    width: 50%;
+    margin-left: auto;
+    left: auto;
+    right: auto;
+}
+
+.col.s4.panel-col.item-count {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 33.3333333333%;
+    height:46px !important;
+    background-color: transparent;
     background-image: url('img/input.png') !important;
     background-position: center center;
     background-repeat: no-repeat;

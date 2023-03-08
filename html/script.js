@@ -155,15 +155,15 @@ $(".button-right").on('click', function() {
     const inputElement = $(this).parent().find('input');
     const component = $(inputElement).attr('id');
     const value = Number($(inputElement).attr('value'));
-    const nValue = value + 1;
+    let nValue = value + 1;
     const min = $(inputElement).attr('min');
     const max = $(inputElement).attr('max');
     if (nValue > max) {
         nValue = min;
     };
     $(inputElement).attr('value', nValue);
-    /*const titleElement = $(this).parent().parent().find('.grey-text-cust');
-    titleElement.text(component + ' ' + nValue + '/' + max);*/
+    const titleElement = $(this).parent().parent().find('.grey-text-count');
+    titleElement.text(nValue + '/' + max);
     $.post('http://oss_stables/'+ component, JSON.stringify({id: nValue}));
 });
 
@@ -171,32 +171,15 @@ $(".button-left").on('click', function() {
     const inputElement = $(this).parent().find('input');
     const component = $(inputElement).attr('id');
     const value = Number($(inputElement).attr('value'));
-    const nValue = value - 1;
+    let nValue = value - 1;
     const min = $(inputElement).attr('min');
     const max = $(inputElement).attr('max');
     if (nValue < min) {
         nValue = max;
     };
     $(inputElement).attr('value', nValue);
-    /*const titleElement = $(this).parent().parent().find('.grey-text-cust');
-    titleElement.text(component + ' ' + nValue + '/' + max);*/
+    const titleElement = $(this).parent().parent().find('.grey-text-count');
+    titleElement.text(nValue + '/' + max);
     $.post('http://oss_stables/'+ component, JSON.stringify({id: nValue}));
 });
 
-/*$(".input-number").on("change paste keyup", function() {
-    const min = Number($(this).attr('min'));
-    const max = Number($(this).attr('max'));
-    const value = $(this).val();
-    if (value == '' || value < min) {
-        value = min;
-        $(this).val(value);
-    };
-    if (value > max) {
-        value = max;
-        $(this).val(value);
-    };
-    const titleElement = $(this).parent().parent().find('.grey-text-cust');
-    const text = titleElement.text();    
-    const component = text.split(' ')[0];
-    titleElement.text(component + ' ' + value + '/' + max);
-});*/
