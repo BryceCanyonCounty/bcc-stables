@@ -34,8 +34,8 @@ window.addEventListener('message', function(event) {
                     const priceGold  = horseData.goldPrice;
                     $(`#page_shop .scroll-container .collapsible #${index} .collapsible-body`).append(`
                         <div id="${_}" onhover="loadHorse(this)" class="col s12 panel item">
-                            <div class="col s6 panel-col item2">
-                                <h6 class="grey-text title" style="color:white;">${horseColor}</h6>
+                            <div class="col s6 panel-col item">
+                                <h6 class="grey-text-shop title">${horseColor}</h6>
                             </div>          
                             <div class="buy-buttons">
                                 <button class="btn-small"  onclick="buyHorse('${_}', ${priceCash}, true)">
@@ -70,16 +70,16 @@ window.addEventListener('message', function(event) {
             const components = tab.components;
             $('#page_myhorses .scroll-container .collapsible').append(`
                 <li>
-                    <div id="heads" class="collapsible-header col s12 panel" style="background-color: transparent; border: 0;">
+                    <div id="heads" class="collapsible-header col s12 panel">
                         <div class="col s12 panel-title">
                             <h6 class="grey-text">${horseName}</h6>
                         </div>
                     </div>
                     <div class="collapsible-body col s12 panel item" id="${horseID}">
-                        <div class="col s6 panel-col item2" onclick="SelectHorse(${horseID})">
+                        <div class="col s6 panel-col item" onclick="SelectHorse(${horseID})">
                             <h6 class="grey-text title">Select</h6>
                         </div>
-                        <div class="col s6 panel-col item2" onclick="SellHorse(${horseID})">
+                        <div class="col s6 panel-col item" onclick="SellHorse(${horseID})">
                             <h6 class="grey-text title">Sell</h6>
                         </div>
                     </div>
@@ -152,51 +152,34 @@ function SellHorse(IdHorse) {
 };
 
 $(".button-right").on('click', function() {
-    var inputElement = $(this).parent().find('input');
-    var component = $(inputElement).attr('id');
-    var value = Number($(inputElement).attr('value'));
-    var nValue = value + 1;
-    var min = $(inputElement).attr('min');
-    var max = $(inputElement).attr('max');
+    const inputElement = $(this).parent().find('input');
+    const component = $(inputElement).attr('id');
+    const value = Number($(inputElement).attr('value'));
+    let nValue = value + 1;
+    const min = $(inputElement).attr('min');
+    const max = $(inputElement).attr('max');
     if (nValue > max) {
         nValue = min;
     };
     $(inputElement).attr('value', nValue);
-    var titleElement = $(this).parent().parent().find('.grey-text');
-    titleElement.text(component + ' ' + nValue + '/' + max);
+    const titleElement = $(this).parent().parent().find('.grey-text-count');
+    titleElement.text(nValue + '/' + max);
     $.post('http://oss_stables/'+ component, JSON.stringify({id: nValue}));
 });
 
 $(".button-left").on('click', function() {
-    var inputElement = $(this).parent().find('input');
-    var component = $(inputElement).attr('id');
-    var value = Number($(inputElement).attr('value'));
-    var nValue = value - 1;
-    var min = $(inputElement).attr('min');
-    var max = $(inputElement).attr('max');
+    const inputElement = $(this).parent().find('input');
+    const component = $(inputElement).attr('id');
+    const value = Number($(inputElement).attr('value'));
+    let nValue = value - 1;
+    const min = $(inputElement).attr('min');
+    const max = $(inputElement).attr('max');
     if (nValue < min) {
         nValue = max;
     };
     $(inputElement).attr('value', nValue);
-    var titleElement = $(this).parent().parent().find('.grey-text');
-    titleElement.text(component + ' ' + nValue + '/' + max);
+    const titleElement = $(this).parent().parent().find('.grey-text-count');
+    titleElement.text(nValue + '/' + max);
     $.post('http://oss_stables/'+ component, JSON.stringify({id: nValue}));
 });
 
-$(".input-number").on("change paste keyup", function() {
-    var min = Number($(this).attr('min'));
-    var max = Number($(this).attr('max'));
-    var value = $(this).val();
-    if (value == '' || value < min) {
-        value = min;
-        $(this).val(value);
-    };
-    if (value > max) {
-        value = max;
-        $(this).val(value);
-    };
-    var titleElement = $(this).parent().parent().find('.grey-text');
-    var text = titleElement.text();    
-    var component = text.split(' ')[0];
-    titleElement.text(component + ' ' + value + '/' + max);
-});
