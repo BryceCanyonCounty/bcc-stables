@@ -8,6 +8,11 @@
     src: url('fonts/robotoslab.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'HapnaSlabSerif-Medium';
+    src: url('fonts/HapnaSlabSerif-Medium.ttf') format('truetype');
+}
+
 body {
     font-family: 'robotoslab';
     overflow: hidden;
@@ -35,8 +40,7 @@ div {
     top: 5%;
     width: 420px;
     color: #e7e7e7 !important;
-    /*background: url('img/bgPanel.png');*/
-    background-color: #000;
+    background: url('img/bgPanel.png');
     background-size: 100% 100%;
 }
 
@@ -56,7 +60,7 @@ div {
     color: #f0f0f0;
     font-family: 'crock';
     text-align: center;
-    background: url('img/toastred.png');
+    background: url('img/toastredflip.png');
     background-position: center;
     background-size: 100% 100%;
 }
@@ -71,6 +75,16 @@ div {
     background: url('img/input.png');
     background-position: center;
     background-size: 95% 100%;
+}
+
+button {
+    outline: none !important;
+    background-color: transparent !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #e7e7e7;
 }
 
 .menu-selectb {
@@ -117,10 +131,67 @@ div {
     width: 100%;
 }
 
-h6 {
-    color: #f0f0f0;
-    font-weight: 400 !important;
-    font-family: 'robotoslab';
+.collapsible {
+    border: 0 !important;
+}
+
+.collapsible-header {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.5;
+    padding: 1rem;
+    background-color: transparent !important;
+    border: 0 !important;
+}
+
+.collapsible-body {
+    border: 0 !important;
+}
+
+.collapsible li {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.item-bg {
+    background: url('img/toast_bg.png');
+     width: 90% !important;
+     background-size: 100% 100%;
+     justify-content: center;
+     padding: 3px 3px !important;
+ }
+
+ .row .col {
+    float: center;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0 .75rem;
+    min-height: 1px;
+}
+
+.row .col.s12 {
+    width: 100%;
+    margin-center: auto;
+    left: auto;
+    right: auto;
+}
+
+.row .col.s6 {
+    width: 50%;
+    margin-left: auto;
+    left: auto;
+    right: auto;
+}
+
+.row .col.s4 {
+    width: 33.3333333333%;
+    margin-left: auto;
+    left: auto;
+    right: auto;
 }
 
 .panel {
@@ -148,10 +219,6 @@ h6 {
     justify-content: center;
 }
 
-.title {
-    font-size: 1.0em;
-}
-
 .panel-title {
     background: url('img/input.png');
     background-size: 100% 100%;
@@ -167,65 +234,14 @@ h6 {
     background-position: center;
 }*/
 
-.grey-text {
-    margin: auto;
-    /* margin-top:4px;
-    margin-bottom:5px; */
-}
-
-.grey-text.title {
-    color: #9e9e9e;
-}
-
-.grey-text.title:hover {
-    color: #f0f0f0;
-}
-
-.grey-text.title-cust {
-    color: #9e9e9e;
-}
-
 .panel-title .grey-text {
     margin: 0;
     margin-top: 5px;
     margin-bottom: 5px;
 }
 
-.row .col.s12 {
-    width: 100%;
-    margin-left: auto;
-    left: auto;
-    right: auto;
-}
-
-.row .col {
-    float: left;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    padding: 0 .75rem;
-    min-height: 1px;
-}
-
-.row .col.s4 {
-    width: 33.3333333333%;
-    margin-left: auto;
-    left: auto;
-    right: auto;
-}
-
-.row .col.s6 {
-    width: 50%;
-    margin-left: auto;
-    left: auto;
-    right: auto;
-}
-
-.item-bg {
-    background: url('img/toast_bg.png');
-    width: 90% !important;
-    background-size: 100% 100%;
-    justify-content: center;
-    padding: 3px 3px !important;
+.title {
+    font-size: 1.0em;
 }
 
 .selected{
@@ -235,19 +251,10 @@ h6 {
 
 .item {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     padding: 3px 3px !important;
 }
 
-button {
-    outline: none !important;
-    background-color: transparent !important;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #e7e7e7;
-}
 
 .menu-button {
     border: 0px #fff solid;
@@ -274,8 +281,7 @@ button {
 	height:46px !important;
 }
 
-.btn,
-.btn-small {
+.btn {
     display:flex !important;
     flex-direction: row !important;
     justify-content: center;
@@ -299,6 +305,22 @@ button {
 .btn:hover {
     background: url('img/buttonv.png');
     background-size: 100% 100%;
+}
+
+.btn-small {
+    display:flex !important;
+    flex-direction: row !important;
+    justify-content: left !important;
+    align-items: center;
+    text-decoration: none;
+    color: #f0f0f0;
+    user-select: none;
+    text-align: left;
+    width: 75px;
+    letter-spacing: .5px;
+    -webkit-transition: background-color .2s ease-out;
+    transition: background-color .2s ease-out;
+    border: 0px #fff solid;
 }
 
 .btn-small:hover {
@@ -336,30 +358,36 @@ button {
     background-size: 100% 100% !important;
 }
 
-.collapsible-header {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-tap-highlight-color: transparent;
-    line-height: 1.5;
-    padding: 1rem;
-    background-color: transparent !important;
-    border: 0 !important;
+h6 {
+    color: #f0f0f0;
+    font-weight: 400 !important;
+    font-family: 'robotoslab';
 }
 
-.collapsible-body {
-    border: 0 !important;
+.grey-text {
+    margin: auto;
+    /* margin-top:4px;
+    margin-bottom:5px; */
 }
 
-.collapsible {
-    border: 0 !important;
+.grey-text-shop.title {
+    color: #9e9e9e;
+    text-align: left;
+    margin-top: auto;
 }
 
-.collapsible li {
-    display:flex;
-    flex-direction: column;
-    align-items: center;
+.grey-text.title:hover {
+    color: #f0f0f0;
+}
+
+.grey-text-cust.title {
+    color: #9e9e9e;
+    text-align: left;
+    margin: auto 0 auto;
+    padding-left: 30px;
+    font-size: 1.1em;
+    font-weight: 400;
+    line-height: 110%;
 }
 
 ul:not(.browser-default)>li {
@@ -403,7 +431,7 @@ input[type='number'] {
     color: #f0f0f0;
     background-color: transparent;
     background-image: url('img/inputb.png');
-    background-position: left center;
+    background-position: center center;
     background-repeat: no-repeat;
     background-size: 100% 100%;
 }
@@ -424,7 +452,7 @@ input[type=number]:active {
     text-align: center;
     font-family: 'crock' !important;
     background-image: url('img/input.png') !important;
-    background-position: left center;
+    background-position: center center;
     background-repeat: no-repeat;
     background-size: 100% 100%;
     margin: auto  !important;

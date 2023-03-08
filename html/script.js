@@ -35,7 +35,7 @@ window.addEventListener('message', function(event) {
                     $(`#page_shop .scroll-container .collapsible #${index} .collapsible-body`).append(`
                         <div id="${_}" onhover="loadHorse(this)" class="col s12 panel item">
                             <div class="col s6 panel-col item">
-                                <h6 class="grey-text title">${horseColor}</h6>
+                                <h6 class="grey-text-shop title">${horseColor}</h6>
                             </div>          
                             <div class="buy-buttons">
                                 <button class="btn-small"  onclick="buyHorse('${_}', ${priceCash}, true)">
@@ -162,8 +162,8 @@ $(".button-right").on('click', function() {
         nValue = min;
     };
     $(inputElement).attr('value', nValue);
-    const titleElement = $(this).parent().parent().find('.grey-text');
-    titleElement.text(component + ' ' + nValue + '/' + max);
+    /*const titleElement = $(this).parent().parent().find('.grey-text-cust');
+    titleElement.text(component + ' ' + nValue + '/' + max);*/
     $.post('http://oss_stables/'+ component, JSON.stringify({id: nValue}));
 });
 
@@ -178,12 +178,12 @@ $(".button-left").on('click', function() {
         nValue = max;
     };
     $(inputElement).attr('value', nValue);
-    const titleElement = $(this).parent().parent().find('.grey-text');
-    titleElement.text(component + ' ' + nValue + '/' + max);
+    /*const titleElement = $(this).parent().parent().find('.grey-text-cust');
+    titleElement.text(component + ' ' + nValue + '/' + max);*/
     $.post('http://oss_stables/'+ component, JSON.stringify({id: nValue}));
 });
 
-$(".input-number").on("change paste keyup", function() {
+/*$(".input-number").on("change paste keyup", function() {
     const min = Number($(this).attr('min'));
     const max = Number($(this).attr('max'));
     const value = $(this).val();
@@ -195,8 +195,8 @@ $(".input-number").on("change paste keyup", function() {
         value = max;
         $(this).val(value);
     };
-    const titleElement = $(this).parent().parent().find('.grey-text');
+    const titleElement = $(this).parent().parent().find('.grey-text-cust');
     const text = titleElement.text();    
     const component = text.split(' ')[0];
     titleElement.text(component + ' ' + value + '/' + max);
-});
+});*/
