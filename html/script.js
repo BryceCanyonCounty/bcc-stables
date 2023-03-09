@@ -33,7 +33,7 @@ window.addEventListener('message', function(event) {
                     const priceCash  = horseData.cashPrice;
                     const priceGold  = horseData.goldPrice;
                     $(`#page_shop .scroll-container .collapsible #${index} .collapsible-body`).append(`
-                        <div id="${_}" onhover="loadHorse(this)" class="col s12 panel item">
+                        <div id="${_}" onhover="loadHorse(this)" class="col s12 panel-shop item">
                             <div class="col s6 panel-col item">
                                 <h6 class="grey-text-shop title">${horseColor}</h6>
                             </div>          
