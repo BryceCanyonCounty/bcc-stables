@@ -19,7 +19,7 @@ window.addEventListener('message', function(event) {
                     <li id="${index}">
                         <div class="collapsible-header col s12 panel ">
                             <div class="col s12 panel-title">
-                                <h6 class="grey-text">${horseBreed}</h6>
+                                <h6 class="grey-text plus">${horseBreed}</h6>
                             </div>
                         </div>
                         <div class="collapsible-body item-bg"></div>
@@ -33,7 +33,7 @@ window.addEventListener('message', function(event) {
                     const priceCash  = horseData.cashPrice;
                     const priceGold  = horseData.goldPrice;
                     $(`#page_shop .scroll-container .collapsible #${index} .collapsible-body`).append(`
-                        <div id="${_}" onhover="loadHorse(this)" class="col s12 panel item">
+                        <div id="${_}" onhover="loadHorse(this)" class="col s12 panel-shop item">
                             <div class="col s6 panel-col item">
                                 <h6 class="grey-text-shop title">${horseColor}</h6>
                             </div>          
@@ -41,7 +41,7 @@ window.addEventListener('message', function(event) {
                                 <button class="btn-small"  onclick="buyHorse('${_}', ${priceCash}, true)">
                                     <img src="img/money.png"><span class="horse-price">${priceCash}</span>
                                 </button>                                  
-                                <button class="btn-small"  onclick="buyHorse('${_}', ${priceGold}, false)">                                                
+                                <button class="btn-small right-btn"  onclick="buyHorse('${_}', ${priceGold}, false)">                                                
                                     <img src="img/gold.png"><span class="horse-price">${priceGold}</span>
                                 </button>                                          
                             </div>
@@ -72,15 +72,15 @@ window.addEventListener('message', function(event) {
                 <li>
                     <div id="heads" class="collapsible-header col s12 panel">
                         <div class="col s12 panel-title">
-                            <h6 class="grey-text">${horseName}</h6>
+                            <h6 class="grey-text plus">${horseName}</h6>
                         </div>
                     </div>
-                    <div class="collapsible-body col s12 panel item" id="${horseID}">
-                        <div class="col s6 panel-col item" onclick="SelectHorse(${horseID})">
-                            <h6 class="grey-text title">Select</h6>
+                    <div class="collapsible-body col s12 panel-myhorse item" id="${horseID}">
+                        <div class="col s6 panel-col item-myhorse" onclick="SelectHorse(${horseID})">
+                            <h6 class="white-text title">Select</h6>
                         </div>
-                        <div class="col s6 panel-col item" onclick="SellHorse(${horseID})">
-                            <h6 class="grey-text title">Sell</h6>
+                        <div class="col s6 panel-col item-myhorse" onclick="SellHorse(${horseID})">
+                            <h6 class="white-text title">Sell</h6>
                         </div>
                     </div>
                 </li> 
