@@ -321,9 +321,13 @@ RegisterNUICallback("loadHorse", function(data)
     })
 end)
 
-RegisterNUICallback("rotate", function()
-
+RegisterNUICallback("rotate", function(data)
+    local direction = data.RotateHorse
+    if direction == "left" then
         rotation(-20)
+    elseif direction == "right" then
+        rotation(20)
+    end
 end)
 
 function rotation(dir)

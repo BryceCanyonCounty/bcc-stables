@@ -107,6 +107,15 @@ function confirm() {
     resetMenu();
 };
 
+function cancel() {
+    $.post('http://oss_stables/CloseStable');
+    $('#button-customization').addClass("disabled");
+    $('#page_myhorses .scroll-container .collapsible').html('');
+    $('#page_shop .scroll-container .collapsible').html('');
+    $("#creatormenu").fadeOut(500);
+    resetMenu();
+};
+
 function resetMenu() {
     $(`#${currentPage}`).hide();
     currentPage = 'page_myhorses';
@@ -127,8 +136,9 @@ function SelectHorse(IdHorse) {
     $.post('http://oss_stables/selectHorse', JSON.stringify({horseID: IdHorse}));
 };
 
-function rotate() {
-    $.post('http://oss_stables/rotate');
+function rotate(direction) {
+    let rotateHorse = direction;
+    $.post('http://oss_stables/rotate', JSON.stringify({RotateHorse: rotateHorse}));
 };
 
 function buyHorse(modelH, price, isCash) {        

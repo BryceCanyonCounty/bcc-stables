@@ -190,10 +190,34 @@
                     </div>                   
                 </div>
 
-                <div class="buttons">
-                    <button id="confirm" class="action-button" onclick="confirm()"><span>Confirm</span></button>
-                    <button id="rotate" class="action-button" onclick="rotate()"><span>Rotate</span></button>
+                <div class="divider-menu-ext"></div>
+
+                <div class="action-buttons">
+                    <button id="confirm" class="action-btn" onclick="confirm()">
+                        <span>Save</span>
+                    </button>
+
+                    <button id="cancel" class="action-btn" onclick="cancel()">
+                        <span>Cancel</span>
+                    </button>
                 </div>
+
+                <div class="rotate-buttons">
+                    <button id="rotateleft" class="rotate-btn" onclick="rotate('left')">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+
+                    <div class="rotate-text">
+                        <h6 class="white-text">Rotate</h6>
+                    </div>
+                    
+                    <button id="rotateright" class="rotate-btn" onclick="rotate('right')">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div> 
+                
+                <div class="divider-menu"></div>
+
             </div>
         </div>
     </div>

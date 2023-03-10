@@ -122,6 +122,17 @@ button {
 	opacity: 0.6;
 }
 
+.divider-menu-ext {
+	width: 90%;
+	height: 4px;
+	margin: auto auto;
+	background-image: url(img/scroller_bottom.png) !important;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 100% 100%;
+	opacity: 0.6;
+}
+
 .scroll-container::-webkit-scrollbar {
     display: none;
     /*width: 0.5em;*/
@@ -141,7 +152,7 @@ button {
     margin: 0px !important;
     overflow-y: scroll;
     overflow-x: hidden;
-    height: calc(100% - 200px);
+    height: calc(100% - 275px);
     width: 100%;
 }
 
@@ -360,32 +371,12 @@ button {
     margin-right: 5px;
 }
 
-.buttons{
-    width:100%;
+/*.buttons{
+    width: calc(100% - 150px) !important;
     height:35px;
     text-align: center;
     margin: 0 auto;
-}
-
-.action-button{
-    font-family: 'robotoslab';
-    font-weight: 400;
-    letter-spacing: 1.5px;
-    padding: 7px 0px;
-    width: 40%;
-    text-align: center;
-    color: #f0f0f0;
-    background: url('img/input.png') !important;
-    background-size: 100% 100%!important;
-    transition: background-color .2s ease-out;
-    display: inline-block;
-}
-
-.action-button:hover{
-    background: url('img/toast.png') !important;
-    transition: background-color .2s ease-out;
-    background-size: 100% 100% !important;
-}
+}*/
 
 h6 {
     color: #f0f0f0;
@@ -559,4 +550,59 @@ input[type=number]:active {
 .selected{
     background-image: url('img/selected.png'), url('img/selection_box.png') !important;
     background-size: 100% 100%;
+}
+
+.action-btn{
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    padding: 7px 0px;
+    width: 50%;
+    text-align: center;
+    color: #f0f0f0;
+}
+
+.action-btn:hover{
+    background: url('img/buttonv.png') !important;
+    background-size: 100% 100% !important;
+}
+
+.action-buttons,
+.rotate-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - 125px) !important;
+    height:35px;
+    background-image: url('img/input.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    margin: auto  !important;
+}
+
+.rotate-btn {
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 25%;
+    background-image: url('img/input.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.rotate-btn:hover {
+    background: url('img/buttonv.png') !important;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 0px;
+}
+.rotate-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    margin: auto  !important;
 }
