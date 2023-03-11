@@ -321,9 +321,13 @@ RegisterNUICallback("loadHorse", function(data)
     })
 end)
 
-RegisterNUICallback("rotate", function()
-
+RegisterNUICallback("rotate", function(data)
+    local direction = data.RotateHorse
+    if direction == "left" then
         rotation(-20)
+    elseif direction == "right" then
+        rotation(20)
+    end
 end)
 
 function rotation(dir)
@@ -430,26 +434,7 @@ AddEventHandler('oss_stables:SetHorseInfo', function(horse_model, horse_name, ho
     HorseComponents = horse_components
 end)
 
---[[Citizen.CreateThread(function()
-    while true do
-    Citizen.Wait(100)
-        if MyHorse_entity ~= nil then
-            SendNUIMessage(
-                {
-                    customize = true
-                }
-            )
-        else
-            SendNUIMessage(
-                {
-                    customize = false
-                }
-            )
-        end
-    end
-end)]]
-
-RegisterNUICallback("CloseStable", function()
+RegisterNUICallback("CloseStable", function(data)
     local player = PlayerPedId()
     SetNuiFocus(false, false)
     SendNUIMessage({
@@ -472,7 +457,13 @@ RegisterNUICallback("CloseStable", function()
     ShowroomHorse_entity = nil
     DisplayRadar(true)
     InMenu = false
-    StableClose()
+
+    local menuAction = data.MenuAction
+    if menuAction == "save" then
+        StableClose()
+    else
+        return
+    end
 end)
 
 function StableClose()

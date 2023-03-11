@@ -76,12 +76,8 @@ window.addEventListener('message', function(event) {
                         </div>
                     </div>
                     <div class="collapsible-body col s12 panel-myhorse item" id="${horseID}">
-                        <div class="col s6 panel-col item-myhorse" onclick="SelectHorse(${horseID})">
-                            <h6 class="white-text title">Select</h6>
-                        </div>
-                        <div class="col s6 panel-col item-myhorse" onclick="SellHorse(${horseID})">
-                            <h6 class="white-text title">Sell</h6>
-                        </div>
+                        <button class="col s6 panel-col item-myhorse" onclick="SelectHorse(${horseID})">Select</button>
+                        <button class="col s6 panel-col item-myhorse" onclick="SellHorse(${horseID})">Sell</button>
                     </div>
                 </li> 
             `);
@@ -98,8 +94,9 @@ window.addEventListener('message', function(event) {
 
 let currentPage = 'page_myhorses';
 
-function confirm() {
-    $.post('http://oss_stables/CloseStable');
+function menuAction(action) {
+    let menuAction = action;
+    $.post('http://oss_stables/CloseStable', JSON.stringify({MenuAction: menuAction}));
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');
     $('#page_shop .scroll-container .collapsible').html('');
@@ -127,8 +124,9 @@ function SelectHorse(IdHorse) {
     $.post('http://oss_stables/selectHorse', JSON.stringify({horseID: IdHorse}));
 };
 
-function rotate() {
-    $.post('http://oss_stables/rotate');
+function rotate(direction) {
+    let rotateHorse = direction;
+    $.post('http://oss_stables/rotate', JSON.stringify({RotateHorse: rotateHorse}));
 };
 
 function buyHorse(modelH, price, isCash) {        
