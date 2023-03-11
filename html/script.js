@@ -77,10 +77,10 @@ window.addEventListener('message', function(event) {
                     </div>
                     <div class="collapsible-body col s12 panel-myhorse item" id="${horseID}">
                         <div class="col s6 panel-col item-myhorse" onclick="SelectHorse(${horseID})">
-                            <h6 class="white-text title">Select</h6>
+                            <h6 class="grey-text-myhorse title">Select</h6>
                         </div>
                         <div class="col s6 panel-col item-myhorse" onclick="SellHorse(${horseID})">
-                            <h6 class="white-text title">Sell</h6>
+                            <h6 class="grey-text-myhorse title">Sell</h6>
                         </div>
                     </div>
                 </li> 
@@ -98,7 +98,7 @@ window.addEventListener('message', function(event) {
 
 let currentPage = 'page_myhorses';
 
-function confirm() {
+function save() {
     $.post('http://oss_stables/CloseStable');
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');

@@ -23,7 +23,7 @@
                     <button id="button-customization" data-target="page_customization" class="menu-selectb">Tack Shop</button>
                 </div>
 
-                <div class="divider-menu"></div>
+                <div class="divider-menu-top"></div>
 
                 <div id="page_myhorses" class="row">
                     <div class="scroll-container">
@@ -42,7 +42,6 @@
 
                 <div id="page_customization" class="row" style="display:none">
                     <div class="scroll-container">
-
                         <div class="col s12 panel-cust">
                             <div class="col s6 panel-col item-cust">
                                 <h6 class="grey-text-cust title">Saddlecloths</h6>
@@ -186,37 +185,20 @@
                                 </button>
                             </div>
                         </div>
-                      
-                    </div>                   
+                    </div>                
                 </div>
 
-                <div class="divider-menu-ext"></div>
+                <div class="divider-menu-top"></div>
 
-                <div class="action-buttons">
-                    <button id="confirm" class="action-btn" onclick="confirm()">
-                        <span>Save</span>
-                    </button>
-
-                    <button id="cancel" class="action-btn" onclick="cancel()">
-                        <span>Cancel</span>
-                    </button>
+                <div id="bottom_buttons" class="row main-bottom-buttons">
+                    <button id="save" class="button-select" onclick="save()">Save</button>
+                    <button id="rotate_left" class="button-select" onclick="rotate('left')"><i class="fas fa-chevron-left"></i></button>
+                    <div id=rotate_label class="rotate-text"><h6 class="grey-text">Rotate</h6></div>
+                    <button id="rotate_right" class="button-select" onclick="rotate('right')"><i class="fas fa-chevron-right"></i></button>
+                    <button id="cancel" class="button-select" onclick="cancel()">Cancel</button>
                 </div>
-
-                <div class="rotate-buttons">
-                    <button id="rotateleft" class="rotate-btn" onclick="rotate('left')">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-
-                    <div class="rotate-text">
-                        <h6 class="white-text">Rotate</h6>
-                    </div>
-                    
-                    <button id="rotateright" class="rotate-btn" onclick="rotate('right')">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div> 
                 
-                <div class="divider-menu"></div>
+                <div class="divider-menu-bottom"></div>
 
             </div>
         </div>
