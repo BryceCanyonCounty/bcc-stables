@@ -76,12 +76,8 @@ window.addEventListener('message', function(event) {
                         </div>
                     </div>
                     <div class="collapsible-body col s12 panel-myhorse item" id="${horseID}">
-                        <div class="col s6 panel-col item-myhorse" onclick="SelectHorse(${horseID})">
-                            <h6 class="grey-text-myhorse title">Select</h6>
-                        </div>
-                        <div class="col s6 panel-col item-myhorse" onclick="SellHorse(${horseID})">
-                            <h6 class="grey-text-myhorse title">Sell</h6>
-                        </div>
+                        <button class="col s6 panel-col item-myhorse" onclick="SelectHorse(${horseID})">Select</button>
+                        <button class="col s6 panel-col item-myhorse" onclick="SellHorse(${horseID})">Sell</button>
                     </div>
                 </li> 
             `);
