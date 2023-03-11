@@ -94,17 +94,9 @@ window.addEventListener('message', function(event) {
 
 let currentPage = 'page_myhorses';
 
-function save() {
-    $.post('http://oss_stables/CloseStable');
-    $('#button-customization').addClass("disabled");
-    $('#page_myhorses .scroll-container .collapsible').html('');
-    $('#page_shop .scroll-container .collapsible').html('');
-    $("#creatormenu").fadeOut(500);
-    resetMenu();
-};
-
-function cancel() {
-    $.post('http://oss_stables/CloseStable');
+function menuAction(action) {
+    let menuAction = action;
+    $.post('http://oss_stables/CloseStable', JSON.stringify({MenuAction: menuAction}));
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');
     $('#page_shop .scroll-container .collapsible').html('');
