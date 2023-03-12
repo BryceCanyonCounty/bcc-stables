@@ -90,9 +90,8 @@ window.addEventListener('message', function(event) {
             }, function() {});
         };
     };
-    const location  = event.data.location;
-    console.log(location);
-    document.getElementById('stable_name').innerHTML = location;
+    //const location  = event.data.location;
+    //document.getElementById('stable_name').innerHTML = location;
 });
 
 let currentPage = 'page_myhorses';
