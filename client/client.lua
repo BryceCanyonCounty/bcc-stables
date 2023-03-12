@@ -325,17 +325,26 @@ end)
 
 RegisterNUICallback("rotate", function(data)
     local direction = data.RotateHorse
+
     if direction == "left" then
-        rotation(20)
+        Rotation(20)
     elseif direction == "right" then
-        rotation(-20)
+        Rotation(-20)
     end
 end)
 
-function rotation(dir)
-    local playerHorse = MyHorse_entity
-    local pedRot = GetEntityHeading(playerHorse) + dir
-    SetEntityHeading(playerHorse, pedRot % 360)
+function Rotation(dir)
+    local ownedHorse = MyHorse_entity
+    local shopHorse = ShowroomHorse_entity
+
+    if ownedHorse then
+        local ownedRot = GetEntityHeading(ownedHorse) + dir
+        SetEntityHeading(ownedHorse, ownedRot % 360)
+
+    elseif shopHorse then
+        local shopRot = GetEntityHeading(shopHorse) + dir
+        SetEntityHeading(shopHorse, shopRot % 360)
+    end
 end
 
 RegisterNUICallback("BuyHorse", function(data)
