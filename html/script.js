@@ -5,9 +5,6 @@ window.addEventListener('message', function(event) {
     const custom    = event.data.customize;
     const shopData  = event.data.shopData;
     const horseData = event.data.myHorsesData;
-    const location  = event.data.location;
-    console.log(location);
-    //document.getElementById('stable_name').innerHTML = location;
 
     if (action === "hide") {$("#creatormenu").fadeOut(500);};
     if (action === "show") {$("#creatormenu").fadeIn(500);};
@@ -62,9 +59,6 @@ window.addEventListener('message', function(event) {
                 };
             };
         };
-        const location  = event.data.location;
-        console.log(location);
-        document.getElementById('stable_name').innerHTML = location;
     };
     if (horseData) {
         $('#page_myhorses .scroll-container .collapsible').html('');
@@ -96,11 +90,12 @@ window.addEventListener('message', function(event) {
             }, function() {});
         };
     };
+    const location  = event.data.location;
+    console.log(location);
+    document.getElementById('stable_name').innerHTML = location;
 });
 
 let currentPage = 'page_myhorses';
-
-
 
 function menuAction(action) {
     let menuAction = action;
