@@ -10,6 +10,7 @@ Config.maxHorses = 5 -- Default: 5
 -- Stables
 Config.stables = { -- Original 7 Stable Locations
     valentine = {
+		shopName = "Valentine Stable", -- Name Shown on the Stable Menu
         promptName = "Valentine Stable", -- Text Below the Prompt Button
         blipAllowed = true, -- Turns Blips On / Off
         blipName = "Valentine Stable", -- Name of the Blip on the Map
@@ -29,6 +30,7 @@ Config.stables = { -- Original 7 Stable Locations
         shopClose = 21, -- Shop Close Time / 24 Hour Clock
     },
 	strawberry = {
+		shopName = "Strawberry Stable",
         promptName = "Strawberry Stable",
         blipAllowed = true,
         blipName = "Strawberry Stable",
@@ -48,6 +50,7 @@ Config.stables = { -- Original 7 Stable Locations
         shopClose = 21,
     },
 	vanhorn = {
+		shopName = "Van Horn Stable",
         promptName = "Van Horn Stable",
         blipAllowed = true,
         blipName = "Van Horn Stable",
@@ -67,6 +70,7 @@ Config.stables = { -- Original 7 Stable Locations
         shopClose = 21,
     },
 	lemoyne = {
+		shopName = "Lemoyne Stable",
         promptName = "Lemoyne Stable",
         blipAllowed = true,
         blipName = "Lemoyne Stable",
@@ -86,6 +90,7 @@ Config.stables = { -- Original 7 Stable Locations
         shopClose = 21,
     },
 	saintdenis = {
+		shopName = "Saint Denis Stable",
         promptName = "Saint Denis Stable",
         blipAllowed = true,
         blipName = "Saint Denis Stable",
@@ -105,6 +110,7 @@ Config.stables = { -- Original 7 Stable Locations
         shopClose = 21,
     },
     blackwater = {
+		shopName = "Blackwater Stable",
         promptName = "Blackwater Stable",
         blipAllowed = true,
         blipName = "Blackwater Stable",
@@ -124,6 +130,7 @@ Config.stables = { -- Original 7 Stable Locations
         shopClose = 21,
     },
     tumbleweed = {
+		shopName = "Tumbleweed Stable",
         promptName = "Tumbleweed Stable",
         blipAllowed = true,
         blipName = "Tumbleweed Stable",

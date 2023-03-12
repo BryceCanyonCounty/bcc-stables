@@ -255,6 +255,7 @@ function OpenStable(shopId)
     InMenu = true
 
     local shopConfig = Config.stables[shopId]
+    local stableName = shopConfig.shopName
     SpawnPoint = {x = shopConfig.spawnPointx, y = shopConfig.spawnPointy, z = shopConfig.spawnPointz, h = shopConfig.spawnPointh}
 
     createCamera(shopId)
@@ -263,7 +264,8 @@ function OpenStable(shopId)
     SendNUIMessage({
         action = "show",
         shopData = getShopData(),
-        customize = false
+        customize = false,
+        location = stableName
     })
     TriggerServerEvent('oss_stables:GetMyHorses')
 end
