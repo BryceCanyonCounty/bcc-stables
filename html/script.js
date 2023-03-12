@@ -59,6 +59,8 @@ window.addEventListener('message', function(event) {
                 };
             };
         };
+        const location  = event.data.location;
+        document.getElementById('stable_name').innerHTML = location;
     };
     if (horseData) {
         $('#page_myhorses .scroll-container .collapsible').html('');
@@ -90,8 +92,6 @@ window.addEventListener('message', function(event) {
             }, function() {});
         };
     };
-    //const location  = event.data.location;
-    //document.getElementById('stable_name').innerHTML = location;
 });
 
 let currentPage = 'page_myhorses';
