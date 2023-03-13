@@ -71,7 +71,9 @@ Citizen.CreateThread(function()
                             Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorClosed)) -- BlipAddModifier
                         end
                         if shopConfig.NPC then
-                            shopConfig.NPC:Remove()
+                            DeleteEntity(shopConfig.NPC)
+                            DeletePed(shopConfig.NPC)
+                            SetEntityAsNoLongerNeeded(shopConfig.NPC)
                             shopConfig.NPC = nil
                         end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
@@ -846,12 +848,24 @@ function AddBlip(shopId)
     Config.stables[shopId].BlipHandle = blip
 end
 
+function LoadModel(npcModel)
+    local model = GetHashKey(npcModel)
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        RequestModel(model)
+        Citizen.Wait(100)
+    end
+end
+
 function SpawnNPC(shopId)
     local shopConfig = Config.stables[shopId]
-    local npc = VORPutils.Peds:Create(shopConfig.npcModel, shopConfig.npcx, shopConfig.npcy, shopConfig.npcz - 1, shopConfig.npch, 'world', false)
-    npc:Freeze(true)
-    npc:Invincible(true)
-    npc:CanBeDamaged(false)
+    LoadModel(shopConfig.npcModel)
+    local npc = CreatePed(shopConfig.npcModel, shopConfig.npcx, shopConfig.npcy, shopConfig.npcz -1, shopConfig.npch, false, true, true, true)
+    Citizen.InvokeNative(0x283978A15512B2FE, npc, true) -- SetRandomOutfitVariation
+    SetEntityCanBeDamaged(npc, false)
+    SetEntityInvincible(npc, true)
+    Wait(500)
+    FreezeEntityPosition(npc, true)
     SetBlockingOfNonTemporaryEvents(npc, true)
     Config.stables[shopId].NPC = npc
 end
@@ -901,7 +915,9 @@ AddEventHandler('onResourceStop', function(resourceName)
             shopConfig.BlipHandle:Remove()
         end
         if shopConfig.NPC then
-            shopConfig.NPC:Remove()
+            DeleteEntity(shopConfig.NPC)
+            DeletePed(shopConfig.NPC)
+            SetEntityAsNoLongerNeeded(shopConfig.NPC)
         end
     end
 end)
