@@ -386,10 +386,6 @@ RegisterNUICallback("loadMyHorse", function(data)
     local horseModel = data.HorseModel
     IdMyHorse = data.IdHorse
 
-    if ShowroomHorse_model == horseModel then
-        return
-    end
-
     if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
         ShowroomHorse_entity = nil
@@ -415,7 +411,7 @@ RegisterNUICallback("loadMyHorse", function(data)
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyHorse_entity, true) -- FreezeEntityPosition
-    SetPedConfigFlag(entity, 113, true) -- PCF_DisableShockingEvents
+    SetPedConfigFlag(MyHorse_entity, 113, true) -- PCF_DisableShockingEvents
     --NetworkSetEntityInvisibleToNetwork(MyHorse_entity, true)
 
     SendNUIMessage({
@@ -600,7 +596,7 @@ function InitiateHorse(atCoords)
     Citizen.InvokeNative(0xFD6943B6DF77E449, entity, false) -- SetPedCanBeLassoed
     Citizen.InvokeNative(0xC80A74AC829DDD92, entity, GetPedRelationshipGroupHash(entity)) -- SetPedRelationshipGroupHash
     Citizen.InvokeNative(0xBF25EB89375A37AD, 1, GetPedRelationshipGroupHash(entity), "PLAYER") -- SetRelationshipBetweenGroups
-    --Citizen.InvokeNative(0x931B241409216C1F, player, entity, true) -- SetPedOwnsAnimal
+    --Citizen.InvokeNative(0xD4EE21B7CC7FD350, MyHorse_entity, true) -- ShowHorseCores
     SetVehicleHasBeenOwnedByPlayer(entity, true)
 
     SetPedConfigFlag(entity, 324, true)
@@ -616,7 +612,6 @@ function InitiateHorse(atCoords)
     SetPedConfigFlag(entity, 277, true)
     SetPedConfigFlag(entity, 319, true) -- PCF_EnableAsVehicleTransitionDestination
     SetPedConfigFlag(entity, 6, true) -- PCF_DontInfluenceWantedLevel
-    SetPedConfigFlag(entity, 546, true) -- IgnoreOwnershipForHorseFeedAndBrush
 
     SetAnimalTuningBoolParam(entity, 25, false)
     SetAnimalTuningBoolParam(entity, 24, false)
