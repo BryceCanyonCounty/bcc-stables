@@ -321,6 +321,10 @@ RegisterNUICallback("loadHorse", function(data)
     SendNUIMessage({
         customize = false
     })
+
+    Wait(300)
+    Citizen.InvokeNative(0x6585D955A68452A5, ShowroomHorse_entity) -- ClearPedEnvDirt
+    Citizen.InvokeNative(0xB5485E4907B53019, ShowroomHorse_entity) -- SetPedWetnessEnabledThisFrame
 end)
 
 RegisterNUICallback("rotate", function(data)
@@ -417,6 +421,10 @@ RegisterNUICallback("loadMyHorse", function(data)
     SendNUIMessage({
         customize = true
     })
+
+    Wait(300)
+    Citizen.InvokeNative(0x6585D955A68452A5, MyHorse_entity) -- ClearPedEnvDirt
+    Citizen.InvokeNative(0xB5485E4907B53019, MyHorse_entity) -- SetPedWetnessEnabledThisFrame
 
     local componentsHorse = json.decode(data.HorseComp)
     if componentsHorse ~= '[]' then
@@ -596,7 +604,7 @@ function InitiateHorse(atCoords)
     Citizen.InvokeNative(0xFD6943B6DF77E449, entity, false) -- SetPedCanBeLassoed
     Citizen.InvokeNative(0xC80A74AC829DDD92, entity, GetPedRelationshipGroupHash(entity)) -- SetPedRelationshipGroupHash
     Citizen.InvokeNative(0xBF25EB89375A37AD, 1, GetPedRelationshipGroupHash(entity), "PLAYER") -- SetRelationshipBetweenGroups
-    --Citizen.InvokeNative(0xD4EE21B7CC7FD350, MyHorse_entity, true) -- ShowHorseCores
+
     SetVehicleHasBeenOwnedByPlayer(entity, true)
 
     SetPedConfigFlag(entity, 324, true)
@@ -621,7 +629,6 @@ function InitiateHorse(atCoords)
 
     SpawnplayerHorse = entity
 
-    SetPedNameDebug(entity, HorseName)
     SetPedPromptName(entity, HorseName)
 
     if HorseComponents ~= nil and HorseComponents ~= "0" then
@@ -777,12 +784,10 @@ RegisterNUICallback("sellHorse", function(data)
     TriggerServerEvent('oss_stables:GetMyHorses')
     Wait(300)
 
-    SendNUIMessage(
-        {
-            action = "show",
-            shopData = getShopData()
-        }
-    )
+    SendNUIMessage({
+        action = "show",
+        shopData = getShopData()
+    })
     TriggerServerEvent('oss_stables:GetMyHorses')
 end)
 
