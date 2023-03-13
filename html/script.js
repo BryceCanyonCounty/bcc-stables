@@ -131,7 +131,7 @@ function rotate(direction) {
     $.post('http://oss_stables/rotate', JSON.stringify({RotateHorse: rotateHorse}));
 };
 
-function buyHorse(modelH, price, isCash) {        
+function buyHorse(modelH, price, isCash) {
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');
     $('#page_shop .scroll-container .collapsible').html('');
@@ -140,7 +140,7 @@ function buyHorse(modelH, price, isCash) {
         $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: modelH, Cash: price, IsCash: isCash }));
     } else {
         $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: modelH, Gold: price, IsCash: isCash }));
-    };    
+    };
 };
 
 function SellHorse(IdHorse) {    
