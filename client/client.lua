@@ -1,5 +1,6 @@
 local VORPcore = {}
 local VORPutils = {}
+
 local PlayerJob
 local JobName
 local JobGrade
@@ -95,13 +96,13 @@ Citizen.CreateThread(function()
                         if not Config.stables[shopId].BlipHandle and shopConfig.blipAllowed then
                             AddBlip(shopId)
                         end
-                        if Config.stables[shopId].BlipHandle then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorOpen)) -- BlipAddModifier
-                        end
                         if not shopConfig.NPC and shopConfig.npcAllowed then
                             SpawnNPC(shopId)
                         end
                         if not next(shopConfig.allowedJobs) then
+                            if Config.stables[shopId].BlipHandle then
+                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorOpen)) -- BlipAddModifier
+                            end
                             local coordsDist = vector3(coords.x, coords.y, coords.z)
                             local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
                             local distanceShop = #(coordsDist - coordsShop)
@@ -120,6 +121,9 @@ Citizen.CreateThread(function()
                                 end
                             end
                         else
+                            if Config.stables[shopId].BlipHandle then
+                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorJob)) -- BlipAddModifier
+                            end
                             local coordsDist = vector3(coords.x, coords.y, coords.z)
                             local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
                             local distanceShop = #(coordsDist - coordsShop)
@@ -172,13 +176,13 @@ Citizen.CreateThread(function()
                     if not Config.stables[shopId].BlipHandle and shopConfig.blipAllowed then
                         AddBlip(shopId)
                     end
-                    if Config.stables[shopId].BlipHandle then
-                        Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorOpen)) -- BlipAddModifier
-                    end
                     if not shopConfig.NPC and shopConfig.npcAllowed then
                         SpawnNPC(shopId)
                     end
                     if not next(shopConfig.allowedJobs) then
+                        if Config.stables[shopId].BlipHandle then
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorOpen)) -- BlipAddModifier
+                        end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
                         local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
                         local distanceShop = #(coordsDist - coordsShop)
@@ -197,6 +201,9 @@ Citizen.CreateThread(function()
                             end
                         end
                     else
+                        if Config.stables[shopId].BlipHandle then
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorJob)) -- BlipAddModifier
+                        end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
                         local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
                         local distanceShop = #(coordsDist - coordsShop)
@@ -842,10 +849,13 @@ function createCamera(shopId)
     RenderScriptCams(true, false, 0, 0, 0)
 end
 
+-- Blips
 function AddBlip(shopId)
     local shopConfig = Config.stables[shopId]
-    local blip = VORPutils.Blips:SetBlip(shopConfig.blipName, shopConfig.blipSprite, 0.2, shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
-    Config.stables[shopId].BlipHandle = blip
+    shopConfig.BlipHandle = N_0x554d9d53f696d002(1664425300, shopConfig.npcx, shopConfig.npcy, shopConfig.npcz) -- BlipAddForCoords
+    SetBlipSprite(shopConfig.BlipHandle, shopConfig.blipSprite, 1)
+    SetBlipScale(shopConfig.BlipHandle, 0.2)
+    Citizen.InvokeNative(0x9CB1A1623062F402, shopConfig.BlipHandle, shopConfig.blipName) -- SetBlipName
 end
 
 function LoadModel(npcModel)
@@ -912,7 +922,7 @@ AddEventHandler('onResourceStop', function(resourceName)
 
     for _, shopConfig in pairs(Config.stables) do
         if shopConfig.BlipHandle then
-            shopConfig.BlipHandle:Remove()
+            RemoveBlip(shopConfig.BlipHandle)
         end
         if shopConfig.NPC then
             DeleteEntity(shopConfig.NPC)
