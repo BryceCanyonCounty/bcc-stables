@@ -1,13 +1,13 @@
 local VORPcore = {}
-local VORPutils = {}
-
+local OpenShops
+local CloseShops
+local OpenReturn
+local OpenGroup = GetRandomIntInRange(0, 0xffffff)
+local ClosedGroup = GetRandomIntInRange(0, 0xffffff)
 local PlayerJob
 local JobName
 local JobGrade
 local InMenu = false
-local OpenShop
-local ReturnShop
-local ClosedShop
 local Adding = true
 local ShowroomHorse_entity
 local ShowroomHorse_model
@@ -40,18 +40,11 @@ TriggerEvent("getCore", function(core)
     VORPcore = core
 end)
 
-TriggerEvent("getUtils", function(utils)
-    VORPutils = utils
-end)
-
 -- Start Stables
 Citizen.CreateThread(function()
-    local PromptOpen = VORPutils.Prompts:SetupPromptGroup()
-    OpenShop = PromptOpen:RegisterPrompt(_U("shopPrompt"), Config.shopKey, 1, 1, true, 'click')
-    ReturnShop = PromptOpen:RegisterPrompt(_U("returnPrompt"), Config.returnKey, 1, 1, true, 'click')
-
-    local PromptClosed = VORPutils.Prompts:SetupPromptGroup()
-    ClosedShop = PromptClosed:RegisterPrompt(_U("shopPrompt"), Config.shopKey, 1, 1, true, 'click')
+    ShopOpen()
+    ShopClosed()
+    ReturnOpen()
 
     while true do
         Citizen.Wait(0)
@@ -84,9 +77,9 @@ Citizen.CreateThread(function()
                         if (distanceShop <= shopConfig.distanceShop) then
                             sleep = false
                             local shopClosed = CreateVarString(10, 'LITERAL_STRING', _U("closed") .. shopConfig.shopOpen .. _U("am") .. shopConfig.shopClose .. _U("pm"))
-                            PromptClosed:ShowGroup(shopClosed)
+                            PromptSetActiveGroupThisFrame(ClosedGroup, shopClosed)
 
-                            if ClosedShop:HasCompleted() then
+                            if Citizen.InvokeNative(0xC92AC953F0A982AE, CloseShops) then -- UiPromptHasStandardModeCompleted
 
                                 Wait(100)
                                 VORPcore.NotifyRightTip(_U("closed") .. shopConfig.shopOpen .. _U("am") .. shopConfig.shopClose .. _U("pm"), 3000)
@@ -110,13 +103,13 @@ Citizen.CreateThread(function()
                             if (distanceShop <= shopConfig.distanceShop) then
                                 sleep = false
                                 local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopConfig.promptName)
-                                PromptOpen:ShowGroup(shopOpen)
+                                PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
 
-                                if OpenShop:HasCompleted() then
+                                if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
                                     DisplayRadar(false)
                                     OpenStable(shopId)
 
-                                elseif ReturnShop:HasCompleted() then
+                                elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                     returnHorse(shopId)
                                 end
                             end
@@ -131,9 +124,9 @@ Citizen.CreateThread(function()
                             if (distanceShop <= shopConfig.distanceShop) then
                                 sleep = false
                                 local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopConfig.promptName)
-                                PromptOpen:ShowGroup(shopOpen)
+                                PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
 
-                                if OpenShop:HasCompleted() then
+                                if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
 
                                     TriggerServerEvent("oss_stables:GetPlayerJob")
                                     Wait(200)
@@ -151,7 +144,7 @@ Citizen.CreateThread(function()
                                     else
                                         VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                     end
-                                elseif ReturnShop:HasCompleted() then
+                                elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
 
                                     TriggerServerEvent("oss_stables:GetPlayerJob")
                                     Wait(200)
@@ -190,13 +183,13 @@ Citizen.CreateThread(function()
                         if (distanceShop <= shopConfig.distanceShop) then
                             sleep = false
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopConfig.promptName)
-                            PromptOpen:ShowGroup(shopOpen)
+                            PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
 
-                            if OpenShop:HasCompleted() then
+                            if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
                                 DisplayRadar(false)
                                 OpenStable(shopId)
 
-                            elseif ReturnShop:HasCompleted() then
+                            elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                 returnHorse(shopId)
                             end
                         end
@@ -211,9 +204,9 @@ Citizen.CreateThread(function()
                         if (distanceShop <= shopConfig.distanceShop) then
                             sleep = false
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopConfig.promptName)
-                            PromptOpen:ShowGroup(shopOpen)
+                            PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
 
-                            if OpenShop:HasCompleted() then
+                            if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
 
                                 TriggerServerEvent("oss_stables:GetPlayerJob")
                                 Wait(200)
@@ -231,7 +224,7 @@ Citizen.CreateThread(function()
                                 else
                                     VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                 end
-                            elseif ReturnShop:HasCompleted() then
+                            elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
 
                                 TriggerServerEvent("oss_stables:GetPlayerJob")
                                 Wait(200)
@@ -849,6 +842,49 @@ function createCamera(shopId)
     RenderScriptCams(true, false, 0, 0, 0)
 end
 
+-- Menu Prompts
+function ShopOpen()
+    local str = _U("shopPrompt")
+    OpenShops = PromptRegisterBegin()
+    PromptSetControlAction(OpenShops, Config.shopKey)
+    str = CreateVarString(10, 'LITERAL_STRING', str)
+    PromptSetText(OpenShops, str)
+    PromptSetEnabled(OpenShops, 1)
+    PromptSetVisible(OpenShops, 1)
+    PromptSetStandardMode(OpenShops, 1)
+    PromptSetGroup(OpenShops, OpenGroup)
+    Citizen.InvokeNative(0xC5F428EE08FA7F2C, OpenShops, true) -- UiPromptSetUrgentPulsingEnabled
+    PromptRegisterEnd(OpenShops)
+end
+
+function ShopClosed()
+    local str = _U("shopPrompt")
+    CloseShops = PromptRegisterBegin()
+    PromptSetControlAction(CloseShops, Config.shopKey)
+    str = CreateVarString(10, 'LITERAL_STRING', str)
+    PromptSetText(CloseShops, str)
+    PromptSetEnabled(CloseShops, 1)
+    PromptSetVisible(CloseShops, 1)
+    PromptSetStandardMode(CloseShops, 1)
+    PromptSetGroup(CloseShops, ClosedGroup)
+    Citizen.InvokeNative(0xC5F428EE08FA7F2C, CloseShops, true) -- UiPromptSetUrgentPulsingEnabled
+    PromptRegisterEnd(CloseShops)
+end
+
+function ReturnOpen()
+    local str = _U("returnPrompt")
+    OpenReturn = PromptRegisterBegin()
+    PromptSetControlAction(OpenReturn, Config.returnKey)
+    str = CreateVarString(10, 'LITERAL_STRING', str)
+    PromptSetText(OpenReturn, str)
+    PromptSetEnabled(OpenReturn, 1)
+    PromptSetVisible(OpenReturn, 1)
+    PromptSetStandardMode(OpenReturn, 1)
+    PromptSetGroup(OpenReturn, OpenGroup)
+    Citizen.InvokeNative(0xC5F428EE08FA7F2C, OpenReturn, true) -- UiPromptSetUrgentPulsingEnabled
+    PromptRegisterEnd(OpenReturn)
+end
+
 -- Blips
 function AddBlip(shopId)
     local shopConfig = Config.stables[shopId]
@@ -903,17 +939,15 @@ AddEventHandler('onResourceStop', function(resourceName)
 
     if InMenu == true then
         SetNuiFocus(false, false)
-        SendNUIMessage(
-            {
+        SendNUIMessage({
                 action = "hide"
-            }
-        )
+            })
     end
 
     ClearPedTasksImmediately(PlayerPedId())
-    OpenShop:DeletePrompt()
-    ReturnShop:DeletePrompt()
-    ClosedShop:DeletePrompt()
+        PromptDelete(OpenShops)
+        PromptDelete(CloseShops)
+        PromptDelete(OpenReturn)
 
     if SpawnplayerHorse then
         DeleteEntity(SpawnplayerHorse)
