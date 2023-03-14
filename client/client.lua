@@ -22,7 +22,7 @@ local Manes = {}
 local Saddles = {}
 local Stirrups = {}
 local Acsluggage = {}
-local SpawnplayerHorse = 0
+local MyHorse = 0
 local HorseModel
 local HorseName
 local HorseComponents = {}
@@ -76,13 +76,13 @@ Citizen.CreateThread(function()
 
                         if (distanceShop <= shopConfig.distanceShop) then
                             sleep = false
-                            local shopClosed = CreateVarString(10, 'LITERAL_STRING', _U("closed") .. shopConfig.shopOpen .. _U("am") .. shopConfig.shopClose .. _U("pm"))
+                            local shopClosed = CreateVarString(10, 'LITERAL_STRING', shopConfig.shopName .. _U("closed"))
                             PromptSetActiveGroupThisFrame(ClosedGroup, shopClosed)
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, CloseShops) then -- UiPromptHasStandardModeCompleted
 
                                 Wait(100)
-                                VORPcore.NotifyRightTip(_U("closed") .. shopConfig.shopOpen .. _U("am") .. shopConfig.shopClose .. _U("pm"), 3000)
+                                VORPcore.NotifyRightTip(shopConfig.shopName .. _U("hours") .. shopConfig.shopOpen .. _U("to") .. shopConfig.shopClose .. _U("hundred"), 4000)
                             end
                         end
                     elseif hour >= shopConfig.shopOpen then
@@ -520,8 +520,8 @@ Citizen.CreateThread(function()
 			Citizen.Wait(10000) --Flood Protection? i think yes zoot
         end
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x4216AF06) then -- Control = Horse Flee / IsDisabledControlJustPressed
-			if SpawnplayerHorse ~= 0 then
-				fleeHorse(SpawnplayerHorse)
+			if MyHorse ~= 0 then
+				fleeHorse(MyHorse)
 			end
 		end
     end
@@ -529,17 +529,17 @@ end)
 
 function WhistleHorse()
     local player = PlayerPedId()
-    if SpawnplayerHorse ~= 0 then
-        if GetScriptTaskStatus(SpawnplayerHorse, 0x4924437D, 0) ~= 0 then
+    if MyHorse ~= 0 then
+        if GetScriptTaskStatus(MyHorse, 0x4924437D, 0) ~= 0 then
             local pcoords = GetEntityCoords(player)
-            local hcoords = GetEntityCoords(SpawnplayerHorse)
+            local hcoords = GetEntityCoords(MyHorse)
             local caldist = #(pcoords - hcoords)
             if caldist >= 100 then
-                DeleteEntity(SpawnplayerHorse)
+                DeleteEntity(MyHorse)
                 Wait(1000)
-                SpawnplayerHorse = 0
+                MyHorse = 0
             else
-                TaskGoToEntity(SpawnplayerHorse, player, -1, 4, 2.0, 0, 0)
+                TaskGoToEntity(MyHorse, player, -1, 4, 2.0, 0, 0)
             end
         end
     else
@@ -556,9 +556,9 @@ function InitiateHorse(atCoords)
 
     Initializing = true
 
-    if SpawnplayerHorse ~= 0 then
-        DeleteEntity(SpawnplayerHorse)
-        SpawnplayerHorse = 0
+    if MyHorse ~= 0 then
+        DeleteEntity(MyHorse)
+        MyHorse = 0
     end
 
     local player = PlayerPedId()
@@ -595,61 +595,59 @@ function InitiateHorse(atCoords)
         return
     end
 
-    local entity = CreatePed(modelHash, spawnPosition, GetEntityHeading(player), true, true)
+    MyHorse = CreatePed(modelHash, spawnPosition, GetEntityHeading(player), true, true)
     SetModelAsNoLongerNeeded(modelHash)
 
-    Citizen.InvokeNative(0x9587913B9E772D29, entity, 0) -- PlaceEntityOnGroundProperly
-    Citizen.InvokeNative(0x4DB9D03AC4E1FA84, entity, -1, -1, 0) -- SetPedWrithingDuration
-    Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, entity) -- BlipAddForEntity
-    Citizen.InvokeNative(0xBCC76708E5677E1D, entity, 0) -- SetHorseTamingState?
-    Citizen.InvokeNative(0xB8B6430EAD2D2437, entity, GetHashKey("PLAYER_HORSE"))
-    Citizen.InvokeNative(0xFD6943B6DF77E449, entity, false) -- SetPedCanBeLassoed
-    Citizen.InvokeNative(0xC80A74AC829DDD92, entity, GetPedRelationshipGroupHash(entity)) -- SetPedRelationshipGroupHash
-    Citizen.InvokeNative(0xBF25EB89375A37AD, 1, GetPedRelationshipGroupHash(entity), "PLAYER") -- SetRelationshipBetweenGroups
+    Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0) -- PlaceEntityOnGroundProperly
+    Citizen.InvokeNative(0x4DB9D03AC4E1FA84, MyHorse, -1, -1, 0) -- SetPedWrithingDuration
+    Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
+    Citizen.InvokeNative(0xBCC76708E5677E1D, MyHorse, 0) -- SetHorseTamingState?
+    Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, GetHashKey("PLAYER_HORSE"))
+    Citizen.InvokeNative(0xFD6943B6DF77E449, MyHorse, false) -- SetPedCanBeLassoed
+    Citizen.InvokeNative(0xC80A74AC829DDD92, MyHorse, GetPedRelationshipGroupHash(MyHorse)) -- SetPedRelationshipGroupHash
+    Citizen.InvokeNative(0xBF25EB89375A37AD, 1, GetPedRelationshipGroupHash(MyHorse), "PLAYER") -- SetRelationshipBetweenGroups
 
-    SetVehicleHasBeenOwnedByPlayer(entity, true)
+    SetVehicleHasBeenOwnedByPlayer(MyHorse, true)
 
-    SetPedConfigFlag(entity, 324, true)
-    SetPedConfigFlag(entity, 211, true) -- PCF_GiveAmbientDefaultTaskIfMissionPed
-    SetPedConfigFlag(entity, 208, true)
-    SetPedConfigFlag(entity, 209, true)
-    SetPedConfigFlag(entity, 400, true)
-    SetPedConfigFlag(entity, 297, true) -- PCF_ForceInteractionLockonOnTargetPed
-    SetPedConfigFlag(entity, 136, false) -- (for horse) disable mount
-    SetPedConfigFlag(entity, 312, false) -- PCF_DisableHorseGunshotFleeResponse
-    SetPedConfigFlag(entity, 113, false) -- PCF_DisableShockingEvents
-    SetPedConfigFlag(entity, 301, false) -- PCF_DisableInteractionLockonOnTargetPed
-    SetPedConfigFlag(entity, 277, true)
-    SetPedConfigFlag(entity, 319, true) -- PCF_EnableAsVehicleTransitionDestination
-    SetPedConfigFlag(entity, 6, true) -- PCF_DontInfluenceWantedLevel
+    SetPedConfigFlag(MyHorse, 324, true)
+    SetPedConfigFlag(MyHorse, 211, true) -- PCF_GiveAmbientDefaultTaskIfMissionPed
+    SetPedConfigFlag(MyHorse, 208, true)
+    SetPedConfigFlag(MyHorse, 209, true)
+    SetPedConfigFlag(MyHorse, 400, true)
+    SetPedConfigFlag(MyHorse, 297, true) -- PCF_ForceInteractionLockonOnTargetPed
+    SetPedConfigFlag(MyHorse, 136, false) -- (for horse) disable mount
+    SetPedConfigFlag(MyHorse, 312, false) -- PCF_DisableHorseGunshotFleeResponse
+    SetPedConfigFlag(MyHorse, 113, false) -- PCF_DisableShockingEvents
+    SetPedConfigFlag(MyHorse, 301, false) -- PCF_DisableInteractionLockonOnTargetPed
+    SetPedConfigFlag(MyHorse, 277, true)
+    SetPedConfigFlag(MyHorse, 319, true) -- PCF_EnableAsVehicleTransitionDestination
+    SetPedConfigFlag(MyHorse, 6, true) -- PCF_DontInfluenceWantedLevel
 
-    SetAnimalTuningBoolParam(entity, 25, false)
-    SetAnimalTuningBoolParam(entity, 24, false)
+    SetAnimalTuningBoolParam(MyHorse, 25, false)
+    SetAnimalTuningBoolParam(MyHorse, 24, false)
 
-    TaskAnimalUnalerted(entity, -1, false, 0, 0)
-    Citizen.InvokeNative(0x283978A15512B2FE, entity, true) -- SetRandomOutfitVariation
+    TaskAnimalUnalerted(MyHorse, -1, false, 0, 0)
+    Citizen.InvokeNative(0x283978A15512B2FE, MyHorse, true) -- SetRandomOutfitVariation
 
-    SpawnplayerHorse = entity
-
-    SetPedPromptName(entity, HorseName)
+    SetPedPromptName(MyHorse, HorseName)
 
     if HorseComponents ~= nil and HorseComponents ~= "0" then
         for _, componentHash in pairs(json.decode(HorseComponents)) do
-            NativeSetPedComponentEnabled(entity, tonumber(componentHash))
+            NativeSetPedComponentEnabled(MyHorse, tonumber(componentHash))
         end
     end
 
-    TaskGoToEntity(entity, player, -1, 7.2, 2.0, 0, 0)
+    TaskGoToEntity(MyHorse, player, -1, 7.2, 2.0, 0, 0)
     Initializing = false
 end
 
 function fleeHorse(playerHorse)
     local player = PlayerPedId()
-    TaskAnimalFlee(SpawnplayerHorse, player, -1)
+    TaskAnimalFlee(MyHorse, player, -1)
     Wait(10000)
-    DeleteEntity(SpawnplayerHorse)
+    DeleteEntity(MyHorse)
     Wait(1000)
-    SpawnplayerHorse = 0
+    MyHorse = 0
 end
 
 RegisterNUICallback("Saddles", function(data)
@@ -794,12 +792,12 @@ RegisterNUICallback("sellHorse", function(data)
 end)
 
 function returnHorse(shopId)
-    if SpawnplayerHorse == 0 then
+    if MyHorse == 0 then
         VORPcore.NotifyRightTip(_U("noHorse"), 5000)
 
-    elseif SpawnplayerHorse ~=0 then
-        DeleteEntity(SpawnplayerHorse)
-        SpawnplayerHorse = 0
+    elseif MyHorse ~=0 then
+        DeleteEntity(MyHorse)
+        MyHorse = 0
         VORPcore.NotifyRightTip(_U("horseReturned"), 5000)
     end
 end
@@ -949,9 +947,9 @@ AddEventHandler('onResourceStop', function(resourceName)
         PromptDelete(CloseShops)
         PromptDelete(OpenReturn)
 
-    if SpawnplayerHorse then
-        DeleteEntity(SpawnplayerHorse)
-        SpawnplayerHorse = 0
+    if MyHorse then
+        DeleteEntity(MyHorse)
+        MyHorse = 0
     end
 
     for _, shopConfig in pairs(Config.stables) do
