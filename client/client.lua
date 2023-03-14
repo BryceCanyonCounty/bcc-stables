@@ -286,7 +286,6 @@ end)
 
 RegisterNUICallback("loadHorse", function(data)
     local horseModel = data.horseModel
-
     if ShowroomHorse_model == horseModel then
         return
     end
@@ -296,8 +295,12 @@ RegisterNUICallback("loadHorse", function(data)
         MyHorse_entity = nil
     end
 
-    local modelHash = GetHashKey(horseModel)
+    if ShowroomHorse_entity ~= nil then
+        DeleteEntity(ShowroomHorse_entity)
+        ShowroomHorse_entity = nil
+    end
 
+    local modelHash = GetHashKey(horseModel)
     if IsModelValid(modelHash) then
         if not HasModelLoaded(modelHash) then
             RequestModel(modelHash)
@@ -307,26 +310,19 @@ RegisterNUICallback("loadHorse", function(data)
         end
     end
 
-    if ShowroomHorse_entity ~= nil then
-        DeleteEntity(ShowroomHorse_entity)
-        ShowroomHorse_entity = nil
-    end
-
     ShowroomHorse_model = horseModel
     ShowroomHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
     Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShowroomHorse_entity, true) -- FreezeEntityPosition
     SetPedConfigFlag(ShowroomHorse_entity, 113, true) -- PCF_DisableShockingEvents
+    Wait(300)
+    Citizen.InvokeNative(0x6585D955A68452A5, ShowroomHorse_entity) -- ClearPedEnvDirt
     --NetworkSetEntityInvisibleToNetwork(ShowroomHorse_entity, true)
 
     SendNUIMessage({
         customize = false
     })
-
-    Wait(300)
-    Citizen.InvokeNative(0x6585D955A68452A5, ShowroomHorse_entity) -- ClearPedEnvDirt
-    Citizen.InvokeNative(0xB5485E4907B53019, ShowroomHorse_entity) -- SetPedWetnessEnabledThisFrame
 end)
 
 RegisterNUICallback("rotate", function(data)
@@ -362,9 +358,9 @@ function SetHorseName(data)
     SendNUIMessage({
         action = "hide"
     })
+
     Wait(200)
     local horseName = ""
-
 	Citizen.CreateThread(function()
 		AddTextEntry('FMMC_MPM_NA', "Name your horse:")
 		DisplayOnscreenKeyboard(1, "FMMC_MPM_NA", "", "", "", "", "", 30)
@@ -418,15 +414,13 @@ RegisterNUICallback("loadMyHorse", function(data)
     Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyHorse_entity, true) -- FreezeEntityPosition
     SetPedConfigFlag(MyHorse_entity, 113, true) -- PCF_DisableShockingEvents
+    Wait(300)
+    Citizen.InvokeNative(0x6585D955A68452A5, MyHorse_entity) -- ClearPedEnvDirt
     --NetworkSetEntityInvisibleToNetwork(MyHorse_entity, true)
 
     SendNUIMessage({
         customize = true
     })
-
-    Wait(300)
-    Citizen.InvokeNative(0x6585D955A68452A5, MyHorse_entity) -- ClearPedEnvDirt
-    Citizen.InvokeNative(0xB5485E4907B53019, MyHorse_entity) -- SetPedWetnessEnabledThisFrame
 
     local componentsHorse = json.decode(data.HorseComp)
     if componentsHorse ~= '[]' then
@@ -458,8 +452,8 @@ RegisterNUICallback("CloseStable", function(data)
         action = "hide",
         customize = false
     })
-    SetEntityVisible(player, true)
 
+    SetEntityVisible(player, true)
     ShowroomHorse_model = nil
 
     if ShowroomHorse_entity ~= nil then
@@ -495,7 +489,6 @@ function StableClose()
         AcsLuggageUsing
     }
     local compDataEncoded = json.encode(compData)
-
     if compDataEncoded ~= "[]" then
         TriggerServerEvent('oss_stables:UpdateComponents', compData, IdMyHorse, MyHorse_entity)
     end
@@ -517,7 +510,7 @@ Citizen.CreateThread(function()
         Citizen.Wait(1)
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- Control =  H / IsDisabledControlJustPressed
 			WhistleHorse()
-			Citizen.Wait(10000) --Flood Protection? i think yes zoot
+			Citizen.Wait(10000)
         end
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x4216AF06) then -- Control = Horse Flee / IsDisabledControlJustPressed
 			if MyHorse ~= 0 then
@@ -547,6 +540,15 @@ function WhistleHorse()
         Wait(100)
         InitiateHorse()
     end
+end
+
+function fleeHorse(playerHorse)
+    local player = PlayerPedId()
+    TaskAnimalFlee(MyHorse, player, -1)
+    Wait(10000)
+    DeleteEntity(MyHorse)
+    Wait(1000)
+    MyHorse = 0
 end
 
 function InitiateHorse(atCoords)
@@ -606,7 +608,7 @@ function InitiateHorse(atCoords)
     Citizen.InvokeNative(0xFD6943B6DF77E449, MyHorse, false) -- SetPedCanBeLassoed
     Citizen.InvokeNative(0xC80A74AC829DDD92, MyHorse, GetPedRelationshipGroupHash(MyHorse)) -- SetPedRelationshipGroupHash
     Citizen.InvokeNative(0xBF25EB89375A37AD, 1, GetPedRelationshipGroupHash(MyHorse), "PLAYER") -- SetRelationshipBetweenGroups
-
+    --Citizen.InvokeNative(0x931B241409216C1F, player, MyHorse, 1)
     SetVehicleHasBeenOwnedByPlayer(MyHorse, true)
 
     SetPedConfigFlag(MyHorse, 324, true)
@@ -639,15 +641,6 @@ function InitiateHorse(atCoords)
 
     TaskGoToEntity(MyHorse, player, -1, 7.2, 2.0, 0, 0)
     Initializing = false
-end
-
-function fleeHorse(playerHorse)
-    local player = PlayerPedId()
-    TaskAnimalFlee(MyHorse, player, -1)
-    Wait(10000)
-    DeleteEntity(MyHorse)
-    Wait(1000)
-    MyHorse = 0
 end
 
 RegisterNUICallback("Saddles", function(data)
