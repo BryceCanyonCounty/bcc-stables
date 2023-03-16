@@ -15,6 +15,9 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Stable access can be limited by job and jobgrade
 - Max player horses is set in the config (default: 5)
 - Return horse at stable (when open) or using the flee button in the horse menu
+- Feed your horse (haycubes), using the horse menu, to increase horse's health and stamina
+- Brushing your horse, using the horse menu, will clean him and give a slight increase in health
+- Configurable cooldown time for feeding and brushing
 
 #### Dependencies
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
