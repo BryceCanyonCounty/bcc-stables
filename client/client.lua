@@ -8,6 +8,8 @@ local PlayerJob
 local JobName
 local JobGrade
 local InMenu = false
+local BrushCooldown = false
+local FeedCooldown = false
 local Adding = true
 local ShowroomHorse_entity
 local ShowroomHorse_model
@@ -315,10 +317,9 @@ RegisterNUICallback("loadHorse", function(data)
     Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShowroomHorse_entity, true) -- FreezeEntityPosition
-    SetPedConfigFlag(ShowroomHorse_entity, 113, true) -- PCF_DisableShockingEvents
+    SetPedConfigFlag(ShowroomHorse_entity, 113, true) -- DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, ShowroomHorse_entity) -- ClearPedEnvDirt
-    --NetworkSetEntityInvisibleToNetwork(ShowroomHorse_entity, true)
 
     SendNUIMessage({
         customize = false
@@ -505,52 +506,6 @@ function NativeSetPedComponentEnabled(ped, component)
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, component, true, true, true) -- ApplyShopItemToPed
 end
 
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(1)
-        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- Control =  H / IsDisabledControlJustPressed
-			WhistleHorse()
-			Citizen.Wait(10000)
-        end
-        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x4216AF06) then -- Control = Horse Flee / IsDisabledControlJustPressed
-			if MyHorse ~= 0 then
-				fleeHorse(MyHorse)
-			end
-		end
-    end
-end)
-
-function WhistleHorse()
-    local player = PlayerPedId()
-    if MyHorse ~= 0 then
-        if GetScriptTaskStatus(MyHorse, 0x4924437D, 0) ~= 0 then
-            local pcoords = GetEntityCoords(player)
-            local hcoords = GetEntityCoords(MyHorse)
-            local caldist = #(pcoords - hcoords)
-            if caldist >= 100 then
-                DeleteEntity(MyHorse)
-                Wait(1000)
-                MyHorse = 0
-            else
-                TaskGoToEntity(MyHorse, player, -1, 4, 2.0, 0, 0)
-            end
-        end
-    else
-        TriggerServerEvent('oss_stables:GetSelectedHorse')
-        Wait(100)
-        InitiateHorse()
-    end
-end
-
-function fleeHorse(playerHorse)
-    local player = PlayerPedId()
-    TaskAnimalFlee(MyHorse, player, -1)
-    Wait(10000)
-    DeleteEntity(MyHorse)
-    Wait(1000)
-    MyHorse = 0
-end
-
 function InitiateHorse(atCoords)
     if Initializing then
         return
@@ -603,27 +558,29 @@ function InitiateHorse(atCoords)
     Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0) -- PlaceEntityOnGroundProperly
     Citizen.InvokeNative(0x4DB9D03AC4E1FA84, MyHorse, -1, -1, 0) -- SetPedWrithingDuration
     Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
-    Citizen.InvokeNative(0xBCC76708E5677E1D, MyHorse, 0) -- SetHorseTamingState?
     Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, GetHashKey("PLAYER_HORSE"))
     Citizen.InvokeNative(0xFD6943B6DF77E449, MyHorse, false) -- SetPedCanBeLassoed
     Citizen.InvokeNative(0xC80A74AC829DDD92, MyHorse, GetPedRelationshipGroupHash(MyHorse)) -- SetPedRelationshipGroupHash
     Citizen.InvokeNative(0xBF25EB89375A37AD, 1, GetPedRelationshipGroupHash(MyHorse), "PLAYER") -- SetRelationshipBetweenGroups
-    --Citizen.InvokeNative(0x931B241409216C1F, player, MyHorse, 1)
-    SetVehicleHasBeenOwnedByPlayer(MyHorse, true)
+    Citizen.InvokeNative(0x931B241409216C1F, player, MyHorse, 1) -- SetPedOwnsAnimal
+    Citizen.InvokeNative(0xD2CB0FB0FDCB473D, player, MyHorse) -- SetPedAsSaddleHorseForPlayer
+
+    local greyButton = Citizen.InvokeNative(0x51BEA356B1C60225, player, 49) -- GetIsPlayerUiPromptActive
+    print(greyButton)
 
     SetPedConfigFlag(MyHorse, 324, true)
-    SetPedConfigFlag(MyHorse, 211, true) -- PCF_GiveAmbientDefaultTaskIfMissionPed
+    SetPedConfigFlag(MyHorse, 211, true) -- GiveAmbientDefaultTaskIfMissionPed
     SetPedConfigFlag(MyHorse, 208, true)
     SetPedConfigFlag(MyHorse, 209, true)
     SetPedConfigFlag(MyHorse, 400, true)
-    SetPedConfigFlag(MyHorse, 297, true) -- PCF_ForceInteractionLockonOnTargetPed
-    SetPedConfigFlag(MyHorse, 136, false) -- (for horse) disable mount
-    SetPedConfigFlag(MyHorse, 312, false) -- PCF_DisableHorseGunshotFleeResponse
-    SetPedConfigFlag(MyHorse, 113, false) -- PCF_DisableShockingEvents
-    SetPedConfigFlag(MyHorse, 301, false) -- PCF_DisableInteractionLockonOnTargetPed
+    SetPedConfigFlag(MyHorse, 297, true) -- EnableHorseLeading
+    SetPedConfigFlag(MyHorse, 136, false) -- DisableHorseMount
+    SetPedConfigFlag(MyHorse, 312, false) -- DisableHorseGunshotFleeResponse
+    SetPedConfigFlag(MyHorse, 113, false) -- DisableShockingEvents
+    SetPedConfigFlag(MyHorse, 301, false) -- DisablePedCanBeTargeted
     SetPedConfigFlag(MyHorse, 277, true)
-    SetPedConfigFlag(MyHorse, 319, true) -- PCF_EnableAsVehicleTransitionDestination
-    SetPedConfigFlag(MyHorse, 6, true) -- PCF_DontInfluenceWantedLevel
+    SetPedConfigFlag(MyHorse, 319, true) -- EnableAsVehicleTransitionDestination
+    SetPedConfigFlag(MyHorse, 6, true) -- DontInfluenceWantedLevel
 
     SetAnimalTuningBoolParam(MyHorse, 25, false)
     SetAnimalTuningBoolParam(MyHorse, 24, false)
@@ -642,6 +599,97 @@ function InitiateHorse(atCoords)
     TaskGoToEntity(MyHorse, player, -1, 7.2, 2.0, 0, 0)
     Initializing = false
 end
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(1)
+        -- Whistle for Horse (key: H)
+        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- IsDisabledControlJustPressed
+			local player = PlayerPedId()
+            if MyHorse ~= 0 then
+                if GetScriptTaskStatus(MyHorse, 0x4924437D, 0) ~= 0 then
+                    local pcoords = GetEntityCoords(player)
+                    local hcoords = GetEntityCoords(MyHorse)
+                    local caldist = #(pcoords - hcoords)
+                    if caldist >= 100 then
+                        DeleteEntity(MyHorse)
+                        Wait(1000)
+                        MyHorse = 0
+                    else
+                        TaskGoToEntity(MyHorse, player, -1, 4, 2.0, 0, 0)
+                    end
+                end
+            else
+                TriggerServerEvent('oss_stables:GetSelectedHorse')
+                Wait(100)
+                InitiateHorse()
+            end
+        end
+        -- Horse Flee (key: F in Horse Menu)
+        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x4216AF06) then -- IsDisabledControlJustPressed
+			if MyHorse ~= 0 then
+                local player = PlayerPedId()
+                TaskAnimalFlee(MyHorse, player, -1)
+                Wait(10000)
+                DeleteEntity(MyHorse)
+                Wait(1000)
+                MyHorse = 0
+			end
+		end
+    end
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(1)
+        if BrushCooldown then
+            Wait(Config.brushCooldown)
+            BrushCooldown = false
+        end
+        -- Brush Horse (Key: B in Horse Menu)
+        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x63A38F2C) then -- IsDisabledControlJustPressed
+            if MyHorse ~= 0 then
+                local player = PlayerPedId()
+				Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, GetHashKey("Interaction_Brush"), GetHashKey("p_brushHorse02x"), 1) -- TaskAnimalInteraction
+                local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
+                Wait(3000)
+                Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + 5) -- SetAttributeCoreValue
+                Citizen.InvokeNative(0x6585D955A68452A5, MyHorse) -- ClearPedEnvDirt
+                Citizen.InvokeNative(0xB5485E4907B53019, MyHorse) -- SetPedWetnessEnabledThisFrame
+                VORPcore.NotifyRightTip(_U("brushCooldown"), 5000)
+			end
+            if not BrushCooldown then
+                BrushCooldown = true
+            end
+        end
+    end
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(1)
+        if FeedCooldown then
+            Wait(Config.feedCooldown)
+            FeedCooldown = false
+        end
+        -- Feed Horse (Key: R in Horse Menu)
+        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x0D55A0F0) then -- IsDisabledControlJustPressed
+            if MyHorse ~= 0 then
+                local player = PlayerPedId()
+				Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, GetHashKey("Interaction_Food"), GetHashKey("s_horsnack_haycube01x"), 1) -- TaskAnimalInteraction
+                local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
+                local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1) -- GetAttributeCoreValue
+                Wait(3000)
+                Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, stamina + 15) -- SetAttributeCoreValue
+                Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, stamina + 15) -- SetAttributeCoreValue
+                VORPcore.NotifyRightTip(_U("feedCooldown"), 5000)
+			end
+            if not FeedCooldown then
+                FeedCooldown = true
+            end
+        end
+    end
+end)
 
 RegisterNUICallback("Saddles", function(data)
     if tonumber(data.id) == 0 then
