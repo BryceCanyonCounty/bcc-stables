@@ -7,7 +7,17 @@ Config.shopKey = 0x760A9C6F --[G]
 Config.returnKey = 0xD9D0E1C0 --[spacebar]
 -- Max Number of Horses per Player
 Config.maxHorses = 5 -- Default: 5
--- Stables
+-- Cooldown for Brushing Horse
+Config.brushCooldown = 300000 -- Default: 300000 = 5 Minutes
+-- Cooldown for Feeding Horse
+Config.feedCooldown = 300000 -- Default: 300000 = 5 Minutes
+-- Health Increase for Brushing Horse
+Config.brushHealthBoost = 5 -- Default: 5
+-- Health Increase for Feeding Horse
+Config.feedHealthBoost = 15 -- Default: 15
+-- Stamina Increase for Feeding Horse
+Config.feedStaminaBoost = 15 -- Default: 15
+-- Stable Locations and Options
 Config.stables = { -- Original 7 Stable Locations
     valentine = {
 		shopName = "Valentine Stable", -- Name Shown on the Stable Menu

@@ -1,7 +1,10 @@
 local VORPcore = {}
+local VORPInv = {}
 TriggerEvent("getCore", function(core)
     VORPcore = core
 end)
+
+VORPInv = exports.vorp_inventory:vorp_inventoryApi()
 
 RegisterNetEvent('oss_stables:GetMyHorses')
 AddEventHandler('oss_stables:GetMyHorses', function()
@@ -153,14 +156,33 @@ AddEventHandler('oss_stables:SellHorse', function(id)
     end)
 end)
 
+RegisterServerEvent('oss_stables:GetPlayerItem')
+AddEventHandler('oss_stables:GetPlayerItem', function(item)
+    local _source = source
+    if item == "brush" then
+        local brush = VORPInv.getItem(_source, "horsebrush")
+        if brush then
+            TriggerClientEvent('oss_stables:BrushHorse', _source, brush)
+        else
+            VORPcore.NotifyRightTip(_source, _U("noBrush"), 5000)
+        end
+    elseif item == "haycube" then
+        local haycube = VORPInv.getItem(_source, "consumable_haycube")
+        if haycube then
+            TriggerClientEvent('oss_stables:FeedHorse',_source, haycube)
+            VORPInv.subItem(_source, "consumable_haycube", 1)
+        else
+            VORPcore.NotifyRightTip(_source, _U("noHaycube"), 5000)
+        end
+    end
+end)
+
 RegisterServerEvent('oss_stables:GetPlayerJob')
 AddEventHandler('oss_stables:GetPlayerJob', function()
     local _source = source
-    if _source then
-        local Character = VORPcore.getUser(_source).getUsedCharacter
-        local CharacterJob = Character.job
-        local CharacterGrade = Character.jobGrade
+    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local CharacterJob = Character.job
+    local CharacterGrade = Character.jobGrade
 
-        TriggerClientEvent('oss_stables:SendPlayerJob', _source, CharacterJob, CharacterGrade)
-    end
+    TriggerClientEvent('oss_stables:SendPlayerJob', _source, CharacterJob, CharacterGrade)
 end)
