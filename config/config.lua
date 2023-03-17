@@ -17,12 +17,14 @@ Config.brushHealthBoost = 5 -- Default: 5
 Config.feedHealthBoost = 15 -- Default: 15
 -- Stamina Increase for Feeding Horse
 Config.feedStaminaBoost = 15 -- Default: 15
+-- Allow Blips on Map when Stable is Closed
+Config.blipAllowedClosed = true -- true = Show Blips / false = Remove Blips
 -- Stable Locations and Options
 Config.stables = { -- Original 7 Stable Locations
     valentine = {
 		shopName = "Valentine Stable", -- Name Shown on the Stable Menu
         promptName = "Valentine Stable", -- Text Below the Prompt Button
-        blipAllowed = true, -- Turns Blips On / Off
+        blipAllowed = true, -- Turns Blip On / Off
         blipName = "Valentine Stable", -- Name of the Blip on the Map
         blipSprite = 1938782895, -- blip_shop_horse
         blipColorOpen = "BLIP_MODIFIER_MP_COLOR_32", -- Stable Open - Default: White - Blip Colors Shown Below
