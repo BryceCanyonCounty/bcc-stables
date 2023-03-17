@@ -60,8 +60,15 @@ Citizen.CreateThread(function()
             for shopId, shopConfig in pairs(Config.stables) do
                 if shopConfig.shopHours then
                     if hour >= shopConfig.shopClose or hour < shopConfig.shopOpen then
-                        if not Config.stables[shopId].BlipHandle and shopConfig.blipAllowed then
-                            AddBlip(shopId)
+                        if Config.blipAllowedClosed then
+                            if not Config.stables[shopId].BlipHandle and shopConfig.blipAllowed then
+                                AddBlip(shopId)
+                            end
+                        else
+                            if Config.stables[shopId].BlipHandle then
+                                RemoveBlip(Config.stables[shopId].BlipHandle)
+                                Config.stables[shopId].BlipHandle = nil
+                            end
                         end
                         if Config.stables[shopId].BlipHandle then
                             Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorClosed)) -- BlipAddModifier
