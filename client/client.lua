@@ -639,15 +639,21 @@ end)
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
-        if BrushCooldown then
-            Wait(Config.brushCooldown)
-            BrushCooldown = false
-        end
         -- Brush Horse (Key: B in Horse Menu)
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x63A38F2C) then -- IsDisabledControlJustPressed
-            if MyHorse ~= 0 then
+            if not BrushCooldown then
                 TriggerServerEvent('oss_stables:GetPlayerItem', 'brush')
+            else
+                VORPcore.NotifyRightTip(_U("notDirty"), 5000)
 			end
+        end
+        -- Feed Horse (Key: R in Horse Menu)
+        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x0D55A0F0) then -- IsDisabledControlJustPressed
+            if not FeedCooldown then
+                TriggerServerEvent('oss_stables:GetPlayerItem', 'haycube')
+            else
+                VORPcore.NotifyRightTip(_U("notHungry"), 5000)
+            end
         end
     end
 end)
@@ -662,27 +668,11 @@ AddEventHandler('oss_stables:BrushHorse', function(data)
         Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.brushHealthBoost) -- SetAttributeCoreValue
         Citizen.InvokeNative(0x6585D955A68452A5, MyHorse) -- ClearPedEnvDirt
         Citizen.InvokeNative(0xB5485E4907B53019, MyHorse) -- SetPedWetnessEnabledThisFrame
-        local brushCooldown = math.ceil(Config.brushCooldown / 60000)
-        VORPcore.NotifyRightTip(_U("brushCooldown") .. brushCooldown .. _U("minutes"), 5000)
-        if not BrushCooldown then
-            BrushCooldown = true
-        end
-    end
-end)
-
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(1)
-        if FeedCooldown then
-            Wait(Config.feedCooldown)
-            FeedCooldown = false
-        end
-        -- Feed Horse (Key: R in Horse Menu)
-        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x0D55A0F0) then -- IsDisabledControlJustPressed
-            if MyHorse ~= 0 then
-                TriggerServerEvent('oss_stables:GetPlayerItem', 'haycube')
-			end
-        end
+        local bCooldown = math.ceil(Config.brushCooldown / 60000)
+        VORPcore.NotifyRightTip(_U("brushCooldown") .. bCooldown .. _U("minutes"), 5000)
+        BrushCooldown = true
+        Wait(Config.brushCooldown)
+        BrushCooldown = false
     end
 end)
 
@@ -696,11 +686,11 @@ AddEventHandler('oss_stables:FeedHorse', function(data)
         Wait(3000)
         Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.feedHealthBoost) -- SetAttributeCoreValue
         Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, stamina + Config.feedStaminaBoost) -- SetAttributeCoreValue
-        local feedCooldown = math.ceil(Config.feedCooldown / 60000)
-        VORPcore.NotifyRightTip(_U("feedCooldown") .. feedCooldown .. _U("minutes"), 5000)
-        if not FeedCooldown then
-            FeedCooldown = true
-        end
+        local fCooldown = math.ceil(Config.feedCooldown / 60000)
+        VORPcore.NotifyRightTip(_U("feedCooldown") .. fCooldown .. _U("minutes"), 5000)
+        FeedCooldown = true
+        Wait(Config.feedCooldown)
+        FeedCooldown = false
     end
 end)
 
