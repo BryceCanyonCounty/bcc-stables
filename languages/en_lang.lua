@@ -13,11 +13,13 @@ Locales["en_lang"] = {
     horseLimit = "You can have a maximum of ~o~",
     horses = "~q~ horses!",
     soldHorse = "You sold a horse for: $~t6~",
-    horseReturned = "Your horse has been returned",
+    horseReturned = "Your horse has been ~o~returned",
     noHorse = "You don't have a horse to return",
-    brushCooldown = "Horse can be ~o~brushed~q~ again in ~o~",
-    feedCooldown = "Horse can be ~o~fed~q~ again in ~o~",
+    brushCooldown = "Your horse can be ~o~brushed~q~ again in ~o~",
+    feedCooldown = "Your horse can be ~o~fed~q~ again in ~o~",
     minutes = "~q~ minutes",
     noBrush = "You don't have a ~o~horsebrush",
-    noHaycube = "You need ~o~haycubes~q~ to feed your horse",
+    noHaycube = "You need some ~o~haycubes~q~ to feed your horse",
+    notDirty = "Your horse is not ready to be brushed yet",
+    notHungry = "Your horse is not hungry right now"
 }
