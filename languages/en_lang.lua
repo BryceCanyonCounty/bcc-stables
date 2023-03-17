@@ -15,6 +15,9 @@ Locales["en_lang"] = {
     soldHorse = "You sold a horse for: $~t6~",
     horseReturned = "Your horse has been returned",
     noHorse = "You don't have a horse to return",
-    brushCooldown = "Horse can be ~o~brushed~q~ again in ~o~5~q~ minutes",
-    feedCooldown = "Horse can be ~o~fed~q~ again in ~o~5~q~ minutes",
+    brushCooldown = "Horse can be ~o~brushed~q~ again in ~o~",
+    feedCooldown = "Horse can be ~o~fed~q~ again in ~o~",
+    minutes = "~q~ minutes",
+    noBrush = "You don't have a ~o~horsebrush",
+    noHaycube = "You need ~o~haycubes~q~ to feed your horse",
 }
