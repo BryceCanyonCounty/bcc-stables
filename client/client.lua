@@ -8,11 +8,11 @@ local PlayerJob
 local JobName
 local JobGrade
 local InMenu = false
+local StableName
 local BrushCooldown = false
 local FeedCooldown = false
 local Adding = true
 local ShowroomHorse_entity
-local ShowroomHorse_model
 local SpawnPoint = {}
 local MyHorse_entity
 local IdMyHorse
@@ -266,7 +266,7 @@ function OpenStable(shopId)
     InMenu = true
 
     local shopConfig = Config.stables[shopId]
-    local stableName = shopConfig.shopName
+    StableName = shopConfig.shopName
     SpawnPoint = {x = shopConfig.spawnPointx, y = shopConfig.spawnPointy, z = shopConfig.spawnPointz, h = shopConfig.spawnPointh}
 
     createCamera(shopId)
@@ -276,7 +276,7 @@ function OpenStable(shopId)
         action = "show",
         shopData = getShopData(),
         customize = false,
-        location = stableName
+        location = StableName
     })
     TriggerServerEvent('oss_stables:GetMyHorses')
 end
@@ -295,9 +295,6 @@ end)
 
 RegisterNUICallback("loadHorse", function(data)
     local horseModel = data.horseModel
-    if ShowroomHorse_model == horseModel then
-        return
-    end
 
     if MyHorse_entity ~= nil then
         DeleteEntity(MyHorse_entity)
@@ -319,7 +316,6 @@ RegisterNUICallback("loadHorse", function(data)
         ShowroomHorse_entity = nil
     end
 
-    ShowroomHorse_model = horseModel
     ShowroomHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
     Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
@@ -358,10 +354,11 @@ function Rotation(dir)
 end
 
 RegisterNUICallback("BuyHorse", function(data)
-    SetHorseName(data)
+    TriggerServerEvent('oss_stables:BuyHorse', data)
 end)
 
-function SetHorseName(data)
+RegisterNetEvent('oss_stables:SetHorseName')
+AddEventHandler('oss_stables:SetHorseName', function(data)
     SetNuiFocus(false, false)
     SendNUIMessage({
         action = "hide"
@@ -378,27 +375,40 @@ function SetHorseName(data)
 		end
 		if (GetOnscreenKeyboardResult()) then
             horseName = GetOnscreenKeyboardResult()
-            TriggerServerEvent('oss_stables:BuyHorse', data, horseName)
+            TriggerServerEvent('oss_stables:SaveNewHorse', data, horseName)
 
             SetNuiFocus(true, true)
             SendNUIMessage({
                 action = "show",
-                shopData = getShopData()
+                shopData = getShopData(),
+                location = StableName
             })
 
         Wait(1000)
         TriggerServerEvent('oss_stables:GetMyHorses')
 		end
     end)
-end
+end)
+
+RegisterNetEvent('oss_stables:StableMenu')
+AddEventHandler('oss_stables:StableMenu', function()
+    if ShowroomHorse_entity ~= nil then
+        DeleteEntity(ShowroomHorse_entity)
+        ShowroomHorse_entity = nil
+    end
+
+    SendNUIMessage({
+        action = "show",
+        shopData = getShopData(),
+        location = StableName
+    })
+
+    TriggerServerEvent('oss_stables:GetMyHorses')
+end)
 
 RegisterNUICallback("loadMyHorse", function(data)
     local horseModel = data.HorseModel
     IdMyHorse = data.IdHorse
-
-    if ShowroomHorse_model == horseModel then
-        return
-    end
 
     if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
@@ -410,9 +420,7 @@ RegisterNUICallback("loadMyHorse", function(data)
         MyHorse_entity = nil
     end
 
-    ShowroomHorse_model = horseModel
-
-    local modelHash = GetHashKey(ShowroomHorse_model)
+    local modelHash = GetHashKey(horseModel)
 
     if not HasModelLoaded(modelHash) then
         RequestModel(modelHash)
@@ -466,7 +474,6 @@ RegisterNUICallback("CloseStable", function(data)
     })
 
     SetEntityVisible(player, true)
-    ShowroomHorse_model = nil
 
     if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
@@ -834,14 +841,15 @@ function setcloth(hash)
 end
 
 RegisterNUICallback("sellHorse", function(data)
-    DeleteEntity(ShowroomHorse_entity)
+    DeleteEntity(MyHorse_entity)
     TriggerServerEvent('oss_stables:SellHorse', tonumber(data.horseID))
     TriggerServerEvent('oss_stables:GetMyHorses')
     Wait(300)
 
     SendNUIMessage({
         action = "show",
-        shopData = getShopData()
+        shopData = getShopData(),
+        location = StableName
     })
     TriggerServerEvent('oss_stables:GetMyHorses')
 end)
