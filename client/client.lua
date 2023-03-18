@@ -12,7 +12,6 @@ local BrushCooldown = false
 local FeedCooldown = false
 local Adding = true
 local ShowroomHorse_entity
-local ShowroomHorse_model
 local SpawnPoint = {}
 local MyHorse_entity
 local IdMyHorse
@@ -295,9 +294,6 @@ end)
 
 RegisterNUICallback("loadHorse", function(data)
     local horseModel = data.horseModel
-    if ShowroomHorse_model == horseModel then
-        return
-    end
 
     if MyHorse_entity ~= nil then
         DeleteEntity(MyHorse_entity)
@@ -319,7 +315,6 @@ RegisterNUICallback("loadHorse", function(data)
         ShowroomHorse_entity = nil
     end
 
-    ShowroomHorse_model = horseModel
     ShowroomHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
     Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
@@ -412,10 +407,6 @@ RegisterNUICallback("loadMyHorse", function(data)
     local horseModel = data.HorseModel
     IdMyHorse = data.IdHorse
 
-    if ShowroomHorse_model == horseModel then
-        return
-    end
-
     if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
         ShowroomHorse_entity = nil
@@ -426,9 +417,7 @@ RegisterNUICallback("loadMyHorse", function(data)
         MyHorse_entity = nil
     end
 
-    ShowroomHorse_model = horseModel
-
-    local modelHash = GetHashKey(ShowroomHorse_model)
+    local modelHash = GetHashKey(horseModel)
 
     if not HasModelLoaded(modelHash) then
         RequestModel(modelHash)
@@ -482,7 +471,6 @@ RegisterNUICallback("CloseStable", function(data)
     })
 
     SetEntityVisible(player, true)
-    ShowroomHorse_model = nil
 
     if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
