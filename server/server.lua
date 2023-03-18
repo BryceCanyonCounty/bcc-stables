@@ -20,7 +20,7 @@ AddEventHandler('oss_stables:GetMyHorses', function()
 end)
 
 RegisterNetEvent('oss_stables:BuyHorse')
-AddEventHandler('oss_stables:BuyHorse', function(data, name)
+AddEventHandler('oss_stables:BuyHorse', function(data)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -31,6 +31,7 @@ AddEventHandler('oss_stables:BuyHorse', function(data, name)
     function(horses)
         if #horses >= maxHorses then
             VORPcore.NotifyRightTip(_source, _U("horseLimit") .. maxHorses .. _U("horses"), 5000)
+            TriggerClientEvent('oss_stables:StableMenu', _source)
             return
         end
         Wait(200)
@@ -42,6 +43,7 @@ AddEventHandler('oss_stables:BuyHorse', function(data, name)
                 Character.removeCurrency(0, cashPrice)
             else
                 VORPcore.NotifyRightTip(_source, _U("shortCash"), 5000)
+                TriggerClientEvent('oss_stables:StableMenu', _source)
                 return
             end
         else
@@ -52,13 +54,24 @@ AddEventHandler('oss_stables:BuyHorse', function(data, name)
                 Character.removeCurrency(1, goldPrice)
             else
                 VORPcore.NotifyRightTip(_source, _U("shortGold"), 5000)
+                TriggerClientEvent('oss_stables:StableMenu', _source)
                 return
             end
         end
 
-        MySQL.Async.execute('INSERT INTO player_horses (identifier, charid, name, model) VALUES (?, ?, ?, ?)', {identifier, charid, tostring(name), data.ModelH},
+        TriggerClientEvent('oss_stables:SetHorseName', _source, data)
+    end)
+end)
+
+RegisterNetEvent('oss_stables:SaveNewHorse')
+AddEventHandler('oss_stables:SaveNewHorse', function(data, name)
+    local _source = source
+    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local identifier = Character.identifier
+    local charid = Character.charIdentifier
+
+    MySQL.Async.execute('INSERT INTO player_horses (identifier, charid, name, model) VALUES (?, ?, ?, ?)', {identifier, charid, tostring(name), data.ModelH},
         function(done)
-        end)
     end)
 end)
 

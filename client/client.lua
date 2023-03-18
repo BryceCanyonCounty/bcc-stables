@@ -358,10 +358,11 @@ function Rotation(dir)
 end
 
 RegisterNUICallback("BuyHorse", function(data)
-    SetHorseName(data)
+    TriggerServerEvent('oss_stables:BuyHorse', data)
 end)
 
-function SetHorseName(data)
+RegisterNetEvent('oss_stables:SetHorseName')
+AddEventHandler('oss_stables:SetHorseName', function(data)
     SetNuiFocus(false, false)
     SendNUIMessage({
         action = "hide"
@@ -378,7 +379,7 @@ function SetHorseName(data)
 		end
 		if (GetOnscreenKeyboardResult()) then
             horseName = GetOnscreenKeyboardResult()
-            TriggerServerEvent('oss_stables:BuyHorse', data, horseName)
+            TriggerServerEvent('oss_stables:SaveNewHorse', data, horseName)
 
             SetNuiFocus(true, true)
             SendNUIMessage({
@@ -390,7 +391,22 @@ function SetHorseName(data)
         TriggerServerEvent('oss_stables:GetMyHorses')
 		end
     end)
-end
+end)
+
+RegisterNetEvent('oss_stables:StableMenu')
+AddEventHandler('oss_stables:StableMenu', function()
+    if ShowroomHorse_entity ~= nil then
+        DeleteEntity(ShowroomHorse_entity)
+        ShowroomHorse_entity = nil
+    end
+
+    SendNUIMessage({
+        action = "show",
+        shopData = getShopData()
+    })
+
+    TriggerServerEvent('oss_stables:GetMyHorses')
+end)
 
 RegisterNUICallback("loadMyHorse", function(data)
     local horseModel = data.HorseModel
