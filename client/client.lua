@@ -304,11 +304,6 @@ RegisterNUICallback("loadHorse", function(data)
         MyHorse_entity = nil
     end
 
-    if ShowroomHorse_entity ~= nil then
-        DeleteEntity(ShowroomHorse_entity)
-        ShowroomHorse_entity = nil
-    end
-
     local modelHash = GetHashKey(horseModel)
     if IsModelValid(modelHash) then
         if not HasModelLoaded(modelHash) then
@@ -317,6 +312,11 @@ RegisterNUICallback("loadHorse", function(data)
                 Citizen.Wait(10)
             end
         end
+    end
+
+    if ShowroomHorse_entity ~= nil then
+        DeleteEntity(ShowroomHorse_entity)
+        ShowroomHorse_entity = nil
     end
 
     ShowroomHorse_model = horseModel
@@ -395,6 +395,10 @@ end
 RegisterNUICallback("loadMyHorse", function(data)
     local horseModel = data.HorseModel
     IdMyHorse = data.IdHorse
+
+    if ShowroomHorse_model == horseModel then
+        return
+    end
 
     if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
