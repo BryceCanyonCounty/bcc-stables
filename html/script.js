@@ -6,8 +6,8 @@ window.addEventListener('message', function(event) {
     const shopData  = event.data.shopData;
     const horseData = event.data.myHorsesData;
 
-    if (action === "hide") {$("#creatormenu").fadeOut(500);};
-    if (action === "show") {$("#creatormenu").fadeIn(500);};
+    if (action === "hide") {$("#creatormenu").fadeOut(1000);};
+    if (action === "show") {$("#creatormenu").fadeIn(1000);};
     if (custom === true)   {$('#button-customization').removeClass("disabled");};
     if (custom === false)  {$('#button-customization').addClass("disabled");};
 
@@ -102,7 +102,7 @@ function menuAction(action) {
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');
     $('#page_shop .scroll-container .collapsible').html('');
-    $("#creatormenu").fadeOut(500);
+    $("#creatormenu").fadeOut(1000);
     resetMenu();
 };
 
@@ -135,7 +135,7 @@ function buyHorse(modelH, price, isCash) {
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');
     $('#page_shop .scroll-container .collapsible').html('');
-    $("#creatormenu").fadeOut(500);
+    $("#creatormenu").fadeOut(1000);
     if (isCash) {        
         $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: modelH, Cash: price, IsCash: isCash }));
     } else {
@@ -148,7 +148,7 @@ function SellHorse(IdHorse) {
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');
     $('#page_shop .scroll-container .collapsible').html('');
-    $("#creatormenu").fadeOut(500);
+    $("#creatormenu").fadeOut(1000);
 };
 
 $(".button-right").on('click', function() {
