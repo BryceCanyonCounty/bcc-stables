@@ -1,24 +1,34 @@
 Config = {}
--- Set Language
+
 Config.defaultlang = "en_lang"
+
 -- Open Stable Menu
 Config.shopKey = 0x760A9C6F --[G]
+
 -- Return Horse at Stable
 Config.returnKey = 0xD9D0E1C0 --[spacebar]
+
 -- Max Number of Horses per Player
 Config.maxHorses = 5 -- Default: 5
+
 -- Cooldown for Brushing Horse
 Config.brushCooldown = 300000 -- Default: 300000 = 5 Minutes
+
 -- Cooldown for Feeding Horse
 Config.feedCooldown = 300000 -- Default: 300000 = 5 Minutes
+
 -- Health Increase for Brushing Horse
 Config.brushHealthBoost = 5 -- Default: 5
+
 -- Health Increase for Feeding Horse
 Config.feedHealthBoost = 15 -- Default: 15
+
 -- Stamina Increase for Feeding Horse
 Config.feedStaminaBoost = 15 -- Default: 15
+
 -- Allow Blips on Map when Stable is Closed
 Config.blipAllowedClosed = true -- true = Show Blips / false = Remove Blips
+
 -- Stable Locations and Options
 Config.stables = { -- Original 7 Stable Locations
     valentine = {
