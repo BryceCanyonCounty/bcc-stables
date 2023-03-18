@@ -8,6 +8,7 @@ local PlayerJob
 local JobName
 local JobGrade
 local InMenu = false
+local StableName
 local BrushCooldown = false
 local FeedCooldown = false
 local Adding = true
@@ -265,7 +266,7 @@ function OpenStable(shopId)
     InMenu = true
 
     local shopConfig = Config.stables[shopId]
-    local stableName = shopConfig.shopName
+    StableName = shopConfig.shopName
     SpawnPoint = {x = shopConfig.spawnPointx, y = shopConfig.spawnPointy, z = shopConfig.spawnPointz, h = shopConfig.spawnPointh}
 
     createCamera(shopId)
@@ -275,7 +276,7 @@ function OpenStable(shopId)
         action = "show",
         shopData = getShopData(),
         customize = false,
-        location = stableName
+        location = StableName
     })
     TriggerServerEvent('oss_stables:GetMyHorses')
 end
@@ -379,7 +380,8 @@ AddEventHandler('oss_stables:SetHorseName', function(data)
             SetNuiFocus(true, true)
             SendNUIMessage({
                 action = "show",
-                shopData = getShopData()
+                shopData = getShopData(),
+                location = StableName
             })
 
         Wait(1000)
@@ -397,7 +399,8 @@ AddEventHandler('oss_stables:StableMenu', function()
 
     SendNUIMessage({
         action = "show",
-        shopData = getShopData()
+        shopData = getShopData(),
+        location = StableName
     })
 
     TriggerServerEvent('oss_stables:GetMyHorses')
@@ -838,14 +841,15 @@ function setcloth(hash)
 end
 
 RegisterNUICallback("sellHorse", function(data)
-    DeleteEntity(ShowroomHorse_entity)
+    DeleteEntity(MyHorse_entity)
     TriggerServerEvent('oss_stables:SellHorse', tonumber(data.horseID))
     TriggerServerEvent('oss_stables:GetMyHorses')
     Wait(300)
 
     SendNUIMessage({
         action = "show",
-        shopData = getShopData()
+        shopData = getShopData(),
+        location = StableName
     })
     TriggerServerEvent('oss_stables:GetMyHorses')
 end)
