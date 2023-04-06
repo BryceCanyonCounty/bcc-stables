@@ -71,7 +71,7 @@ Citizen.CreateThread(function()
                             end
                         end
                         if Config.stables[shopId].BlipHandle then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorClosed)) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorClosed)) -- BlipAddModifier
                         end
                         if shopConfig.NPC then
                             DeleteEntity(shopConfig.NPC)
@@ -103,7 +103,7 @@ Citizen.CreateThread(function()
                         end
                         if not next(shopConfig.allowedJobs) then
                             if Config.stables[shopId].BlipHandle then
-                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorOpen)) -- BlipAddModifier
+                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorOpen)) -- BlipAddModifier
                             end
                             local coordsDist = vector3(coords.x, coords.y, coords.z)
                             local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
@@ -124,7 +124,7 @@ Citizen.CreateThread(function()
                             end
                         else
                             if Config.stables[shopId].BlipHandle then
-                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorJob)) -- BlipAddModifier
+                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorJob)) -- BlipAddModifier
                             end
                             local coordsDist = vector3(coords.x, coords.y, coords.z)
                             local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
@@ -183,7 +183,7 @@ Citizen.CreateThread(function()
                     end
                     if not next(shopConfig.allowedJobs) then
                         if Config.stables[shopId].BlipHandle then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorOpen)) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorOpen)) -- BlipAddModifier
                         end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
                         local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
@@ -204,7 +204,7 @@ Citizen.CreateThread(function()
                         end
                     else
                         if Config.stables[shopId].BlipHandle then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, GetHashKey(shopConfig.blipColorJob)) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorJob)) -- BlipAddModifier
                         end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
                         local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
@@ -301,7 +301,7 @@ RegisterNUICallback("loadHorse", function(data)
         MyHorse_entity = nil
     end
 
-    local modelHash = GetHashKey(horseModel)
+    local modelHash = joaat(horseModel)
     if IsModelValid(modelHash) then
         if not HasModelLoaded(modelHash) then
             RequestModel(modelHash)
@@ -420,7 +420,7 @@ RegisterNUICallback("loadMyHorse", function(data)
         MyHorse_entity = nil
     end
 
-    local modelHash = GetHashKey(horseModel)
+    local modelHash = joaat(horseModel)
 
     if not HasModelLoaded(modelHash) then
         RequestModel(modelHash)
@@ -445,7 +445,7 @@ RegisterNUICallback("loadMyHorse", function(data)
     local componentsHorse = json.decode(data.HorseComp)
     if componentsHorse ~= '[]' then
         for _, Key in pairs(componentsHorse) do
-            local model2 = GetHashKey(tonumber(Key))
+            local model2 = joaat(tonumber(Key))
             if not HasModelLoaded(model2) then
                 Citizen.InvokeNative(0xFA28FE3A6246FC30, model2) -- RequestModel
             end
@@ -538,7 +538,7 @@ function InitiateHorse(atCoords)
 
     local player = PlayerPedId()
     local pCoords = GetEntityCoords(player)
-    local modelHash = GetHashKey(HorseModel)
+    local modelHash = joaat(HorseModel)
     if not HasModelLoaded(modelHash) then
         RequestModel(modelHash)
         while not HasModelLoaded(modelHash) do
@@ -576,7 +576,7 @@ function InitiateHorse(atCoords)
     Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0) -- PlaceEntityOnGroundProperly
     Citizen.InvokeNative(0x4DB9D03AC4E1FA84, MyHorse, -1, -1, 0) -- SetPedWrithingDuration
     Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
-    Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, GetHashKey("PLAYER_HORSE"))
+    Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, joaat("PLAYER_HORSE"))
     Citizen.InvokeNative(0xFD6943B6DF77E449, MyHorse, false) -- SetPedCanBeLassoed
     Citizen.InvokeNative(0xC80A74AC829DDD92, MyHorse, GetPedRelationshipGroupHash(MyHorse)) -- SetPedRelationshipGroupHash
     Citizen.InvokeNative(0xBF25EB89375A37AD, 1, GetPedRelationshipGroupHash(MyHorse), "PLAYER") -- SetRelationshipBetweenGroups
@@ -680,12 +680,14 @@ RegisterNetEvent('oss_stables:BrushHorse')
 AddEventHandler('oss_stables:BrushHorse', function(data)
     local horsebrush = data.name
     if horsebrush == "horsebrush" then
-        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, GetHashKey("Interaction_Brush"), GetHashKey("p_brushHorse02x"), 1) -- TaskAnimalInteraction
+        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat("Interaction_Brush"), joaat("p_brushHorse02x"), 1) -- TaskAnimalInteraction
         local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
-        Wait(4000)
+        Wait(5000)
         Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.brushHealthBoost) -- SetAttributeCoreValue
         Citizen.InvokeNative(0x6585D955A68452A5, MyHorse) -- ClearPedEnvDirt
-        Citizen.InvokeNative(0xB5485E4907B53019, MyHorse) -- SetPedWetnessEnabledThisFrame
+        Citizen.InvokeNative(0x523C79AEEFCC4A2A, MyHorse, 10, "ALL") -- ClearPedDamageDecalByZone
+        Citizen.InvokeNative(0x8FE22675A5A45817, MyHorse) -- ClearPedBloodDamage
+        --Citizen.InvokeNative(0xE3144B932DFDFF65, MyHorse, 0.0, -1, 1, 1) -- SetPedDirtCleaned
         local bCooldown = math.ceil(Config.brushCooldown / 60000)
         VORPcore.NotifyRightTip(_U("brushCooldown") .. bCooldown .. _U("minutes"), 5000)
         BrushCooldown = true
@@ -698,7 +700,7 @@ RegisterNetEvent('oss_stables:FeedHorse')
 AddEventHandler('oss_stables:FeedHorse', function(data)
     local haycube = data.name
     if haycube == "consumable_haycube" then
-        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, GetHashKey("Interaction_Food"), 0, 1) -- TaskAnimalInteraction
+        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat("Interaction_Food"), joaat("s_horsnack_haycube01x"), 1) -- TaskAnimalInteraction
         local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
         local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1) -- GetAttributeCoreValue
         Wait(3000)
@@ -833,7 +835,7 @@ RegisterNUICallback("AcsLuggage", function(data)
 end)
 
 function setcloth(hash)
-    local model2 = GetHashKey(tonumber(hash))
+    local model2 = joaat(tonumber(hash))
     if not HasModelLoaded(model2) then
         Citizen.InvokeNative(0xFA28FE3A6246FC30, model2) -- RequestModel
     end
@@ -956,7 +958,7 @@ function AddBlip(shopId)
 end
 
 function LoadModel(npcModel)
-    local model = GetHashKey(npcModel)
+    local model = joaat(npcModel)
     RequestModel(model)
     while not HasModelLoaded(model) do
         RequestModel(model)
