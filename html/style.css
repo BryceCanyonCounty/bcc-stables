@@ -55,6 +55,7 @@ div {
 .header-text {
     position: relative;
     padding: 20px 20px;
+    margin-top: 10px;
     margin-bottom: 10px;
     font-size: 2.0em;
     color: #f0f0f0;
@@ -62,7 +63,8 @@ div {
     text-align: center;
     background: url('img/menu_header.png');
     background-position: center;
-    background-size: 100% 100%;
+    background-size: 90% 90%;
+    background-repeat: no-repeat;
 }
 
 #button_menu {

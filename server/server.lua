@@ -157,7 +157,7 @@ AddEventHandler('oss_stables:SellHorse', function(id)
 
         for _,horseConfig in pairs(Config.Horses) do
             for models,values in pairs(horseConfig) do
-                if models ~= "name" then
+                if models ~= "breed" then
                     if models == modelHorse then
                         local sellPrice = values.sellPrice
                         Character.addCurrency(0, sellPrice)
