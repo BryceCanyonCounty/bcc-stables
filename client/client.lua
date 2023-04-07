@@ -17,13 +17,13 @@ local SpawnPoint = {}
 local MyHorse_entity
 local IdMyHorse
 local Saddlecloths = {}
-local Acshorn = {}
-local Bags = {}
-local Horsetails = {}
+local SaddleHorns = {}
+local SaddleBags = {}
+local Tails = {}
 local Manes = {}
 local Saddles = {}
 local Stirrups = {}
-local Acsluggage = {}
+local Bedrolls = {}
 local MyHorse = 0
 local HorseModel
 local HorseName
@@ -34,9 +34,9 @@ local SaddleclothsUsing = nil
 local StirrupsUsing = nil
 local BagsUsing = nil
 local ManesUsing = nil
-local HorseTailsUsing = nil
-local AcsHornUsing = nil
-local AcsLuggageUsing = nil
+local TailsUsing = nil
+local SaddleHornsUsing = nil
+local BedrollsUsing = nil
 
 TriggerEvent("getCore", function(core)
     VORPcore = core
@@ -503,9 +503,9 @@ function SaveComps()
         StirrupsUsing,
         BagsUsing,
         ManesUsing,
-        HorseTailsUsing,
-        AcsHornUsing,
-        AcsLuggageUsing
+        TailsUsing,
+        SaddleHornsUsing,
+        BedrollsUsing
     }
     local compDataEncoded = json.encode(compData)
     if compDataEncoded ~= "[]" then
@@ -756,7 +756,7 @@ RegisterNUICallback("Stirrups", function(data)
     end
 end)
 
-RegisterNUICallback("Bags", function(data)
+RegisterNUICallback("SaddleBags", function(data)
     if tonumber(data.id) == 0 then
         BagsUsing = 0
         local playerHorse = MyHorse_entity
@@ -764,9 +764,9 @@ RegisterNUICallback("Bags", function(data)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
-        local hash = Bags[num]
+        local hash = SaddleBags[num]
         SetModel(hash)
-        BagsUsing = Bags[num]
+        BagsUsing = SaddleBags[num]
     end
 end)
 
@@ -784,45 +784,45 @@ RegisterNUICallback("Manes", function(data)
     end
 end)
 
-RegisterNUICallback("HorseTails", function(data)
+RegisterNUICallback("Tails", function(data)
     if tonumber(data.id) == 0 then
-        HorseTailsUsing = 0
+        TailsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
-        local hash = Horsetails[num]
+        local hash = Tails[num]
         SetModel(hash)
-        HorseTailsUsing = Horsetails[num]
+        TailsUsing = Tails[num]
     end
 end)
 
-RegisterNUICallback("AcsHorn", function(data)
+RegisterNUICallback("SaddleHorns", function(data)
     if tonumber(data.id) == 0 then
-        AcsHornUsing = 0
+        SaddleHornsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x5447332, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
-        local hash = Acshorn[num]
+        local hash = SaddleHorns[num]
         SetModel(hash)
-        AcsHornUsing = Acshorn[num]
+        SaddleHornsUsing = SaddleHorns[num]
     end
 end)
 
-RegisterNUICallback("AcsLuggage", function(data)
+RegisterNUICallback("Bedrolls", function(data)
     if tonumber(data.id) == 0 then
-        AcsLuggageUsing = 0
+        BedrollsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xEFB31921, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local num = tonumber(data.id)
-        local hash = Acsluggage[num]
+        local hash = Bedrolls[num]
         SetModel(hash)
-        AcsLuggageUsing = Acsluggage[num]
+        BedrollsUsing = Bedrolls[num]
     end
 end)
 
@@ -864,21 +864,21 @@ Citizen.CreateThread(function()
 		Wait(0)
 		for _, v in ipairs(HorseComp) do
 			if v.category == "Saddlecloths" then
-				Saddlecloths[#Saddlecloths+1] = v.Hash
-			elseif v.category == "AcsHorn" then
-				Acshorn[#Acshorn+1] = v.Hash
-			elseif v.category == "Bags" then
-				Bags[#Bags+1] = v.Hash
-			elseif v.category == "HorseTails" then
-				Horsetails[#Horsetails+1] = v.Hash
+				Saddlecloths[#Saddlecloths + 1] = v.hash
+			elseif v.category == "SaddleHorns" then
+				SaddleHorns[#SaddleHorns + 1] = v.hash
+			elseif v.category == "SaddleBags" then
+				SaddleBags[#SaddleBags + 1] = v.hash
+			elseif v.category == "Tails" then
+				Tails[#Tails + 1] = v.hash
 			elseif v.category == "Manes" then
-				Manes[#Manes+1] = v.Hash
+				Manes[#Manes + 1] = v.hash
 			elseif v.category == "Saddles" then
-				Saddles[#Saddles+1] = v.Hash
+				Saddles[#Saddles + 1] = v.hash
 			elseif v.category == "Stirrups" then
-				Stirrups[#Stirrups+1] = v.Hash
-			elseif v.category == "AcsLuggage" then
-				Acsluggage[#Acsluggage+1] = v.Hash
+				Stirrups[#Stirrups + 1] = v.hash
+			elseif v.category == "Bedrolls" then
+				Bedrolls[#Bedrolls + 1] = v.hash
 			end
 		end
 		Adding = false
