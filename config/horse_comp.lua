@@ -1,4 +1,6 @@
 HorseComp = {
+
+  --******************* Saddlecloths *********************--
   [1]  = { hash = "0x127E0412", category = "Saddlecloths" },
   [2]  = { hash = "0x19C5E80C", category = "Saddlecloths" },
   [3]  = { hash = "0x20D4A0BF", category = "Saddlecloths" },
@@ -65,6 +67,7 @@ HorseComp = {
   [64] = { hash = "0xFDF4250B", category = "Saddlecloths" },
   [65] = { hash = "0xFFB1DE72", category = "Saddlecloths" },
 
+  --******************** SaddleHorns ********************--
   [66] = { hash = "0x107D9598", category = "SaddleHorns" },
   [67] = { hash = "0x2A28C8BE", category = "SaddleHorns" },
   [68] = { hash = "0x333CDC06", category = "SaddleHorns" },
@@ -80,6 +83,7 @@ HorseComp = {
   [78] = { hash = "0xF826E4EB", category = "SaddleHorns" },
   [79] = { hash = "0xF8CAE723", category = "SaddleHorns" },
 
+  --******************* SaddleBags *********************--
   [80] = { hash = "0x1D4EDB88", category = "SaddleBags" },
   [81] = { hash = "0x20AA8620", category = "SaddleBags" },
   [82] = { hash = "0x293E17B3", category = "SaddleBags" },
@@ -101,6 +105,7 @@ HorseComp = {
   [98] = { hash = "0xF0C30271", category = "SaddleBags" },
   [99] = { hash = "0xF8FB69CA", category = "SaddleBags" },
 
+  --********************* Tails ********************--
   [100] = { hash = "0x12DBBBAF", category = "Tails" },
   [101] = { hash = "0x17EB79D3", category = "Tails" },
   [102] = { hash = "0x1A3B721B", category = "Tails" },
@@ -187,6 +192,7 @@ HorseComp = {
   [183] = { hash = "0xF6B0AB06", category = "Tails" },
   [184] = { hash = "0xF867D611", category = "Tails" },
 
+  --******************** Manes *********************--
   [185] = { hash = "0x130E341A", category = "Manes" },
   [186] = { hash = "0x14098229", category = "Manes" },
   [187] = { hash = "0x16923E26", category = "Manes" },
@@ -254,7 +260,7 @@ HorseComp = {
   [249] = { hash = "0xAA3FAC1A", category = "Manes" },
   [250] = { hash = "0xABA8475F", category = "Manes" },
   [251] = { hash = "0xACA2B4B1", category = "Manes" },
-  [252] = { hash = "0xAFB7C24",  category = "Manes" } ,
+  [252] = { hash = "0xAFB7C24",  category = "Manes" },
   [253] = { hash = "0xB13D134B", category = "Manes" },
   [254] = { hash = "0xB288D42C", category = "Manes" },
   [255] = { hash = "0xB2FB934B", category = "Manes" },
@@ -290,6 +296,7 @@ HorseComp = {
   [285] = { hash = "0xFF17AB82", category = "Manes" },
   [286] = { hash = "0xFFF3B76A", category = "Manes" },
 
+  --********************* Saddles ********************--
   [287] = { hash = "0x106961A8", category = "Saddles" },
   [288] = { hash = "0x14168240", category = "Saddles" },
   [289] = { hash = "0x150D0DAA", category = "Saddles" },
@@ -427,6 +434,7 @@ HorseComp = {
   [421] = { hash = "0xFCE1D7A4", category = "Saddles" },
   [422] = { hash = "0xFD4E14C5", category = "Saddles" },
 
+  --******************** Stirrups *********************--
   [423] = { hash = "0x3B3AB08",  category = "Stirrups" },
   [424] = { hash = "0x587DD49F", category = "Stirrups" },
   [425] = { hash = "0x67AF7302", category = "Stirrups" },
@@ -439,6 +447,7 @@ HorseComp = {
   [432] = { hash = "0xD8AE54FE", category = "Stirrups" },
   [433] = { hash = "0xE73FF221", category = "Stirrups" },
 
+  --******************** Bedrolls ********************--
   [434] = { hash = "0x12F0DF9F", category = "Bedrolls" },
   [435] = { hash = "0x18BB6B30", category = "Bedrolls" },
   [436] = { hash = "0x1B43F045", category = "Bedrolls" },
@@ -468,5 +477,76 @@ HorseComp = {
   [460] = { hash = "0xD020E789", category = "Bedrolls" },
   [461] = { hash = "0xD258EF10", category = "Bedrolls" },
   [462] = { hash = "0xD8258E14", category = "Bedrolls" },
-  [463] = { hash = "0xFFB0391E", category = "Bedrolls" }
+  [463] = { hash = "0xFFB0391E", category = "Bedrolls" },
+
+  --******************** Masks *********************--
+  [464] = { hash = "0x08A78F53", category = "Masks" },
+  [465] = { hash = "0x13AC6E51", category = "Masks" },
+  [466] = { hash = "0x226B2F76", category = "Masks" },
+  [467] = { hash = "0x30044BAC", category = "Masks" },
+  [468] = { hash = "0x406FC6C7", category = "Masks" },
+  [469] = { hash = "0x4C8C83A4", category = "Masks" },
+  [470] = { hash = "0x4E22622C", category = "Masks" },
+  [471] = { hash = "0x53EEEBD4", category = "Masks" },
+  [472] = { hash = "0x61BEAE08", category = "Masks" },
+  [473] = { hash = "0x68FB97DE", category = "Masks" },
+  [474] = { hash = "0x69CD996E", category = "Masks" },
+  [475] = { hash = "0x6B355791", category = "Masks" },
+  [476] = { hash = "0x702A4AF3", category = "Masks" },
+  [477] = { hash = "0x7A773AC1", category = "Masks" },
+  [478] = { hash = "0x7BFA791B", category = "Masks" },
+  [479] = { hash = "0x872A0C5A", category = "Masks" },
+  [480] = { hash = "0x8C471684", category = "Masks" },
+  [481] = { hash = "0x8DB38601", category = "Masks" },
+  [482] = { hash = "0x8DCC1CBE", category = "Masks" },
+  [483] = { hash = "0x90A62272", category = "Masks" },
+  [484] = { hash = "0x9946F874", category = "Masks" },
+  [485] = { hash = "0x9A11B219", category = "Masks" },
+  [486] = { hash = "0x9DB125FC", category = "Masks" },
+  [487] = { hash = "0xA45049C6", category = "Masks" },
+  [488] = { hash = "0xB0395F88", category = "Masks" },
+  [489] = { hash = "0xB395D1C5", category = "Masks" },
+  [490] = { hash = "0xB567EBF5", category = "Masks" },
+  [491] = { hash = "0xBD887906", category = "Masks" },
+  [492] = { hash = "0xC4886BDC", category = "Masks" },
+  [493] = { hash = "0xC70D8F40", category = "Masks" },
+  [494] = { hash = "0xC907FCA9", category = "Masks" },
+  [495] = { hash = "0xD6E279B1", category = "Masks" },
+  [496] = { hash = "0xDDCDB9A0", category = "Masks" },
+  [497] = { hash = "0xE3278C28", category = "Masks" },
+  [498] = { hash = "0xEC10D626", category = "Masks" },
+  [499] = { hash = "0xEEF65F11", category = "Masks" },
+  [500] = { hash = "0xF606EC4A", category = "Masks" },
+  [501] = { hash = "0xFA5B72BB", category = "Masks" },
+  [502] = { hash = "0xD70C73EA", category = "Masks" },
+  [503] = { hash = "0xF17728C7", category = "Masks" },
+  [504] = { hash = "0x68DB4FAD", category = "Masks" },
+  [505] = { hash = "0x62C5B02A", category = "Masks" },
+  [506] = { hash = "0xF0ED62FF", category = "Masks" },
+  [507] = { hash = "0x2E776EE6", category = "Masks" },
+  [508] = { hash = "0x75637CBD", category = "Masks" },
+  [509] = { hash = "0x4A992729", category = "Masks" },
+  [510] = { hash = "0x4E312E61", category = "Masks" },
+  [511] = { hash = "0x48099436", category = "Masks" },
+  [512] = { hash = "0x77987353", category = "Masks" },
+  [513] = { hash = "0xAD6DDEFD", category = "Masks" },
+  [514] = { hash = "0x5B22BA68", category = "Masks" },
+
+  --******************* Mustaches **********************--
+  [515] = { hash = "0x004BBEED", category = "Mustaches" },
+  [516] = { hash = "0x0960D117", category = "Mustaches" },
+  [517] = { hash = "0x281A6D81", category = "Mustaches" },
+  [518] = { hash = "0x334F83D3", category = "Mustaches" },
+  [519] = { hash = "0x5497E784", category = "Mustaches" },
+  [520] = { hash = "0x67590D8F", category = "Mustaches" },
+  [521] = { hash = "0x91887491", category = "Mustaches" },
+  [522] = { hash = "0x9ADAF492", category = "Mustaches" },
+  [523] = { hash = "0xAC459767", category = "Mustaches" },
+  [524] = { hash = "0xAF2A2FD8", category = "Mustaches" },
+  [525] = { hash = "0xB755402E", category = "Mustaches" },
+  [526] = { hash = "0xCFBA5E50", category = "Mustaches" },
+  [527] = { hash = "0xDC895660", category = "Mustaches" },
+  [528] = { hash = "0xEAEEF32B", category = "Mustaches" },
+  [529] = { hash = "0xED8D1970", category = "Mustaches" },
+  [530] = { hash = "0xF7203FC3", category = "Mustaches" }
 }

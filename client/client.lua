@@ -1,21 +1,11 @@
 local VORPcore = {}
+-- Prompts
 local OpenShops
 local CloseShops
 local OpenReturn
 local OpenGroup = GetRandomIntInRange(0, 0xffffff)
 local ClosedGroup = GetRandomIntInRange(0, 0xffffff)
-local PlayerJob
-local JobName
-local JobGrade
-local InMenu = false
-local StableName
-local BrushCooldown = false
-local FeedCooldown = false
-local Adding = true
-local ShowroomHorse_entity
-local SpawnPoint = {}
-local MyHorse_entity
-local IdMyHorse
+-- Horse Tack
 local Saddlecloths = {}
 local SaddleHorns = {}
 local SaddleBags = {}
@@ -24,11 +14,8 @@ local Manes = {}
 local Saddles = {}
 local Stirrups = {}
 local Bedrolls = {}
-local MyHorse = 0
-local HorseModel
-local HorseName
-local HorseComponents = {}
-local Initializing = false
+local Masks = {}
+local Mustaches = {}
 local SaddlesUsing = nil
 local SaddleclothsUsing = nil
 local StirrupsUsing = nil
@@ -37,6 +24,27 @@ local ManesUsing = nil
 local TailsUsing = nil
 local SaddleHornsUsing = nil
 local BedrollsUsing = nil
+local MasksUsing = nil
+local MustachesUsing = nil
+-- Job Check
+local PlayerJob
+local JobName
+local JobGrade
+-- Misc.
+local InMenu = false
+local Adding = true
+local StableName
+local BrushCooldown = false
+local FeedCooldown = false
+local ShowroomHorse_entity
+local MyHorse_entity
+local MyHorse = 0
+local SpawnPoint = {}
+local IdMyHorse
+local HorseModel
+local HorseName
+local HorseComponents = {}
+local Initializing = false
 
 TriggerEvent("getCore", function(core)
     VORPcore = core
@@ -59,6 +67,7 @@ Citizen.CreateThread(function()
         if InMenu == false and not dead then
             for shopId, shopConfig in pairs(Config.stables) do
                 if shopConfig.shopHours then
+                    -- Using Stable Hours - Stable Closed
                     if hour >= shopConfig.shopClose or hour < shopConfig.shopOpen then
                         if Config.blipAllowedClosed then
                             if not Config.stables[shopId].BlipHandle and shopConfig.blipAllowed then
@@ -95,6 +104,7 @@ Citizen.CreateThread(function()
                             end
                         end
                     elseif hour >= shopConfig.shopOpen then
+                        -- Using Stable Hours - Stable Open
                         if not Config.stables[shopId].BlipHandle and shopConfig.blipAllowed then
                             AddBlip(shopId)
                         end
@@ -123,6 +133,7 @@ Citizen.CreateThread(function()
                                 end
                             end
                         else
+                            -- Using Stable Hours - Stable Open - Job Locked
                             if Config.stables[shopId].BlipHandle then
                                 Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorJob)) -- BlipAddModifier
                             end
@@ -175,6 +186,7 @@ Citizen.CreateThread(function()
                         end
                     end
                 else
+                    -- Not Using Stable Hours - Stable Always Open
                     if not Config.stables[shopId].BlipHandle and shopConfig.blipAllowed then
                         AddBlip(shopId)
                     end
@@ -203,6 +215,7 @@ Citizen.CreateThread(function()
                             end
                         end
                     else
+                        -- Not Using Stable Hours - Stable Always Open - Job Locked
                         if Config.stables[shopId].BlipHandle then
                             Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorJob)) -- BlipAddModifier
                         end
@@ -262,6 +275,7 @@ Citizen.CreateThread(function()
     end
 end)
 
+-- Open Main Menu
 function OpenStable(shopId)
     InMenu = true
 
@@ -281,11 +295,13 @@ function OpenStable(shopId)
     TriggerServerEvent('oss_stables:GetMyHorses')
 end
 
+-- Get Horse Data for Purchases
 function GetShopData()
     local ret = Config.Horses
     return ret
 end
 
+-- Get Horse Data for Players Horses
 RegisterNetEvent('oss_stables:ReceiveHorsesData')
 AddEventHandler('oss_stables:ReceiveHorsesData', function(dataHorses)
     SendNUIMessage({
@@ -293,6 +309,7 @@ AddEventHandler('oss_stables:ReceiveHorsesData', function(dataHorses)
     })
 end)
 
+-- View Horses for Purchase
 RegisterNUICallback("loadHorse", function(data)
     local horseModel = data.horseModel
 
@@ -329,30 +346,7 @@ RegisterNUICallback("loadHorse", function(data)
     })
 end)
 
-RegisterNUICallback("rotate", function(data)
-    local direction = data.RotateHorse
-
-    if direction == "left" then
-        Rotation(20)
-    elseif direction == "right" then
-        Rotation(-20)
-    end
-end)
-
-function Rotation(dir)
-    local ownedHorse = MyHorse_entity
-    local shopHorse = ShowroomHorse_entity
-
-    if ownedHorse then
-        local ownedRot = GetEntityHeading(ownedHorse) + dir
-        SetEntityHeading(ownedHorse, ownedRot % 360)
-
-    elseif shopHorse then
-        local shopRot = GetEntityHeading(shopHorse) + dir
-        SetEntityHeading(shopHorse, shopRot % 360)
-    end
-end
-
+-- Buy and Name New Horse
 RegisterNUICallback("BuyHorse", function(data)
     TriggerServerEvent('oss_stables:BuyHorse', data)
 end)
@@ -390,22 +384,7 @@ AddEventHandler('oss_stables:SetHorseName', function(data)
     end)
 end)
 
-RegisterNetEvent('oss_stables:StableMenu')
-AddEventHandler('oss_stables:StableMenu', function()
-    if ShowroomHorse_entity ~= nil then
-        DeleteEntity(ShowroomHorse_entity)
-        ShowroomHorse_entity = nil
-    end
-
-    SendNUIMessage({
-        action = "show",
-        shopData = GetShopData(),
-        location = StableName
-    })
-
-    TriggerServerEvent('oss_stables:GetMyHorses')
-end)
-
+-- View Player Owned Horses
 RegisterNUICallback("loadMyHorse", function(data)
     local horseModel = data.HorseModel
     IdMyHorse = data.IdHorse
@@ -436,11 +415,8 @@ RegisterNUICallback("loadMyHorse", function(data)
     SetPedConfigFlag(MyHorse_entity, 113, true) -- PCF_DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, MyHorse_entity) -- ClearPedEnvDirt
-    --NetworkSetEntityInvisibleToNetwork(MyHorse_entity, true)
 
-    SendNUIMessage({
-        customize = true
-    })
+    SendNUIMessage({ customize = true })
 
     local componentsHorse = json.decode(data.HorseComp)
     if componentsHorse ~= '[]' then
@@ -454,6 +430,7 @@ RegisterNUICallback("loadMyHorse", function(data)
     end
 end)
 
+-- Select Active Horse
 RegisterNUICallback("selectHorse", function(data)
     TriggerServerEvent('oss_stables:SelectHorse', tonumber(data.horseID))
 end)
@@ -465,6 +442,7 @@ AddEventHandler('oss_stables:SetHorseInfo', function(horse_model, horse_name, ho
     HorseComponents = horse_components
 end)
 
+-- Close Stable Menu
 RegisterNUICallback("CloseStable", function(data)
     local player = PlayerPedId()
     SetNuiFocus(false, false)
@@ -496,6 +474,7 @@ RegisterNUICallback("CloseStable", function(data)
     end
 end)
 
+-- Save Horse Tack to Database
 function SaveComps()
     local compData = {
         SaddlesUsing,
@@ -505,13 +484,31 @@ function SaveComps()
         ManesUsing,
         TailsUsing,
         SaddleHornsUsing,
-        BedrollsUsing
+        BedrollsUsing,
+        MasksUsing,
+        MustachesUsing
     }
     local compDataEncoded = json.encode(compData)
     if compDataEncoded ~= "[]" then
         TriggerServerEvent('oss_stables:UpdateComponents', compData, IdMyHorse, MyHorse_entity)
     end
 end
+
+-- Reopen Menu After Sell or Failed Purchase
+RegisterNetEvent('oss_stables:StableMenu')
+AddEventHandler('oss_stables:StableMenu', function()
+    if ShowroomHorse_entity ~= nil then
+        DeleteEntity(ShowroomHorse_entity)
+        ShowroomHorse_entity = nil
+    end
+
+    SendNUIMessage({
+        action = "show",
+        shopData = GetShopData(),
+        location = StableName
+    })
+    TriggerServerEvent('oss_stables:GetMyHorses')
+end)
 
 RegisterNetEvent('oss_stables:SetComponents')
 AddEventHandler('oss_stables:SetComponents', function(horseEntity, components)
@@ -524,6 +521,7 @@ function NativeSetPedComponentEnabled(ped, component)
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, component, true, true, true) -- ApplyShopItemToPed
 end
 
+-- Spawn Player Horse
 function InitiateHorse(atCoords)
     if Initializing then
         return
@@ -615,6 +613,7 @@ function InitiateHorse(atCoords)
     Initializing = false
 end
 
+-- Call and Flee Player Horse
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
@@ -654,6 +653,7 @@ Citizen.CreateThread(function()
     end
 end)
 
+-- Brush and Feed Player Horse
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
@@ -714,6 +714,7 @@ AddEventHandler('oss_stables:FeedHorse', function(data)
     end
 end)
 
+-- Select Horse Tack from Menu
 RegisterNUICallback("Saddles", function(data)
     if tonumber(data.id) == 0 then
         SaddlesUsing = 0
@@ -826,37 +827,40 @@ RegisterNUICallback("Bedrolls", function(data)
     end
 end)
 
+RegisterNUICallback("Masks", function(data)
+    if tonumber(data.id) == 0 then
+        MasksUsing = 0
+        local playerHorse = MyHorse_entity
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xD3500E5D, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+    else
+        local num = tonumber(data.id)
+        local hash = Masks[num]
+        SetModel(hash)
+        MasksUsing = Masks[num]
+    end
+end)
+
+RegisterNUICallback("Mustaches", function(data)
+    if tonumber(data.id) == 0 then
+        MustachesUsing = 0
+        local playerHorse = MyHorse_entity
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x30DEFDDF, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+    else
+        local num = tonumber(data.id)
+        local hash = Mustaches[num]
+        SetModel(hash)
+        MustachesUsing = Mustaches[num]
+    end
+end)
+
 function SetModel(hash)
     local model = joaat(tonumber(hash))
     if not HasModelLoaded(model) then
         Citizen.InvokeNative(0xFA28FE3A6246FC30, model) -- RequestModel
     end
     Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
-end
-
-RegisterNUICallback("sellHorse", function(data)
-    DeleteEntity(MyHorse_entity)
-    TriggerServerEvent('oss_stables:SellHorse', tonumber(data.horseID))
-    TriggerServerEvent('oss_stables:GetMyHorses')
-    Wait(300)
-
-    SendNUIMessage({
-        action = "show",
-        shopData = GetShopData(),
-        location = StableName
-    })
-    TriggerServerEvent('oss_stables:GetMyHorses')
-end)
-
-function ReturnHorse(shopId)
-    if MyHorse == 0 then
-        VORPcore.NotifyRightTip(_U("noHorse"), 5000)
-
-    elseif MyHorse ~=0 then
-        DeleteEntity(MyHorse)
-        MyHorse = 0
-        VORPcore.NotifyRightTip(_U("horseReturned"), 5000)
-    end
 end
 
 Citizen.CreateThread(function()
@@ -879,12 +883,44 @@ Citizen.CreateThread(function()
 				Stirrups[#Stirrups + 1] = v.hash
 			elseif v.category == "Bedrolls" then
 				Bedrolls[#Bedrolls + 1] = v.hash
+            elseif v.category == "Masks" then
+				Masks[#Masks + 1] = v.hash
+            elseif v.category == "Mustaches" then
+				Mustaches[#Mustaches + 1] = v.hash
 			end
 		end
 		Adding = false
 	end
 end)
 
+-- Sell Player Horse
+RegisterNUICallback("sellHorse", function(data)
+    DeleteEntity(MyHorse_entity)
+    TriggerServerEvent('oss_stables:SellHorse', tonumber(data.horseID))
+    TriggerServerEvent('oss_stables:GetMyHorses')
+    Wait(300)
+
+    SendNUIMessage({
+        action = "show",
+        shopData = GetShopData(),
+        location = StableName
+    })
+    TriggerServerEvent('oss_stables:GetMyHorses')
+end)
+
+-- Return Player Horse at Stable
+function ReturnHorse(shopId)
+    if MyHorse == 0 then
+        VORPcore.NotifyRightTip(_U("noHorse"), 5000)
+
+    elseif MyHorse ~=0 then
+        DeleteEntity(MyHorse)
+        MyHorse = 0
+        VORPcore.NotifyRightTip(_U("horseReturned"), 5000)
+    end
+end
+
+-- View Horses While in Menu
 function CreateCamera(shopId)
     local shopConfig = Config.stables[shopId]
     local horseCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
@@ -895,6 +931,31 @@ function CreateCamera(shopId)
     Wait(500)
     DoScreenFadeIn(500)
     RenderScriptCams(true, false, 0, 0, 0)
+end
+
+-- -- Rotate Horses while Viewing
+RegisterNUICallback("rotate", function(data)
+    local direction = data.RotateHorse
+
+    if direction == "left" then
+        Rotation(20)
+    elseif direction == "right" then
+        Rotation(-20)
+    end
+end)
+
+function Rotation(dir)
+    local ownedHorse = MyHorse_entity
+    local shopHorse = ShowroomHorse_entity
+
+    if ownedHorse then
+        local ownedRot = GetEntityHeading(ownedHorse) + dir
+        SetEntityHeading(ownedHorse, ownedRot % 360)
+
+    elseif shopHorse then
+        local shopRot = GetEntityHeading(shopHorse) + dir
+        SetEntityHeading(shopHorse, shopRot % 360)
+    end
 end
 
 -- Menu Prompts
@@ -949,15 +1010,7 @@ function AddBlip(shopId)
     Citizen.InvokeNative(0x9CB1A1623062F402, shopConfig.BlipHandle, shopConfig.blipName) -- SetBlipName
 end
 
-function LoadModel(npcModel)
-    local model = joaat(npcModel)
-    RequestModel(model)
-    while not HasModelLoaded(model) do
-        RequestModel(model)
-        Citizen.Wait(100)
-    end
-end
-
+-- NPSs
 function SpawnNPC(shopId)
     local shopConfig = Config.stables[shopId]
     LoadModel(shopConfig.npcModel)
@@ -971,6 +1024,16 @@ function SpawnNPC(shopId)
     Config.stables[shopId].NPC = npc
 end
 
+function LoadModel(npcModel)
+    local model = joaat(npcModel)
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        RequestModel(model)
+        Citizen.Wait(100)
+    end
+end
+
+-- Check for Jobs
 function CheckJob(allowedJob, playerJob)
     for _, jobAllowed in pairs(allowedJob) do
         JobName = jobAllowed
@@ -991,24 +1054,19 @@ AddEventHandler('onResourceStop', function(resourceName)
     if (GetCurrentResourceName() ~= resourceName) then
         return
     end
-
     if InMenu == true then
         SetNuiFocus(false, false)
-        SendNUIMessage({
-                action = "hide"
-            })
+        SendNUIMessage({ action = "hide" })
     end
-
     ClearPedTasksImmediately(PlayerPedId())
-        PromptDelete(OpenShops)
-        PromptDelete(CloseShops)
-        PromptDelete(OpenReturn)
+    PromptDelete(OpenShops)
+    PromptDelete(CloseShops)
+    PromptDelete(OpenReturn)
 
     if MyHorse then
         DeleteEntity(MyHorse)
         MyHorse = 0
     end
-
     for _, shopConfig in pairs(Config.stables) do
         if shopConfig.BlipHandle then
             RemoveBlip(shopConfig.BlipHandle)
