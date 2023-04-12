@@ -11,6 +11,9 @@ Config.returnKey = 0xD9D0E1C0 --[spacebar]
 -- Max Number of Horses per Player
 Config.maxHorses = 5 -- Default: 5
 
+-- Number of Items Allowed in Horse Inventory
+Config.invLimit = 200 -- Default: 200
+
 -- Cooldown for Brushing Horse
 Config.brushCooldown = 300000 -- Default: 300000 = 5 Minutes
 

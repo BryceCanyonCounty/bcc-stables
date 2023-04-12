@@ -169,6 +169,14 @@ AddEventHandler('oss_stables:SellHorse', function(id)
     end)
 end)
 
+RegisterServerEvent('oss_stables:OpenHorseInventory')
+AddEventHandler('oss_stables:OpenHorseInventory', function(id)
+    local _source = source
+    local invId = "horse_" .. tostring(id)
+    VORPInv.registerInventory(invId, _U("horseInv"), tonumber(Config.invLimit))
+    VORPInv.OpenInv(_source, invId)
+end)
+
 RegisterServerEvent('oss_stables:GetPlayerItem')
 AddEventHandler('oss_stables:GetPlayerItem', function(item)
     local _source = source

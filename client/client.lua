@@ -337,6 +337,7 @@ RegisterNUICallback("loadHorse", function(data)
     Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShowroomHorse_entity, true) -- FreezeEntityPosition
+    SetBlockingOfNonTemporaryEvents(ShowroomHorse_entity, true)
     SetPedConfigFlag(ShowroomHorse_entity, 113, true) -- DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, ShowroomHorse_entity) -- ClearPedEnvDirt
@@ -412,6 +413,7 @@ RegisterNUICallback("loadMyHorse", function(data)
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyHorse_entity, true) -- FreezeEntityPosition
+    SetBlockingOfNonTemporaryEvents(MyHorse_entity, true)
     SetPedConfigFlag(MyHorse_entity, 113, true) -- PCF_DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, MyHorse_entity) -- ClearPedEnvDirt
@@ -1077,4 +1079,9 @@ AddEventHandler('onResourceStop', function(resourceName)
             SetEntityAsNoLongerNeeded(shopConfig.NPC)
         end
     end
+end)
+
+RegisterCommand("openInv", function(source, args, rawCommand)
+    local horseId = 18
+    TriggerServerEvent('oss_stables:OpenHorseInventory', horseId)
 end)
