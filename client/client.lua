@@ -39,8 +39,9 @@ local FeedCooldown = false
 local ShowroomHorse_entity
 local MyHorse_entity
 local MyHorse = 0
+local MyHorseId
 local SpawnPoint = {}
-local IdMyHorse
+local MyHorse_entityId
 local HorseModel
 local HorseName
 local HorseComponents = {}
@@ -89,7 +90,7 @@ Citizen.CreateThread(function()
                             shopConfig.NPC = nil
                         end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
-                        local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
+                        local coordsShop = vector3(shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z)
                         local distanceShop = #(coordsDist - coordsShop)
 
                         if (distanceShop <= shopConfig.distanceShop) then
@@ -116,7 +117,7 @@ Citizen.CreateThread(function()
                                 Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorOpen)) -- BlipAddModifier
                             end
                             local coordsDist = vector3(coords.x, coords.y, coords.z)
-                            local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
+                            local coordsShop = vector3(shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z)
                             local distanceShop = #(coordsDist - coordsShop)
 
                             if (distanceShop <= shopConfig.distanceShop) then
@@ -138,7 +139,7 @@ Citizen.CreateThread(function()
                                 Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorJob)) -- BlipAddModifier
                             end
                             local coordsDist = vector3(coords.x, coords.y, coords.z)
-                            local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
+                            local coordsShop = vector3(shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z)
                             local distanceShop = #(coordsDist - coordsShop)
 
                             if (distanceShop <= shopConfig.distanceShop) then
@@ -198,7 +199,7 @@ Citizen.CreateThread(function()
                             Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorOpen)) -- BlipAddModifier
                         end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
-                        local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
+                        local coordsShop = vector3(shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z)
                         local distanceShop = #(coordsDist - coordsShop)
 
                         if (distanceShop <= shopConfig.distanceShop) then
@@ -220,7 +221,7 @@ Citizen.CreateThread(function()
                             Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(shopConfig.blipColorJob)) -- BlipAddModifier
                         end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
-                        local coordsShop = vector3(shopConfig.npcx, shopConfig.npcy, shopConfig.npcz)
+                        local coordsShop = vector3(shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z)
                         local distanceShop = #(coordsDist - coordsShop)
 
                         if (distanceShop <= shopConfig.distanceShop) then
@@ -281,7 +282,7 @@ function OpenStable(shopId)
 
     local shopConfig = Config.stables[shopId]
     StableName = shopConfig.shopName
-    SpawnPoint = {x = shopConfig.spawnPointx, y = shopConfig.spawnPointy, z = shopConfig.spawnPointz, h = shopConfig.spawnPointh}
+    SpawnPoint = {x = shopConfig.spawnPoint.x, y = shopConfig.spawnPoint.y, z = shopConfig.spawnPoint.z, h = shopConfig.spawnPoint.h}
 
     CreateCamera(shopId)
 
@@ -337,6 +338,7 @@ RegisterNUICallback("loadHorse", function(data)
     Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShowroomHorse_entity, true) -- FreezeEntityPosition
+    SetBlockingOfNonTemporaryEvents(ShowroomHorse_entity, true)
     SetPedConfigFlag(ShowroomHorse_entity, 113, true) -- DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, ShowroomHorse_entity) -- ClearPedEnvDirt
@@ -387,7 +389,7 @@ end)
 -- View Player Owned Horses
 RegisterNUICallback("loadMyHorse", function(data)
     local horseModel = data.HorseModel
-    IdMyHorse = data.IdHorse
+    MyHorse_entityId = data.IdHorse
 
     if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
@@ -412,6 +414,7 @@ RegisterNUICallback("loadMyHorse", function(data)
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyHorse_entity, true) -- FreezeEntityPosition
+    SetBlockingOfNonTemporaryEvents(MyHorse_entity, true)
     SetPedConfigFlag(MyHorse_entity, 113, true) -- PCF_DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, MyHorse_entity) -- ClearPedEnvDirt
@@ -436,7 +439,8 @@ RegisterNUICallback("selectHorse", function(data)
 end)
 
 RegisterNetEvent('oss_stables:SetHorseInfo')
-AddEventHandler('oss_stables:SetHorseInfo', function(horse_model, horse_name, horse_components)
+AddEventHandler('oss_stables:SetHorseInfo', function(horse_id, horse_model, horse_name, horse_components)
+    MyHorseId = horse_id
     HorseModel = horse_model
     HorseName = horse_name
     HorseComponents = horse_components
@@ -490,7 +494,7 @@ function SaveComps()
     }
     local compDataEncoded = json.encode(compData)
     if compDataEncoded ~= "[]" then
-        TriggerServerEvent('oss_stables:UpdateComponents', compData, IdMyHorse, MyHorse_entity)
+        TriggerServerEvent('oss_stables:UpdateComponents', compData, MyHorse_entityId, MyHorse_entity)
     end
 end
 
@@ -609,49 +613,84 @@ function InitiateHorse(atCoords)
         end
     end
 
+    TriggerServerEvent('oss_stables:RegisterInventory', MyHorseId)
+
     TaskGoToEntity(MyHorse, player, -1, 7.2, 2.0, 0, 0)
     Initializing = false
 end
 
--- Call and Flee Player Horse
+-- Horse Actions
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
         -- Whistle for Horse (key: H)
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- IsDisabledControlJustPressed
-			local player = PlayerPedId()
-            if MyHorse ~= 0 then
-                if GetScriptTaskStatus(MyHorse, 0x4924437D, 0) ~= 0 then
-                    local pcoords = GetEntityCoords(player)
-                    local hcoords = GetEntityCoords(MyHorse)
-                    local caldist = #(pcoords - hcoords)
-                    if caldist >= 100 then
-                        DeleteEntity(MyHorse)
-                        Wait(1000)
-                        MyHorse = 0
-                    else
-                        TaskGoToEntity(MyHorse, player, -1, 4, 2.0, 0, 0)
-                    end
-                end
-            else
-                TriggerServerEvent('oss_stables:GetSelectedHorse')
-                Wait(100)
-                InitiateHorse()
-            end
+			CallHorse()
+        end
+        -- Open Saddlebags (key: U)
+        if Citizen.InvokeNative(0x580417101DDB492F, 2, 0xD8F73058) then -- IsControlJustPressed
+            OpenInventory()
         end
         -- Horse Flee (key: F in Horse Menu)
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x4216AF06) then -- IsDisabledControlJustPressed
-			if MyHorse ~= 0 then
-                local player = PlayerPedId()
-                TaskAnimalFlee(MyHorse, player, -1)
-                Wait(10000)
-                DeleteEntity(MyHorse)
-                Wait(1000)
-                MyHorse = 0
-			end
+			FleeHorse()
 		end
     end
 end)
+
+function CallHorse()
+    local player = PlayerPedId()
+    if MyHorse ~= 0 then
+        if GetScriptTaskStatus(MyHorse, 0x4924437D, 0) ~= 0 then
+            local pcoords = GetEntityCoords(player)
+            local hcoords = GetEntityCoords(MyHorse)
+            local callDist = #(pcoords - hcoords)
+            if callDist >= 100 then
+                DeleteEntity(MyHorse)
+
+                Wait(1000)
+
+                MyHorse = 0
+            else
+                TaskGoToEntity(MyHorse, player, -1, 4, 2.0, 0, 0)
+            end
+        end
+    else
+        TriggerServerEvent('oss_stables:GetSelectedHorse')
+
+        Wait(100)
+
+        InitiateHorse()
+    end
+end
+
+function OpenInventory()
+    local pcoords = GetEntityCoords(PlayerPedId())
+    local hcoords = GetEntityCoords(MyHorse)
+    local invDist = #(pcoords - hcoords)
+    if invDist <= 1.0 then
+        local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459)
+        if not hasSaddlebags then
+            VORPcore.NotifyRightTip(_U("noSaddlebags"), 5000)
+        else
+            TriggerServerEvent('oss_stables:OpenInventory', MyHorseId)
+        end
+    end
+end
+
+function FleeHorse()
+    if MyHorse ~= 0 then
+        TaskAnimalFlee(MyHorse, PlayerPedId(), -1)
+
+        Wait(10000)
+
+        DeleteEntity(MyHorse)
+
+        Wait(1000)
+
+        MyHorse = 0
+    end
+end
 
 -- Brush and Feed Player Horse
 Citizen.CreateThread(function()
@@ -682,16 +721,20 @@ AddEventHandler('oss_stables:BrushHorse', function(data)
     if horsebrush == "horsebrush" then
         Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat("Interaction_Brush"), joaat("p_brushHorse02x"), 1) -- TaskAnimalInteraction
         local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
+
         Wait(5000)
+
         Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.brushHealthBoost) -- SetAttributeCoreValue
         Citizen.InvokeNative(0x6585D955A68452A5, MyHorse) -- ClearPedEnvDirt
         Citizen.InvokeNative(0x523C79AEEFCC4A2A, MyHorse, 10, "ALL") -- ClearPedDamageDecalByZone
         Citizen.InvokeNative(0x8FE22675A5A45817, MyHorse) -- ClearPedBloodDamage
-        --Citizen.InvokeNative(0xE3144B932DFDFF65, MyHorse, 0.0, -1, 1, 1) -- SetPedDirtCleaned
+
         local bCooldown = math.ceil(Config.brushCooldown / 60000)
         VORPcore.NotifyRightTip(_U("brushCooldown") .. bCooldown .. _U("minutes"), 5000)
         BrushCooldown = true
+
         Wait(Config.brushCooldown)
+
         BrushCooldown = false
     end
 end)
@@ -703,13 +746,18 @@ AddEventHandler('oss_stables:FeedHorse', function(data)
         Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat("Interaction_Food"), joaat("s_horsnack_haycube01x"), 1) -- TaskAnimalInteraction
         local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
         local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1) -- GetAttributeCoreValue
+
         Wait(3000)
+
         Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.feedHealthBoost) -- SetAttributeCoreValue
         Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, stamina + Config.feedStaminaBoost) -- SetAttributeCoreValue
+
         local fCooldown = math.ceil(Config.feedCooldown / 60000)
         VORPcore.NotifyRightTip(_U("feedCooldown") .. fCooldown .. _U("minutes"), 5000)
         FeedCooldown = true
+
         Wait(Config.feedCooldown)
+
         FeedCooldown = false
     end
 end)
@@ -924,7 +972,7 @@ end
 function CreateCamera(shopId)
     local shopConfig = Config.stables[shopId]
     local horseCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
-    SetCamCoord(horseCam, shopConfig.horseCamx, shopConfig.horseCamy, shopConfig.horseCamz + 1.2 )
+    SetCamCoord(horseCam, shopConfig.horseCam.x, shopConfig.horseCam.y, shopConfig.horseCam.z + 1.2 )
     SetCamActive(horseCam, true)
     PointCamAtCoord(horseCam, SpawnPoint.x - 0.5, SpawnPoint.y, SpawnPoint.z)
     DoScreenFadeOut(500)
@@ -1004,7 +1052,7 @@ end
 -- Blips
 function AddBlip(shopId)
     local shopConfig = Config.stables[shopId]
-    shopConfig.BlipHandle = N_0x554d9d53f696d002(1664425300, shopConfig.npcx, shopConfig.npcy, shopConfig.npcz) -- BlipAddForCoords
+    shopConfig.BlipHandle = N_0x554d9d53f696d002(1664425300, shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z) -- BlipAddForCoords
     SetBlipSprite(shopConfig.BlipHandle, shopConfig.blipSprite, 1)
     SetBlipScale(shopConfig.BlipHandle, 0.2)
     Citizen.InvokeNative(0x9CB1A1623062F402, shopConfig.BlipHandle, shopConfig.blipName) -- SetBlipName
@@ -1014,7 +1062,7 @@ end
 function SpawnNPC(shopId)
     local shopConfig = Config.stables[shopId]
     LoadModel(shopConfig.npcModel)
-    local npc = CreatePed(shopConfig.npcModel, shopConfig.npcx, shopConfig.npcy, shopConfig.npcz -1, shopConfig.npch, false, true, true, true)
+    local npc = CreatePed(shopConfig.npcModel, shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z -1, shopConfig.npc.h, false, true, true, true)
     Citizen.InvokeNative(0x283978A15512B2FE, npc, true) -- SetRandomOutfitVariation
     SetEntityCanBeDamaged(npc, false)
     SetEntityInvincible(npc, true)
@@ -1078,3 +1126,8 @@ AddEventHandler('onResourceStop', function(resourceName)
         end
     end
 end)
+
+--[[RegisterCommand("openInv", function(source, args, rawCommand)
+    local horseId = 18
+    TriggerServerEvent('oss_stables:OpenHorseInventory', horseId)
+end)]]

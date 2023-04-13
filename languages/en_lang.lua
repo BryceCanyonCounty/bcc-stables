@@ -21,5 +21,7 @@ Locales["en_lang"] = {
     noBrush = "You don't have a ~o~horsebrush",
     noHaycube = "You need some ~o~haycubes~q~ to feed your horse",
     notDirty = "Your horse is not ready to be brushed yet",
-    notHungry = "Your horse is not hungry right now"
+    notHungry = "Your horse is not hungry right now",
+    horseInv = "Saddlebags",
+    noSaddlebags = "You need ~o~saddlebags~q~ to store your items"
 }
