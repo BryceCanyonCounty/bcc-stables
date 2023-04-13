@@ -46,9 +46,9 @@ Config.stables = { -- Original 7 Stable Locations
         distanceShop = 3.0, -- Distance from NPC to Get Menu Prompt
         npcAllowed = true, -- Turns NPCs On / Off
         npcModel = "A_M_M_UniBoatCrew_01", -- Sets Model for NPCs
-        npcx = -365.08, npcy = 791.21, npcz = 116.18, npch = 179.76, -- Location for NPC and Stable
-		horseCamx = -368.48, horseCamy = 789.89, horseCamz = 116.16, -- Camera Location to View Horse When In-Menu
-		spawnPointx = -371.35, spawnPointy = 786.71, spawnPointz = 116.17, spawnPointh = 269.3, -- Location for Horse Preview When In-Menu
+        npc = {x = -365.08, y = 791.21, z = 116.18, h = 179.76}, -- Location for NPC and Stable
+		horseCam = {x = -368.48, y = 789.89, z = 116.16}, -- Camera Location to View Horse When In-Menu
+		spawnPoint = {x = -371.35, y = 786.71, z = 116.17, h = 269.3}, -- Location for Horse Preview When In-Menu
         allowedJobs = {}, -- If Empty, Everyone Can Use / Insert Job to limit access - ex. "police"
         jobGrade = 0, -- Enter Minimum Rank / Job Grade to Access Shop
         shopHours = false, -- If You Want the Shops to Use Open and Closed Hours
@@ -67,9 +67,9 @@ Config.stables = { -- Original 7 Stable Locations
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = -1817.85, npcy = -564.86, npcz = 156.06, npch = 335.86,
-		horseCamx = -1822.55, horseCamy = -563.93, horseCamz = 156.13,
-		spawnPointx = -1823.94, spawnPointy = -560.85, spawnPointz = 156.06, spawnPointh = 257.86,
+        npc = {x = -1817.85, y = -564.86, z = 156.06, h = 335.86},
+		horseCam = {x = -1822.55, y = -563.93, z = 156.13},
+		spawnPoint = {x = -1823.94, y = -560.85, z = 156.06, h = 257.86},
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -88,9 +88,9 @@ Config.stables = { -- Original 7 Stable Locations
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 2967.53, npcy = 792.71, npcz = 51.4, npch = 353.62,
-		horseCamx = 2970.67, horseCamy = 793.65, horseCamz = 51.4,
-		spawnPointx = 2971.66, spawnPointy = 796.82, spawnPointz = 51.4, spawnPointh = 96.54,
+        npc = {x = 2967.53, y = 792.71, z = 51.4, h = 353.62},
+		horseCam = {x = 2970.67, y = 793.65, z = 51.4},
+		spawnPoint = {x = 2971.66, y = 796.82, z = 51.4, h = 96.54},
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -109,9 +109,9 @@ Config.stables = { -- Original 7 Stable Locations
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 1210.73, npcy = -189.78, npcz = 101.39, npch = 107.52,
-		horseCamx = 1211.89, horseCamy = -192.76, horseCamz = 101.46,
-		spawnPointx = 1210.5, spawnPointy = -196.25, spawnPointz = 101.38, spawnPointh = 15.61,
+        npc = {x = 1210.73, y = -189.78, z = 101.39, h = 107.52},
+		horseCam = {x = 1211.89, y = -192.76, z = 101.46},
+		spawnPoint = {x = 1210.5, y = -196.25, z = 101.38, h = 15.61},
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -130,9 +130,9 @@ Config.stables = { -- Original 7 Stable Locations
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = 2505.53, npcy = -1453.93, npcz = 46.32, npch = 99.45,
-		horseCamx = 2505.65, horseCamy = -1441.49, horseCamz = 46.29,
-		spawnPointx = 2502.59, spawnPointy = -1438.62, spawnPointz = 46.32, spawnPointh = 182.93,
+        npc = {x = 2505.53, y = -1453.93, z = 46.32, h = 99.45},
+		horseCam = {x = 2505.65, y = -1441.49, z = 46.29},
+		spawnPoint = {x = 2502.59, y = -1438.62, z = 46.32, h = 182.93},
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -151,9 +151,9 @@ Config.stables = { -- Original 7 Stable Locations
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = -871.0, npcy = -1369.63, npcz = 43.53, npch = 6.64,
-		horseCamx = -867.11, horseCamy = -1368.86, horseCamz = 43.54,
-		spawnPointx = -864.7, spawnPointy = -1366.19, spawnPointz = 43.55, spawnPointh = 88.47,
+        npc = {x = -871.0, y = -1369.63, z = 43.53, h = 6.64},
+		horseCam = {x = -867.11, y = -1368.86, z = 43.54},
+		spawnPoint = {x = -864.7, y = -1366.19, z = 43.55, h = 88.47},
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
@@ -172,9 +172,9 @@ Config.stables = { -- Original 7 Stable Locations
         distanceShop = 3.0,
         npcAllowed = true,
         npcModel = "A_M_M_UniBoatCrew_01",
-        npcx = -5515.2, npcy = -3040.17, npcz = -2.39, npch = 180.76,
-		horseCamx = -5521.37, horseCamy = -3041.23, horseCamz = -2.39,
-		spawnPointx = -5524.48, spawnPointy = -3044.31, spawnPointz = -2.39, spawnPointh = 263.98,
+        npc = {x = -5515.2, y = -3040.17, z = -2.39, h = 180.76},
+		horseCam = {x = -5521.37, y = -3041.23, z = -2.39},
+		spawnPoint = {x = -5524.48, y = -3044.31, z = -2.39, h = 263.98},
         allowedJobs = {},
         jobGrade = 0,
         shopHours = false,
