@@ -9,6 +9,7 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 #### Features
 - Buy and sell horses through the stables
 - Cash or gold may be used for payments in the menu
+- Individual inventory for each horse
 - Shop hours may be set individually for each stable or disabled to allow the stable to remain open
 - Stable blips are colored and changeable per stable location
 - Blips can change color reflecting if stable is open, closed or job locked
@@ -21,6 +22,7 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 
 #### Dependencies
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
+- [vorp_inventory](https://github.com/VORPCORE/vorp_inventory-lua)
 
 #### Installation
 - Add `oss_stables` folder to your resources folder
