@@ -39,8 +39,9 @@ local FeedCooldown = false
 local ShowroomHorse_entity
 local MyHorse_entity
 local MyHorse = 0
+local MyHorseId
 local SpawnPoint = {}
-local IdMyHorse
+local MyHorse_entityId
 local HorseModel
 local HorseName
 local HorseComponents = {}
@@ -388,7 +389,7 @@ end)
 -- View Player Owned Horses
 RegisterNUICallback("loadMyHorse", function(data)
     local horseModel = data.HorseModel
-    IdMyHorse = data.IdHorse
+    MyHorse_entityId = data.IdHorse
 
     if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
@@ -438,7 +439,8 @@ RegisterNUICallback("selectHorse", function(data)
 end)
 
 RegisterNetEvent('oss_stables:SetHorseInfo')
-AddEventHandler('oss_stables:SetHorseInfo', function(horse_model, horse_name, horse_components)
+AddEventHandler('oss_stables:SetHorseInfo', function(horse_id, horse_model, horse_name, horse_components)
+    MyHorseId = horse_id
     HorseModel = horse_model
     HorseName = horse_name
     HorseComponents = horse_components
@@ -492,7 +494,7 @@ function SaveComps()
     }
     local compDataEncoded = json.encode(compData)
     if compDataEncoded ~= "[]" then
-        TriggerServerEvent('oss_stables:UpdateComponents', compData, IdMyHorse, MyHorse_entity)
+        TriggerServerEvent('oss_stables:UpdateComponents', compData, MyHorse_entityId, MyHorse_entity)
     end
 end
 
@@ -611,11 +613,12 @@ function InitiateHorse(atCoords)
         end
     end
 
+    TriggerServerEvent('oss_stables:RegisterInventory', MyHorseId)
     TaskGoToEntity(MyHorse, player, -1, 7.2, 2.0, 0, 0)
     Initializing = false
 end
 
--- Call and Flee Player Horse
+-- Horse Actions
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
@@ -626,8 +629,8 @@ Citizen.CreateThread(function()
                 if GetScriptTaskStatus(MyHorse, 0x4924437D, 0) ~= 0 then
                     local pcoords = GetEntityCoords(player)
                     local hcoords = GetEntityCoords(MyHorse)
-                    local caldist = #(pcoords - hcoords)
-                    if caldist >= 100 then
+                    local callDist = #(pcoords - hcoords)
+                    if callDist >= 100 then
                         DeleteEntity(MyHorse)
                         Wait(1000)
                         MyHorse = 0
@@ -639,6 +642,21 @@ Citizen.CreateThread(function()
                 TriggerServerEvent('oss_stables:GetSelectedHorse')
                 Wait(100)
                 InitiateHorse()
+            end
+        end
+        -- Open Saddlebags (key: U)
+        if Citizen.InvokeNative(0x580417101DDB492F, 2, 0xD8F73058) then -- IsControlJustPressed
+            local player = PlayerPedId()
+            local pcoords = GetEntityCoords(player)
+            local hcoords = GetEntityCoords(MyHorse)
+            local invDist = #(pcoords - hcoords)
+            if invDist <= 1.0 then
+                local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459)
+                if not hasSaddlebags then
+                    VORPcore.NotifyRightTip(_U("noSaddlebags"), 5000)
+                else
+                    TriggerServerEvent('oss_stables:OpenInventory', MyHorseId)
+                end
             end
         end
         -- Horse Flee (key: F in Horse Menu)
@@ -1081,7 +1099,7 @@ AddEventHandler('onResourceStop', function(resourceName)
     end
 end)
 
-RegisterCommand("openInv", function(source, args, rawCommand)
+--[[RegisterCommand("openInv", function(source, args, rawCommand)
     local horseId = 18
     TriggerServerEvent('oss_stables:OpenHorseInventory', horseId)
-end)
+end)]]

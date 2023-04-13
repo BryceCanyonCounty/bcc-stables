@@ -6,7 +6,7 @@ end)
 
 VORPInv = exports.vorp_inventory:vorp_inventoryApi()
 
-RegisterNetEvent('oss_stables:GetMyHorses')
+RegisterServerEvent('oss_stables:GetMyHorses')
 AddEventHandler('oss_stables:GetMyHorses', function()
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
@@ -19,7 +19,7 @@ AddEventHandler('oss_stables:GetMyHorses', function()
     end)
 end)
 
-RegisterNetEvent('oss_stables:BuyHorse')
+RegisterServerEvent('oss_stables:BuyHorse')
 AddEventHandler('oss_stables:BuyHorse', function(data)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
@@ -34,7 +34,9 @@ AddEventHandler('oss_stables:BuyHorse', function(data)
             TriggerClientEvent('oss_stables:StableMenu', _source)
             return
         end
+
         Wait(200)
+
         if data.IsCash then
             local charCash = Character.money
             local cashPrice = data.Cash
@@ -46,6 +48,7 @@ AddEventHandler('oss_stables:BuyHorse', function(data)
                 TriggerClientEvent('oss_stables:StableMenu', _source)
                 return
             end
+
         else
             local charGold = Character.gold
             local goldPrice = data.Gold
@@ -63,7 +66,7 @@ AddEventHandler('oss_stables:BuyHorse', function(data)
     end)
 end)
 
-RegisterNetEvent('oss_stables:SaveNewHorse')
+RegisterServerEvent('oss_stables:SaveNewHorse')
 AddEventHandler('oss_stables:SaveNewHorse', function(data, name)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
@@ -75,7 +78,7 @@ AddEventHandler('oss_stables:SaveNewHorse', function(data, name)
     end)
 end)
 
-RegisterNetEvent('oss_stables:SelectHorse')
+RegisterServerEvent('oss_stables:SelectHorse')
 AddEventHandler('oss_stables:SelectHorse', function(id)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
@@ -102,7 +105,7 @@ AddEventHandler('oss_stables:SelectHorse', function(id)
     end)
 end)
 
-RegisterNetEvent('oss_stables:GetSelectedHorse')
+RegisterServerEvent('oss_stables:GetSelectedHorse')
 AddEventHandler('oss_stables:GetSelectedHorse', function()
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
@@ -114,21 +117,21 @@ AddEventHandler('oss_stables:GetSelectedHorse', function()
         if #horses ~= 0 then
             for i = 1, #horses do
                 if horses[i].selected == 1 then
-                    TriggerClientEvent('oss_stables:SetHorseInfo', _source, horses[i].model, horses[i].name, horses[i].components)
+                    TriggerClientEvent('oss_stables:SetHorseInfo', _source, horses[i].id, horses[i].model, horses[i].name, horses[i].components)
                 end
             end
         end
     end)
 end)
 
-RegisterNetEvent('oss_stables:UpdateComponents')
-AddEventHandler('oss_stables:UpdateComponents', function(components, idhorse, MyHorse_entity)
+RegisterServerEvent('oss_stables:UpdateComponents')
+AddEventHandler('oss_stables:UpdateComponents', function(components, horseId, MyHorse_entity)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
     local encodedComponents = json.encode(components)
-    local id = idhorse
+    local id = horseId
 
     MySQL.Async.execute('UPDATE player_horses SET components = ? WHERE identifier = ? AND charid = ? AND id = ?', {encodedComponents, identifier, charid, id},
     function(done)
@@ -136,7 +139,7 @@ AddEventHandler('oss_stables:UpdateComponents', function(components, idhorse, My
     end)
 end)
 
-RegisterNetEvent('oss_stables:SellHorse')
+RegisterServerEvent('oss_stables:SellHorse')
 AddEventHandler('oss_stables:SellHorse', function(id)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
@@ -169,12 +172,17 @@ AddEventHandler('oss_stables:SellHorse', function(id)
     end)
 end)
 
-RegisterServerEvent('oss_stables:OpenHorseInventory')
-AddEventHandler('oss_stables:OpenHorseInventory', function(id)
+RegisterServerEvent('oss_stables:RegisterInventory')
+AddEventHandler('oss_stables:RegisterInventory', function(id)
+
+    VORPInv.registerInventory("horse_" .. tostring(id), _U("horseInv"), tonumber(Config.invLimit))
+end)
+
+RegisterServerEvent('oss_stables:OpenInventory')
+AddEventHandler('oss_stables:OpenInventory', function(id)
     local _source = source
-    local invId = "horse_" .. tostring(id)
-    VORPInv.registerInventory(invId, _U("horseInv"), tonumber(Config.invLimit))
-    VORPInv.OpenInv(_source, invId)
+
+    VORPInv.OpenInv(_source, "horse_" .. tostring(id))
 end)
 
 RegisterServerEvent('oss_stables:GetPlayerItem')
@@ -187,6 +195,7 @@ AddEventHandler('oss_stables:GetPlayerItem', function(item)
         else
             VORPcore.NotifyRightTip(_source, _U("noBrush"), 5000)
         end
+
     elseif item == "haycube" then
         local haycube = VORPInv.getItem(_source, "consumable_haycube")
         if haycube then
