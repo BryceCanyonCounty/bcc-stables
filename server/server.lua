@@ -88,8 +88,8 @@ AddEventHandler('oss_stables:SelectHorse', function(id)
     MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', {identifier, charid},
     function(horse)
         for i = 1, #horse do
-            local horseID = horse[i].id
-            MySQL.Async.execute('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', {0, identifier, charid, horseID},
+            local horseId = horse[i].id
+            MySQL.Async.execute('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', {0, identifier, charid, horseId},
             function(done)
             end)
 
@@ -98,7 +98,6 @@ AddEventHandler('oss_stables:SelectHorse', function(id)
             if horse[i].id == id then
                 MySQL.Async.execute('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', {1, identifier, charid, id},
                 function(done)
-                    TriggerClientEvent('oss_stables:SetHorseInfo', _source, horse[i].model, horse[i].name, horse[i].components)
                 end)
             end
         end
@@ -117,9 +116,11 @@ AddEventHandler('oss_stables:GetSelectedHorse', function()
         if #horses ~= 0 then
             for i = 1, #horses do
                 if horses[i].selected == 1 then
-                    TriggerClientEvent('oss_stables:SetHorseInfo', _source, horses[i].id, horses[i].model, horses[i].name, horses[i].components)
+                    TriggerClientEvent('oss_stables:SetHorseInfo', _source, horses[i].model, horses[i].name, horses[i].components, horses[i].id)
                 end
             end
+        else
+            VORPcore.NotifyRightTip(_source, _U("noHorses"), 5000)
         end
     end)
 end)
