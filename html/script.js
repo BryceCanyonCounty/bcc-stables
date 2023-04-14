@@ -4,7 +4,7 @@ window.addEventListener('message', function(event) {
     const action    = event.data.action;
     const custom    = event.data.customize;
     const shopData  = event.data.shopData;
-    const horseData = event.data.myHorsesData;
+    const myHorsesData = event.data.myHorsesData;
 
     if (action === "hide") {$("#creatormenu").fadeOut(1000);};
     if (action === "show") {$("#creatormenu").fadeIn(1000);};
@@ -62,12 +62,12 @@ window.addEventListener('message', function(event) {
         const location  = event.data.location;
         document.getElementById('stable_name').innerHTML = location;
     };
-    if (horseData) {
+    if (myHorsesData) {
         $('#page_myhorses .scroll-container .collapsible').html('');
         $('.collapsible').collapsible();
-        for (const [ind, tab] of Object.entries(horseData)) {
+        for (const [ind, tab] of Object.entries(myHorsesData)) {
             const horseName = tab.name;
-            const horseID = tab.id;
+            const horseId = tab.id;
             const horseModel = tab.model;
             const components = tab.components;
             $('#page_myhorses .scroll-container .collapsible').append(`
@@ -77,17 +77,17 @@ window.addEventListener('message', function(event) {
                             <h6 class="grey-text plus">${horseName}</h6>
                         </div>
                     </div>
-                    <div class="collapsible-body col s12 panel-myhorse item" id="${horseID}">
-                        <button class="col s6 panel-col item-myhorse" onclick="SelectHorse(${horseID})">Select</button>
-                        <button class="col s6 panel-col item-myhorse" onclick="SellHorse(${horseID})">Sell</button>
+                    <div class="collapsible-body col s12 panel-myhorse item" id="${horseId}">
+                        <button class="col s6 panel-col item-myhorse" onclick="SelectHorse(${horseId})">Select</button>
+                        <button class="col s6 panel-col item-myhorse" onclick="SellHorse(${horseId})">Sell</button>
                     </div>
                 </li> 
             `);
-            $(`#page_myhorses .scroll-container .collapsible #${horseID}`).hover(function() {  
+            $(`#page_myhorses .scroll-container .collapsible #${horseId}`).hover(function() {  
                 $(this).click(function() { 
-                    $(horseID).addClass("selected");
+                    $(horseId).addClass("selected");
                     $('.selected').removeClass("selected");
-                    $.post('http://oss_stables/loadMyHorse', JSON.stringify({ IdHorse: horseID, HorseModel: horseModel, HorseComp: components}));
+                    $.post('http://oss_stables/loadMyHorse', JSON.stringify({ IdHorse: horseId, HorseModel: horseModel, HorseComp: components}));
                 });                         
             }, function() {});
         };
@@ -123,7 +123,7 @@ $('.menu-selectb').on('click', function() {
 });
 
 function SelectHorse(IdHorse) {    
-    $.post('http://oss_stables/selectHorse', JSON.stringify({horseID: IdHorse}));
+    $.post('http://oss_stables/selectHorse', JSON.stringify({horseId: IdHorse}));
 };
 
 function rotate(direction) {
@@ -144,7 +144,7 @@ function buyHorse(modelH, price, isCash) {
 };
 
 function SellHorse(IdHorse) {    
-    $.post('http://oss_stables/sellHorse', JSON.stringify({horseID: IdHorse}));
+    $.post('http://oss_stables/sellHorse', JSON.stringify({horseId: IdHorse}));
     $('#button-customization').addClass("disabled");
     $('#page_myhorses .scroll-container .collapsible').html('');
     $('#page_shop .scroll-container .collapsible').html('');
