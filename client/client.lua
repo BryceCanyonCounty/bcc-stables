@@ -46,6 +46,7 @@ local HorseModel
 local HorseName
 local HorseComponents = {}
 local Initializing = false
+local CallTimer = false
 
 TriggerEvent("getCore", function(core)
     VORPcore = core
@@ -382,6 +383,7 @@ AddEventHandler('oss_stables:SetHorseName', function(data)
 
         Wait(1000)
         TriggerServerEvent('oss_stables:GetMyHorses')
+        VORPcore.NotifyRightTip(_U("selectHorse"), 5000)
 		end
     end)
 end)
@@ -435,15 +437,16 @@ end)
 
 -- Select Active Horse
 RegisterNUICallback("selectHorse", function(data)
-    TriggerServerEvent('oss_stables:SelectHorse', tonumber(data.horseID))
+    TriggerServerEvent('oss_stables:SelectHorse', tonumber(data.horseId))
 end)
 
 RegisterNetEvent('oss_stables:SetHorseInfo')
-AddEventHandler('oss_stables:SetHorseInfo', function(horse_id, horse_model, horse_name, horse_components)
-    MyHorseId = horse_id
-    HorseModel = horse_model
-    HorseName = horse_name
-    HorseComponents = horse_components
+AddEventHandler('oss_stables:SetHorseInfo', function(model, name, components, id)
+    HorseModel = model
+    HorseName = name
+    HorseComponents = components
+    MyHorseId = id
+    InitiateHorse()
 end)
 
 -- Close Stable Menu
@@ -526,11 +529,10 @@ function NativeSetPedComponentEnabled(ped, component)
 end
 
 -- Spawn Player Horse
-function InitiateHorse(atCoords)
+function InitiateHorse()
     if Initializing then
         return
     end
-
     Initializing = true
 
     if MyHorse ~= 0 then
@@ -549,23 +551,19 @@ function InitiateHorse(atCoords)
     end
 
     local spawnPosition
-    if atCoords == nil then
-        local x, y, z = table.unpack(pCoords)
-        local nodePosition = GetClosestVehicleNode(x, y, z, 1, 3.0, 0.0)
-        local index = 0
-        while index <= 25 do
-            local _bool, _nodePosition = GetNthClosestVehicleNode(x, y, z, index, 1, 3.0, 2.5)
-            if _bool == true or _bool == 1 then
-                nodePosition = _nodePosition
-                index = index + 3
-            else
-                break
-            end
+    local x, y, z = table.unpack(pCoords)
+    local nodePosition = GetClosestVehicleNode(x, y, z, 1, 3.0, 0.0)
+    local index = 0
+    while index <= 25 do
+        local _bool, _nodePosition = GetNthClosestVehicleNode(x, y, z, index, 1, 3.0, 2.5)
+        if _bool == true or _bool == 1 then
+            nodePosition = _nodePosition
+            index = index + 3
+        else
+            break
         end
-        spawnPosition = nodePosition
-    else
-        spawnPosition = atCoords
     end
+    spawnPosition = nodePosition
 
     if spawnPosition == nil then
         Initializing = false
@@ -625,7 +623,7 @@ Citizen.CreateThread(function()
         Citizen.Wait(1)
         -- Whistle for Horse (key: H)
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- IsDisabledControlJustPressed
-			CallHorse()
+			CallCheck()
         end
         -- Open Saddlebags (key: U)
         if Citizen.InvokeNative(0x580417101DDB492F, 2, 0xD8F73058) then -- IsControlJustPressed
@@ -638,6 +636,18 @@ Citizen.CreateThread(function()
     end
 end)
 
+-- Call Owned Horse
+function CallCheck()
+    if not CallTimer then
+        CallHorse()
+        CallTimer = true
+        Wait(5000)
+        CallTimer = false
+    else
+        return
+    end
+end
+
 function CallHorse()
     local player = PlayerPedId()
     if MyHorse ~= 0 then
@@ -647,9 +657,7 @@ function CallHorse()
             local callDist = #(pcoords - hcoords)
             if callDist >= 100 then
                 DeleteEntity(MyHorse)
-
                 Wait(1000)
-
                 MyHorse = 0
             else
                 TaskGoToEntity(MyHorse, player, -1, 4, 2.0, 0, 0)
@@ -657,13 +665,10 @@ function CallHorse()
         end
     else
         TriggerServerEvent('oss_stables:GetSelectedHorse')
-
-        Wait(100)
-
-        InitiateHorse()
     end
 end
 
+-- Open Horse Inventory
 function OpenInventory()
     local pcoords = GetEntityCoords(PlayerPedId())
     local hcoords = GetEntityCoords(MyHorse)
@@ -678,16 +683,13 @@ function OpenInventory()
     end
 end
 
+-- Send Horse Away
 function FleeHorse()
     if MyHorse ~= 0 then
         TaskAnimalFlee(MyHorse, PlayerPedId(), -1)
-
         Wait(10000)
-
         DeleteEntity(MyHorse)
-
         Wait(1000)
-
         MyHorse = 0
     end
 end
@@ -944,7 +946,7 @@ end)
 -- Sell Player Horse
 RegisterNUICallback("sellHorse", function(data)
     DeleteEntity(MyHorse_entity)
-    TriggerServerEvent('oss_stables:SellHorse', tonumber(data.horseID))
+    TriggerServerEvent('oss_stables:SellHorse', tonumber(data.horseId))
     TriggerServerEvent('oss_stables:GetMyHorses')
     Wait(300)
 
@@ -1126,8 +1128,3 @@ AddEventHandler('onResourceStop', function(resourceName)
         end
     end
 end)
-
---[[RegisterCommand("openInv", function(source, args, rawCommand)
-    local horseId = 18
-    TriggerServerEvent('oss_stables:OpenHorseInventory', horseId)
-end)]]
