@@ -355,11 +355,9 @@ RegisterNUICallback("BuyHorse", function(data)
 end)
 
 RegisterNetEvent('oss_stables:SetHorseName')
-AddEventHandler('oss_stables:SetHorseName', function(data)
+AddEventHandler('oss_stables:SetHorseName', function(data, action)
     SetNuiFocus(false, false)
-    SendNUIMessage({
-        action = "hide"
-    })
+    SendNUIMessage({ action = "hide" })
 
     Wait(200)
     local horseName = ""
@@ -372,7 +370,12 @@ AddEventHandler('oss_stables:SetHorseName', function(data)
 		end
 		if (GetOnscreenKeyboardResult()) then
             horseName = GetOnscreenKeyboardResult()
-            TriggerServerEvent('oss_stables:SaveNewHorse', data, horseName)
+            if action == "newHorse" then
+                TriggerServerEvent('oss_stables:SaveNewHorse', data, horseName)
+
+            elseif action == "rename" then
+                TriggerServerEvent('oss_stables:UpdateHorseName', data, horseName)
+            end
 
             SetNuiFocus(true, true)
             SendNUIMessage({
@@ -383,9 +386,14 @@ AddEventHandler('oss_stables:SetHorseName', function(data)
 
         Wait(1000)
         TriggerServerEvent('oss_stables:GetMyHorses')
-        VORPcore.NotifyRightTip(_U("selectHorse"), 5000)
 		end
     end)
+end)
+
+-- Rename Owned Horse
+RegisterNUICallback("RenameHorse", function(data)
+    local action = "rename"
+    TriggerEvent('oss_stables:SetHorseName', data, action)
 end)
 
 -- View Player Owned Horses

@@ -78,8 +78,9 @@ window.addEventListener('message', function(event) {
                         </div>
                     </div>
                     <div class="collapsible-body col s12 panel-myhorse item" id="${horseId}">
-                        <button class="col s6 panel-col item-myhorse" onclick="SelectHorse(${horseId})">Select</button>
-                        <button class="col s6 panel-col item-myhorse" onclick="SellHorse(${horseId})">Sell</button>
+                        <button class="col s4 panel-col item-myhorse" onclick="SelectHorse(${horseId})">Select</button>
+                        <button class="col s4 panel-col item-myhorse" onclick="RenameHorse(${horseId})">Rename</button>
+                        <button class="col s4 panel-col item-myhorse" onclick="SellHorse(${horseId})">Sell</button>
                     </div>
                 </li> 
             `);
@@ -142,6 +143,14 @@ function buyHorse(modelH, price, isCash) {
         $.post('http://oss_stables/BuyHorse', JSON.stringify({ ModelH: modelH, Gold: price, IsCash: isCash }));
     };
 };
+
+function RenameHorse(IdHorse) {
+    $('#button-customization').addClass("disabled");
+    $('#page_myhorses .scroll-container .collapsible').html('');
+    $('#page_shop .scroll-container .collapsible').html('');
+    $("#creatormenu").fadeOut(1000);
+    $.post('http://oss_stables/RenameHorse', JSON.stringify({horseId: IdHorse}));
+}
 
 function SellHorse(IdHorse) {    
     $.post('http://oss_stables/sellHorse', JSON.stringify({horseId: IdHorse}));

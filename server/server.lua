@@ -61,8 +61,8 @@ AddEventHandler('oss_stables:BuyHorse', function(data)
                 return
             end
         end
-
-        TriggerClientEvent('oss_stables:SetHorseName', _source, data)
+        local action = "newHorse"
+        TriggerClientEvent('oss_stables:SetHorseName', _source, data, action)
     end)
 end)
 
@@ -74,7 +74,17 @@ AddEventHandler('oss_stables:SaveNewHorse', function(data, name)
     local charid = Character.charIdentifier
 
     MySQL.Async.execute('INSERT INTO player_horses (identifier, charid, name, model) VALUES (?, ?, ?, ?)', {identifier, charid, tostring(name), data.ModelH},
-        function(done)
+    function(done)
+        VORPcore.NotifyRightTip(_source, _U("selectHorse"), 5000)
+    end)
+end)
+
+RegisterServerEvent('oss_stables:UpdateHorseName')
+AddEventHandler('oss_stables:UpdateHorseName', function(data, name)
+    local horseId = data.horseId
+
+    MySQL.Async.execute('UPDATE player_horses SET name = ? WHERE id = ?', {name, horseId},
+    function(done)
     end)
 end)
 
