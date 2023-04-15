@@ -584,32 +584,10 @@ function InitiateHorse()
     Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0) -- PlaceEntityOnGroundProperly
     Citizen.InvokeNative(0x4DB9D03AC4E1FA84, MyHorse, -1, -1, 0) -- SetPedWrithingDuration
     Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
-    Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, joaat("PLAYER_HORSE"))
-    Citizen.InvokeNative(0xFD6943B6DF77E449, MyHorse, false) -- SetPedCanBeLassoed
-    Citizen.InvokeNative(0xC80A74AC829DDD92, MyHorse, GetPedRelationshipGroupHash(MyHorse)) -- SetPedRelationshipGroupHash
-    Citizen.InvokeNative(0xBF25EB89375A37AD, 1, GetPedRelationshipGroupHash(MyHorse), "PLAYER") -- SetRelationshipBetweenGroups
-    Citizen.InvokeNative(0x931B241409216C1F, player, MyHorse, 1) -- SetPedOwnsAnimal
-    Citizen.InvokeNative(0xD2CB0FB0FDCB473D, player, MyHorse) -- SetPedAsSaddleHorseForPlayer
-
-    SetPedConfigFlag(MyHorse, 324, true)
-    SetPedConfigFlag(MyHorse, 211, true) -- GiveAmbientDefaultTaskIfMissionPed
-    SetPedConfigFlag(MyHorse, 208, true)
-    SetPedConfigFlag(MyHorse, 209, true)
-    SetPedConfigFlag(MyHorse, 400, true)
-    SetPedConfigFlag(MyHorse, 297, true) -- EnableHorseLeading
-    SetPedConfigFlag(MyHorse, 136, false) -- DisableHorseMount
-    SetPedConfigFlag(MyHorse, 312, false) -- DisableHorseGunshotFleeResponse
-    SetPedConfigFlag(MyHorse, 113, false) -- DisableShockingEvents
-    SetPedConfigFlag(MyHorse, 301, false) -- DisablePedCanBeTargeted
-    SetPedConfigFlag(MyHorse, 277, true)
-    SetPedConfigFlag(MyHorse, 319, true) -- EnableAsVehicleTransitionDestination
-    SetPedConfigFlag(MyHorse, 6, true) -- DontInfluenceWantedLevel
-
-    SetAnimalTuningBoolParam(MyHorse, 25, false)
-    SetAnimalTuningBoolParam(MyHorse, 24, false)
-
-    TaskAnimalUnalerted(MyHorse, -1, false, 0, 0)
+    Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse) -- SetPlayerOwnsMount
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse, true) -- SetRandomOutfitVariation
+
+    SetPedConfigFlag(MyHorse, 297, true) -- EnableHorseLeading
 
     SetPedPromptName(MyHorse, HorseName)
 
