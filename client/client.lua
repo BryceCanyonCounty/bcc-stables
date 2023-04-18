@@ -583,11 +583,12 @@ function InitiateHorse()
 
     Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0) -- PlaceEntityOnGroundProperly
     Citizen.InvokeNative(0x4DB9D03AC4E1FA84, MyHorse, -1, -1, 0) -- SetPedWrithingDuration
-    Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
     Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse) -- SetPlayerOwnsMount
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse, true) -- SetRandomOutfitVariation
-
     SetPedConfigFlag(MyHorse, 297, true) -- EnableHorseLeading
+
+    local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
+    Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, HorseName) -- SetBlipName
 
     SetPedPromptName(MyHorse, HorseName)
 
