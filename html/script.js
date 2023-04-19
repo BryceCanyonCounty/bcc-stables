@@ -72,22 +72,19 @@ window.addEventListener('message', function(event) {
             const components = tab.components;
             $('#page_myhorses .scroll-container .collapsible').append(`
                 <li>
-                    <div id="heads" class="collapsible-header col s12 panel">
+                    <div id="${horseId}" class="collapsible-header col s12 panel">
                         <div class="col s12 panel-title">
-                            <h6 class="grey-text plus">${horseName}</h6>
+                            <h6 class="grey-text plus" onclick="SelectHorse(${horseId})">${horseName}</h6>
                         </div>
                     </div>
-                    <div class="collapsible-body col s12 panel-myhorse item" id="${horseId}">
-                        <button class="col s4 panel-col item-myhorse" onclick="SelectHorse(${horseId})">Select</button>
-                        <button class="col s4 panel-col item-myhorse" onclick="RenameHorse(${horseId})">Rename</button>
-                        <button class="col s4 panel-col item-myhorse" onclick="SellHorse(${horseId})">Sell</button>
+                    <div class="collapsible-body col s12 panel-myhorse item">
+                        <button class="col s6 panel-col item-myhorse" onclick="RenameHorse(${horseId})">Rename</button>
+                        <button class="col s6 panel-col item-myhorse" onclick="SellHorse(${horseId})">Sell</button>
                     </div>
                 </li> 
             `);
             $(`#page_myhorses .scroll-container .collapsible #${horseId}`).hover(function() {  
-                $(this).click(function() { 
-                    $(horseId).addClass("selected");
-                    $('.selected').removeClass("selected");
+                $(this).click(function() {
                     $.post('http://oss_stables/loadMyHorse', JSON.stringify({ IdHorse: horseId, HorseModel: horseModel, HorseComp: components}));
                 });                         
             }, function() {});
