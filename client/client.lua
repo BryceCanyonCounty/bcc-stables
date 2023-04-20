@@ -319,14 +319,11 @@ RegisterNUICallback("loadHorse", function(data)
         MyHorse_entity = nil
     end
 
-    local modelHash = joaat(horseModel)
-    if IsModelValid(modelHash) then
-        if not HasModelLoaded(modelHash) then
-            RequestModel(modelHash)
-            while not HasModelLoaded(modelHash) do
-                Citizen.Wait(10)
-            end
-        end
+    local model = joaat(horseModel)
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        RequestModel(model)
+        Citizen.Wait(100)
     end
 
     if ShowroomHorse_entity ~= nil then
@@ -334,7 +331,7 @@ RegisterNUICallback("loadHorse", function(data)
         ShowroomHorse_entity = nil
     end
 
-    ShowroomHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
+    ShowroomHorse_entity = CreatePed(model, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
     Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShowroomHorse_entity, true) -- FreezeEntityPosition
@@ -405,21 +402,19 @@ RegisterNUICallback("loadMyHorse", function(data)
         ShowroomHorse_entity = nil
     end
 
+    local model = joaat(horseModel)
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        RequestModel(model)
+        Citizen.Wait(100)
+    end
+
     if MyHorse_entity ~= nil then
         DeleteEntity(MyHorse_entity)
         MyHorse_entity = nil
     end
 
-    local modelHash = joaat(horseModel)
-
-    if not HasModelLoaded(modelHash) then
-        RequestModel(modelHash)
-        while not HasModelLoaded(modelHash) do
-            Citizen.Wait(10)
-        end
-    end
-
-    MyHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
+    MyHorse_entity = CreatePed(model, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyHorse_entity, true) -- FreezeEntityPosition
