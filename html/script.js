@@ -73,8 +73,8 @@ window.addEventListener('message', function(event) {
             $('#page_myhorses .scroll-container .collapsible').append(`
                 <li>
                     <div id="${horseId}" class="collapsible-header col s12 panel">
-                        <div class="col s12 panel-title">
-                            <h6 class="grey-text plus" onclick="SelectHorse(${horseId})">${horseName}</h6>
+                        <div class="col s12 panel-title" onclick="SelectHorse(${horseId})">
+                            <h6 class="grey-text plus">${horseName}</h6>
                         </div>
                     </div>
                     <div class="collapsible-body col s12 panel-myhorse item">
