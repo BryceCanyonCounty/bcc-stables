@@ -579,7 +579,6 @@ function InitiateHorse()
     SetModelAsNoLongerNeeded(model)
 
     Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0) -- PlaceEntityOnGroundProperly
-    Citizen.InvokeNative(0x4DB9D03AC4E1FA84, MyHorse, -1, -1, 0) -- SetPedWrithingDuration
     Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse) -- SetPlayerOwnsMount
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse, true) -- SetRandomOutfitVariation
     SetPedConfigFlag(MyHorse, 297, true) -- EnableHorseLeading
@@ -980,6 +979,11 @@ function Rotation(dir)
         SetEntityHeading(shopHorse, shopRot % 360)
     end
 end
+
+RegisterCommand('horseRespawn', function(source, args, rawCommand)
+    Initializing = false
+    TriggerServerEvent('oss_stables:GetSelectedHorse')
+end)
 
 -- Menu Prompts
 function ShopOpen()
