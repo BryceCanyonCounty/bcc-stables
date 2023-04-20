@@ -46,7 +46,6 @@ local HorseModel
 local HorseName
 local HorseComponents = {}
 local Initializing = false
-local CallTimer = false
 
 TriggerEvent("getCore", function(core)
     VORPcore = core
@@ -320,14 +319,11 @@ RegisterNUICallback("loadHorse", function(data)
         MyHorse_entity = nil
     end
 
-    local modelHash = joaat(horseModel)
-    if IsModelValid(modelHash) then
-        if not HasModelLoaded(modelHash) then
-            RequestModel(modelHash)
-            while not HasModelLoaded(modelHash) do
-                Citizen.Wait(10)
-            end
-        end
+    local model = joaat(horseModel)
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        RequestModel(model)
+        Citizen.Wait(100)
     end
 
     if ShowroomHorse_entity ~= nil then
@@ -335,7 +331,7 @@ RegisterNUICallback("loadHorse", function(data)
         ShowroomHorse_entity = nil
     end
 
-    ShowroomHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
+    ShowroomHorse_entity = CreatePed(model, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
     Citizen.InvokeNative(0x283978A15512B2FE, ShowroomHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShowroomHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShowroomHorse_entity, true) -- FreezeEntityPosition
@@ -406,21 +402,19 @@ RegisterNUICallback("loadMyHorse", function(data)
         ShowroomHorse_entity = nil
     end
 
+    local model = joaat(horseModel)
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        RequestModel(model)
+        Citizen.Wait(100)
+    end
+
     if MyHorse_entity ~= nil then
         DeleteEntity(MyHorse_entity)
         MyHorse_entity = nil
     end
 
-    local modelHash = joaat(horseModel)
-
-    if not HasModelLoaded(modelHash) then
-        RequestModel(modelHash)
-        while not HasModelLoaded(modelHash) do
-            Citizen.Wait(10)
-        end
-    end
-
-    MyHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
+    MyHorse_entity = CreatePed(model, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity) -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyHorse_entity, true) -- FreezeEntityPosition
@@ -548,38 +542,41 @@ function InitiateHorse()
         MyHorse = 0
     end
 
+    local model = joaat(HorseModel)
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        RequestModel(model)
+        Citizen.Wait(100)
+    end
+
     local player = PlayerPedId()
-    local pCoords = GetEntityCoords(player)
-    local modelHash = joaat(HorseModel)
-    if not HasModelLoaded(modelHash) then
-        RequestModel(modelHash)
-        while not HasModelLoaded(modelHash) do
-            Citizen.Wait(10)
+    local x, y, z = table.unpack(GetOffsetFromEntityInWorldCoords(player, 0.0, -40.0, 0.0))
+    local gChk, groundZ = nil, nil
+    for height = 1, 1000 do
+        gChk, groundZ = GetGroundZAndNormalFor_3dCoord(x, y, height + 0.0)
+        if gChk then
+            break
         end
     end
 
-    local spawnPosition
-    local x, y, z = table.unpack(pCoords)
-    local nodePosition = GetClosestVehicleNode(x, y, z, 1, 3.0, 0.0)
+    local spawnPosition = nil
     local index = 0
     while index <= 25 do
         local _bool, _nodePosition = GetNthClosestVehicleNode(x, y, z, index, 1, 3.0, 2.5)
-        if _bool == true or _bool == 1 then
-            nodePosition = _nodePosition
+        if _bool then
+            spawnPosition = _nodePosition
             index = index + 3
         else
             break
         end
     end
-    spawnPosition = nodePosition
 
-    if spawnPosition == nil then
-        Initializing = false
-        return
+    if spawnPosition then
+        MyHorse = CreatePed(model, spawnPosition, GetEntityHeading(player), true, true)
+    else
+        MyHorse = CreatePed(model, x, y, groundZ + 2, GetEntityHeading(player), true, true)
     end
-
-    MyHorse = CreatePed(modelHash, spawnPosition, GetEntityHeading(player), true, true)
-    SetModelAsNoLongerNeeded(modelHash)
+    SetModelAsNoLongerNeeded(model)
 
     Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0) -- PlaceEntityOnGroundProperly
     Citizen.InvokeNative(0x4DB9D03AC4E1FA84, MyHorse, -1, -1, 0) -- SetPedWrithingDuration
@@ -610,7 +607,7 @@ Citizen.CreateThread(function()
         Citizen.Wait(1)
         -- Whistle for Horse (key: H)
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- IsDisabledControlJustPressed
-			CallCheck()
+			CallHorse()
         end
         -- Open Saddlebags (key: U)
         if Citizen.InvokeNative(0x580417101DDB492F, 2, 0xD8F73058) then -- IsControlJustPressed
@@ -624,17 +621,6 @@ Citizen.CreateThread(function()
 end)
 
 -- Call Owned Horse
-function CallCheck()
-    if not CallTimer then
-        CallHorse()
-        CallTimer = true
-        Wait(5000)
-        CallTimer = false
-    else
-        return
-    end
-end
-
 function CallHorse()
     local player = PlayerPedId()
     if MyHorse ~= 0 then
