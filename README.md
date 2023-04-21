@@ -19,6 +19,7 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Feed your horse (haycubes), using the horse menu, to increase horse's health and stamina
 - Brushing your horse, using the horse menu, will clean him and give a slight increase in health
 - Configurable cooldown time for feeding and brushing
+- If unable to reach your horse use command: `/horseRespawn` 
 
 #### Dependencies
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
