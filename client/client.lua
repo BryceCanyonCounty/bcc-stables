@@ -358,7 +358,7 @@ AddEventHandler('oss_stables:SetHorseName', function(data, action)
     Wait(200)
     local horseName = ""
 	Citizen.CreateThread(function()
-		AddTextEntry('FMMC_MPM_NA', "Name your horse:")
+		AddTextEntry('FMMC_MPM_NA', _U("nameHorse"))
 		DisplayOnscreenKeyboard(1, "FMMC_MPM_NA", "", "", "", "", "", 30)
 		while (UpdateOnscreenKeyboard() == 0) do
 			DisableAllControlActions(0)
@@ -380,8 +380,8 @@ AddEventHandler('oss_stables:SetHorseName', function(data, action)
                 location = StableName
             })
 
-        Wait(1000)
-        TriggerServerEvent('oss_stables:GetMyHorses')
+            Wait(1000)
+            TriggerServerEvent('oss_stables:GetMyHorses')
 		end
     end)
 end)
@@ -580,7 +580,6 @@ function InitiateHorse()
 
     Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0) -- PlaceEntityOnGroundProperly
     Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse) -- SetPlayerOwnsMount
-    --Citizen.InvokeNative(0xD2CB0FB0FDCB473D, player, MyHorse) -- SetPedAsSaddleHorseForPlayer
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse, true) -- SetRandomOutfitVariation
     SetPedConfigFlag(MyHorse, 297, true) -- EnableHorseLeading
     SetPedConfigFlag(MyHorse, 312, true) -- DisableHorseGunshotFleeResponse
@@ -606,7 +605,7 @@ end
 -- Horse Actions
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(1)
+        Citizen.Wait(0)
         -- Whistle for Horse (key: H)
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- IsDisabledControlJustPressed
 			CallHorse()
@@ -693,50 +692,44 @@ Citizen.CreateThread(function()
 end)
 
 RegisterNetEvent('oss_stables:BrushHorse')
-AddEventHandler('oss_stables:BrushHorse', function(data)
-    local horsebrush = data.name
-    if horsebrush == "horsebrush" then
-        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat("Interaction_Brush"), joaat("p_brushHorse02x"), 1) -- TaskAnimalInteraction
-        local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
+AddEventHandler('oss_stables:BrushHorse', function()
+    Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat("Interaction_Brush"), joaat("p_brushHorse02x"), 1) -- TaskAnimalInteraction
+    local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
 
-        Wait(5000)
+    Wait(5000)
 
-        Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.brushHealthBoost) -- SetAttributeCoreValue
-        Citizen.InvokeNative(0x6585D955A68452A5, MyHorse) -- ClearPedEnvDirt
-        Citizen.InvokeNative(0x523C79AEEFCC4A2A, MyHorse, 10, "ALL") -- ClearPedDamageDecalByZone
-        Citizen.InvokeNative(0x8FE22675A5A45817, MyHorse) -- ClearPedBloodDamage
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.brushHealthBoost) -- SetAttributeCoreValue
+    Citizen.InvokeNative(0x6585D955A68452A5, MyHorse) -- ClearPedEnvDirt
+    Citizen.InvokeNative(0x523C79AEEFCC4A2A, MyHorse, 10, "ALL") -- ClearPedDamageDecalByZone
+    Citizen.InvokeNative(0x8FE22675A5A45817, MyHorse) -- ClearPedBloodDamage
 
-        local bCooldown = math.ceil(Config.brushCooldown / 60000)
-        VORPcore.NotifyRightTip(_U("brushCooldown") .. bCooldown .. _U("minutes"), 5000)
-        BrushCooldown = true
+    local bCooldown = math.ceil(Config.brushCooldown / 60000)
+    VORPcore.NotifyRightTip(_U("brushCooldown") .. bCooldown .. _U("minutes"), 5000)
+    BrushCooldown = true
 
-        Wait(Config.brushCooldown)
+    Wait(Config.brushCooldown)
 
-        BrushCooldown = false
-    end
+    BrushCooldown = false
 end)
 
 RegisterNetEvent('oss_stables:FeedHorse')
-AddEventHandler('oss_stables:FeedHorse', function(data)
-    local haycube = data.name
-    if haycube == "consumable_haycube" then
-        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat("Interaction_Food"), joaat("s_horsnack_haycube01x"), 1) -- TaskAnimalInteraction
-        local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
-        local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1) -- GetAttributeCoreValue
+AddEventHandler('oss_stables:FeedHorse', function()
+    Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat("Interaction_Food"), 1549014409, 1) -- TaskAnimalInteraction
+    local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
+    local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1) -- GetAttributeCoreValue
 
-        Wait(3000)
+    Wait(3000)
 
-        Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.feedHealthBoost) -- SetAttributeCoreValue
-        Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, stamina + Config.feedStaminaBoost) -- SetAttributeCoreValue
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.feedHealthBoost) -- SetAttributeCoreValue
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, stamina + Config.feedStaminaBoost) -- SetAttributeCoreValue
 
-        local fCooldown = math.ceil(Config.feedCooldown / 60000)
-        VORPcore.NotifyRightTip(_U("feedCooldown") .. fCooldown .. _U("minutes"), 5000)
-        FeedCooldown = true
+    local fCooldown = math.ceil(Config.feedCooldown / 60000)
+    VORPcore.NotifyRightTip(_U("feedCooldown") .. fCooldown .. _U("minutes"), 5000)
+    FeedCooldown = true
 
-        Wait(Config.feedCooldown)
+    Wait(Config.feedCooldown)
 
-        FeedCooldown = false
-    end
+    FeedCooldown = false
 end)
 
 -- Select Horse Tack from Menu
