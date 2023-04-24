@@ -12,6 +12,7 @@ Locales["en_lang"] = {
     needJob = "To use this stable you need job: ~o~",
     horseLimit = "You can have a maximum of ~o~",
     horses = "~q~ horses!",
+    nameHorse = "Name your horse:",
     soldHorse = "You sold a horse for: $~t6~",
     horseReturned = "Your horse has been ~o~returned",
     noHorse = "You don't have a horse to return",
