@@ -1,12 +1,15 @@
 # Stables
 
 #### Important
+
 This is a "work in progress".
 
 #### Description
+
 Stables script for RedM servers using the [VORP framework](https://github.com/VORPCORE). Using the 7 original stable locations from the game. More stable locations may be added using the `config.lua` file.
 
 #### Features
+
 - Buy and sell horses through the stables
 - Cash or gold may be used for payments in the menu
 - Individual inventory for each horse
@@ -21,16 +24,21 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Configurable cooldown time for feeding and brushing
 
 #### Dependencies
+
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
 - [vorp_inventory](https://github.com/VORPCORE/vorp_inventory-lua)
 
 #### Installation
+
 - Add `oss_stables` folder to your resources folder
 - Add `ensure oss_stables` to your `resources.cfg`
 - Run the included database file `oss_stables.sql`
 
 #### Credits
+
 - lrp_stables
+- SavSin - Everything
 
 #### GitHub
+
 - https://github.com/JusCampin/oss_stables

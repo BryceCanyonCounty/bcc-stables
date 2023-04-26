@@ -1,48 +1,60 @@
 <template>
-  <div id="creatormenu" style="display: block" class="row">
-    <div id="creator-container" class="col s5">
-      <div id="head">
-        <div id="stable_name" class="header-text">{{ stableName }}</div>
+  <div class="container">
+    <div class="main">
+      <div class="header">
+        <div class="header-text">
+          {{ shopName }}
+        </div>
       </div>
 
-      <div id="button_menu" class="row main-nav-buttons">
-        <MenuButton label="Stable" @click="page = 'Stable'" />
-        <MenuButton label="Trader" @click="page = 'Trader'" />
-        <MenuButton label="Tack Shop" @click="page = 'Tack Shop'" />
+      <div class="btn-menu main-nav-buttons">
+        <MenuButton
+          label="Stable"
+          :selectedPage="page"
+          @click="page = 'Stable'"
+        />
+        <MenuButton
+          label="Trader"
+          :selectedPage="page"
+          @click="page = 'Trader'"
+        />
+        <MenuButton
+          label="Tack Shop"
+          :selectedPage="page"
+          @click="page = 'Tack Shop'"
+        />
       </div>
 
       <div class="divider-menu-top"></div>
 
-      <MyStableMenu :horses="myHorses" v-if="page == 'Stable'" />
-      <TraderMenu :horses="horses" v-else-if="page == 'Trader'" />
-      <TackShopMenu v-else />
+      <div class="scroll-container" v-if="page == 'Stable'">
+        <MyStableMenu />
+      </div>
 
-      <div class="divider-menu-top"></div>
+      <div class="scroll-container" v-else-if="page == 'Trader'">
+        <TraderMenu />
+      </div>
 
-      <div id="bottom_buttons" class="row main-bottom-buttons">
-        <button id="save" class="button-select" onclick="menuAction('save')">
+      <div class="scroll-container" v-else>
+        <TackShopMenu />
+      </div>
+
+      <div class="divider-menu-top" style="margin-top: 1rem"></div>
+
+      <div class="btn-bottom-main btn-bottom">
+        <button id="save" class="btn-select" @click="menuAction('save')">
           Save
         </button>
-        <button id="rotate_left" class="button-select" onclick="rotate('left')">
-          <i class="fas fa-chevron-left"></i>
+        <button id="rotate_left" class="btn-select" @click="rotate('left')">
+          <i class="fas fa-chevron-left center"></i>
         </button>
         <div id="rotate_label" class="rotate-text">
-          <h6 class="grey-text">Rotate</h6>
+          <h6 class="grey-text center">Rotate</h6>
         </div>
-        <button
-          id="rotate_right"
-          class="button-select"
-          onclick="rotate('right')"
-        >
-          <i class="fas fa-chevron-right"></i>
+        <button id="rotate_right" class="btn-select" @click="rotate('right')">
+          <i class="fas fa-chevron-right center"></i>
         </button>
-        <button
-          id="cancel"
-          class="button-select"
-          onclick="menuAction('cancel')"
-        >
-          Cancel
-        </button>
+        <button id="cancel" class="btn-select" @click="close()">Cancel</button>
       </div>
 
       <div class="divider-menu-bottom"></div>
@@ -51,7 +63,8 @@
 </template>
 
 <script>
-// @ is an alias to /src
+import { mapState } from "vuex";
+import api from "@/api";
 import MenuButton from "@/components/MenuButton.vue";
 import MyStableMenu from "@/components/MyStableMenu.vue";
 import TraderMenu from "@/components/TraderMenu.vue";
@@ -62,103 +75,6 @@ export default {
   data() {
     return {
       page: "Stable",
-
-      //  Temp DATA
-      stableName: "Saint Denis Stable",
-      myHorses: [
-        { id: 1, name: "Midnight" },
-        { id: 2, name: "Strawberry" },
-        { id: 3, name: "Spirit" },
-      ],
-      horses: [
-        {
-          breed: "American Paint",
-          colors: {
-            ["a_c_horse_americanpaint_greyovero"]: {
-              color: "Grey Overo",
-              cashPrice: 425,
-              goldPrice: 20,
-              sellPrice: 255,
-            },
-            ["a_c_horse_americanpaint_splashedwhite"]: {
-              color: "Splashed White",
-              cashPrice: 140,
-              goldPrice: 6,
-              sellPrice: 84,
-            },
-            ["a_c_horse_americanpaint_tobiano"]: {
-              color: "Tobiano",
-              cashPrice: 140,
-              goldPrice: 6,
-              sellPrice: 84,
-            },
-            ["a_c_horse_americanpaint_overo"]: {
-              color: "Overo",
-              cashPrice: 130,
-              goldPrice: 6,
-              sellPrice: 78,
-            },
-          },
-        },
-        {
-          breed: "American Standardbred",
-          colors: {
-            ["a_c_horse_americanstandardbred_silvertailbuckskin"]: {
-              color: "Silver Tail Buckskin",
-              cashPrice: 400,
-              goldPrice: 19,
-              sellPrice: 240,
-            },
-            ["a_c_horse_americanstandardbred_palominodapple"]: {
-              color: "Palomino Dapple",
-              cashPrice: 150,
-              goldPrice: 7,
-              sellPrice: 90,
-            },
-            ["a_c_horse_americanstandardbred_black"]: {
-              color: "Black",
-              cashPrice: 130,
-              goldPrice: 6,
-              sellPrice: 78,
-            },
-            ["a_c_horse_americanstandardbred_buckskin"]: {
-              color: "Buckskin",
-              cashPrice: 130,
-              goldPrice: 6,
-              sellPrice: 78,
-            },
-            ["a_c_horse_americanstandardbred_lightbuckskin"]: {
-              color: "Light Buckskin",
-              cashPrice: 130,
-              goldPrice: 6,
-              sellPrice: 78,
-            },
-          },
-        },
-        {
-          breed: "Andalusian",
-          colors: {
-            ["a_c_horse_andalusian_perlino"]: {
-              color: "Perlino",
-              cashPrice: 450,
-              goldPrice: 21,
-              sellPrice: 270,
-            },
-            ["a_c_horse_andalusian_rosegray"]: {
-              color: "Rose Gray",
-              cashPrice: 440,
-              goldPrice: 21,
-              sellPrice: 264,
-            },
-            ["a_c_horse_andalusian_darkbay"]: {
-              color: "Dark Bay",
-              cashPrice: 140,
-              goldPrice: 6,
-              sellPrice: 84,
-            },
-          },
-        },
-      ],
     };
   },
   components: {
@@ -167,8 +83,179 @@ export default {
     TraderMenu,
     TackShopMenu,
   },
-  methods: {},
+  methods: {
+    save() {
+      api
+        .post("CloseStable", {
+          MenuAction: "save",
+        })
+        .catch((e) => {
+          console.log(e.message);
+        });
+    },
+    close() {
+      api
+        .post("CloseStable", {
+          MenuAction: "Close",
+        })
+        .catch((e) => {
+          console.log(e.message);
+        });
+    },
+    rotate(direction) {
+      api.post("rotate", {
+        RotateHorse: direction,
+      });
+    },
+  },
+  computed: mapState(["shopName"]),
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  padding-bottom: 40px;
+  border-radius: 0px;
+  overflow: hidden;
+  position: absolute;
+  height: 80vh;
+  left: 2%;
+  top: 5%;
+  width: 420px;
+  color: #e7e7e7 !important;
+  background: url("/public/img/bgPanel.png");
+  background-size: 100% 100%;
+  display: block;
+}
+
+.header {
+  margin: 0 -0.75rem;
+  min-width: 420px;
+  border-radius: 2px;
+  overflow: hidden;
+  transition: all 0.5s;
+}
+
+.header-text {
+  position: relative;
+  padding: 20px 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 2em;
+  color: #f0f0f0;
+  font-family: "crock";
+  text-align: center;
+  background: url("/public/img/menu_header.png");
+  background-position: center;
+  background-size: 85% 85%;
+  background-repeat: no-repeat;
+}
+
+.btn-menu {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  border-radius: 0px;
+  padding: 0px 20px;
+  height: 5vh;
+  background: url("/public/img/input.png");
+  background-position: center;
+  background-size: 95% 100%;
+}
+
+.main-nav-buttons {
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.divider-menu-top,
+.divider-menu-bottom {
+  width: 90%;
+  height: 4px;
+  margin: auto auto;
+  background-image: url("/public/img/divider_line.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  opacity: 0.6;
+}
+
+.divider-menu-top {
+  margin-bottom: 10px;
+}
+
+.divider-menu-bottom {
+  margin-top: 10px;
+}
+
+.btn-bottom {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  border-radius: 0px;
+  padding: 0px 20px;
+  height: 4vh;
+  background: url("/public/img/input.png");
+  background-position: center;
+  background-size: 95% 100%;
+}
+
+.btn-bottom-main {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.btn-select {
+  flex-grow: 1;
+  border-radius: 0px;
+  height: 4vh;
+  border: 0px #fff solid;
+  font-family: "robotoslab";
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  color: #9e9e9e;
+  background-color: transparent !important;
+}
+
+.btn-select:hover {
+  background: url("/public/img/buttonv.png");
+  background-size: 100% 100%;
+  color: #f0f0f0;
+}
+
+.rotate-text {
+  font-family: "robotoslab";
+  font-weight: 500;
+  font-size: 20px;
+  margin: auto;
+  padding: 0px 5px;
+}
+
+.grey-text {
+  color: #9e9e9e;
+}
+
+.center {
+  margin: auto;
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  outline: 1px solid #313131;
+  border-radius: 5px;
+}
+
+.scroll-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 54vh;
+  width: 100%;
+}
+</style>

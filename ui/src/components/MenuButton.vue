@@ -1,5 +1,5 @@
 <template>
-  <button>{{ label }}</button>
+  <button :class="isActive ? 'active' : ''">{{ label }}</button>
 </template>
 
 <script>
@@ -7,6 +7,12 @@ export default {
   name: "MenuButton",
   props: {
     label: String,
+    selectedPage: String,
+  },
+  computed: {
+    isActive() {
+      return this.label == this.selectedPage;
+    },
   },
 };
 </script>
@@ -33,7 +39,7 @@ button:hover {
   cursor: pointer;
 }
 
-button:active {
+button.active {
   background: url("/public/img/input.png");
   background-size: 100% 100%;
   color: #f0f0f0;

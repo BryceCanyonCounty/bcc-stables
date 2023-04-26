@@ -433,7 +433,30 @@ Config.Horses = { -- Gold to Dollar Ratio Based on 1899 Gold Price / sellPrice i
 			["a_c_donkey_01"] = { color = "Donkey", cashPrice = 15, goldPrice = 1, sellPrice = 9 },
 			["a_c_horse_mp_mangy_backup"] = { color = "Mangy", cashPrice = 15, goldPrice = 1, sellPrice = 9 },
 		}
-	}
+	},
+	{
+		breed = "Special",
+		colors = {
+			["a_c_horse_eagleflies"] = { color = "Eagle Flies Horse", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_bill"] = { color = "Brown Jack", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_charles"] = { color = "Spot", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_charles_endlesssummer"] = { color = "Falmouth", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_dutch"] = { color = "Arthur", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_hosea"] = { color = "Silver Dollar", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_javier"] = { color = "Boaz", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_john"] = { color = "Old Boy", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_karen"] = { color = "Old Belle", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_kieran"] = { color = "Branwen", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_lenny"] = { color = "Mag", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_micah"] = { color = "Ghost", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_sadie"] = { color = "Bob", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_sadie_endlesssummer"] = { color = "Sadie", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_sean"] = { color = "Ennis", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_trelawney"] = { color = "Gwydion", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_uncle"] = { color = "Nell II", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+			["a_c_horse_gang_uncle_endlesssummer"] = { color = "Nell IV", cashPrice = 1, goldPrice = 1, sellPrice = 1 },
+		}
+	},
 }
 
 --[[--------BLIP_COLORS----------

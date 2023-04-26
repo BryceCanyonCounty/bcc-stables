@@ -13,10 +13,10 @@ AddEventHandler('oss_stables:GetMyHorses', function()
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', {identifier, charid},
-    function(horses)
-        TriggerClientEvent('oss_stables:ReceiveHorsesData', _source, horses)
-    end)
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
+        function(horses)
+            TriggerClientEvent('oss_stables:ReceiveHorsesData', _source, horses)
+        end)
 end)
 
 RegisterServerEvent('oss_stables:BuyHorse')
@@ -27,43 +27,42 @@ AddEventHandler('oss_stables:BuyHorse', function(data)
     local charid = Character.charIdentifier
     local maxHorses = Config.maxHorses
 
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', {identifier, charid},
-    function(horses)
-        if #horses >= maxHorses then
-            VORPcore.NotifyRightTip(_source, _U("horseLimit") .. maxHorses .. _U("horses"), 5000)
-            TriggerClientEvent('oss_stables:StableMenu', _source)
-            return
-        end
-
-        Wait(200)
-
-        if data.IsCash then
-            local charCash = Character.money
-            local cashPrice = data.Cash
-
-            if charCash >= cashPrice then
-                Character.removeCurrency(0, cashPrice)
-            else
-                VORPcore.NotifyRightTip(_source, _U("shortCash"), 5000)
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
+        function(horses)
+            if #horses >= maxHorses then
+                VORPcore.NotifyRightTip(_source, _U("horseLimit") .. maxHorses .. _U("horses"), 5000)
                 TriggerClientEvent('oss_stables:StableMenu', _source)
                 return
             end
 
-        else
-            local charGold = Character.gold
-            local goldPrice = data.Gold
+            Wait(200)
 
-            if charGold >= goldPrice then
-                Character.removeCurrency(1, goldPrice)
+            if data.IsCash then
+                local charCash = Character.money
+                local cashPrice = data.Cash
+
+                if charCash >= cashPrice then
+                    Character.removeCurrency(0, cashPrice)
+                else
+                    VORPcore.NotifyRightTip(_source, _U("shortCash"), 5000)
+                    TriggerClientEvent('oss_stables:StableMenu', _source)
+                    return
+                end
             else
-                VORPcore.NotifyRightTip(_source, _U("shortGold"), 5000)
-                TriggerClientEvent('oss_stables:StableMenu', _source)
-                return
+                local charGold = Character.gold
+                local goldPrice = data.Gold
+
+                if charGold >= goldPrice then
+                    Character.removeCurrency(1, goldPrice)
+                else
+                    VORPcore.NotifyRightTip(_source, _U("shortGold"), 5000)
+                    TriggerClientEvent('oss_stables:StableMenu', _source)
+                    return
+                end
             end
-        end
-        local action = "newHorse"
-        TriggerClientEvent('oss_stables:SetHorseName', _source, data, action)
-    end)
+            local action = "newHorse"
+            TriggerClientEvent('oss_stables:SetHorseName', _source, data, action)
+        end)
 end)
 
 RegisterServerEvent('oss_stables:SaveNewHorse')
@@ -73,19 +72,20 @@ AddEventHandler('oss_stables:SaveNewHorse', function(data, name)
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.execute('INSERT INTO player_horses (identifier, charid, name, model) VALUES (?, ?, ?, ?)', {identifier, charid, tostring(name), data.ModelH},
-    function(done)
-        VORPcore.NotifyRightTip(_source, _U("selectHorse"), 5000)
-    end)
+    MySQL.Async.execute('INSERT INTO player_horses (identifier, charid, name, model) VALUES (?, ?, ?, ?)',
+        { identifier, charid, tostring(name), data.ModelH },
+        function(done)
+            VORPcore.NotifyRightTip(_source, _U("selectHorse"), 5000)
+        end)
 end)
 
 RegisterServerEvent('oss_stables:UpdateHorseName')
 AddEventHandler('oss_stables:UpdateHorseName', function(data, name)
     local horseId = data.horseId
 
-    MySQL.Async.execute('UPDATE player_horses SET name = ? WHERE id = ?', {name, horseId},
-    function(done)
-    end)
+    MySQL.Async.execute('UPDATE player_horses SET name = ? WHERE id = ?', { name, horseId },
+        function(done)
+        end)
 end)
 
 RegisterServerEvent('oss_stables:SelectHorse')
@@ -95,23 +95,27 @@ AddEventHandler('oss_stables:SelectHorse', function(id)
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', {identifier, charid},
-    function(horse)
-        for i = 1, #horse do
-            local horseId = horse[i].id
-            MySQL.Async.execute('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', {0, identifier, charid, horseId},
-            function(done)
-            end)
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
+        function(horse)
+            for i = 1, #horse do
+                local horseId = horse[i].id
+                MySQL.Async.execute(
+                    'UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?',
+                    { 0, identifier, charid, horseId },
+                    function(done)
+                    end)
 
-            Wait(300)
+                Wait(300)
 
-            if horse[i].id == id then
-                MySQL.Async.execute('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', {1, identifier, charid, id},
-                function(done)
-                end)
+                if horse[i].id == id then
+                    MySQL.Async.execute(
+                        'UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?',
+                        { 1, identifier, charid, id },
+                        function(done)
+                        end)
+                end
             end
-        end
-    end)
+        end)
 end)
 
 RegisterServerEvent('oss_stables:GetSelectedHorse')
@@ -121,18 +125,19 @@ AddEventHandler('oss_stables:GetSelectedHorse', function()
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', {identifier, charid},
-    function(horses)
-        if #horses ~= 0 then
-            for i = 1, #horses do
-                if horses[i].selected == 1 then
-                    TriggerClientEvent('oss_stables:SetHorseInfo', _source, horses[i].model, horses[i].name, horses[i].components, horses[i].id)
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
+        function(horses)
+            if #horses ~= 0 then
+                for i = 1, #horses do
+                    if horses[i].selected == 1 then
+                        TriggerClientEvent('oss_stables:SetHorseInfo', _source, horses[i].model, horses[i].name,
+                            horses[i].components, horses[i].id)
+                    end
                 end
+            else
+                VORPcore.NotifyRightTip(_source, _U("noHorses"), 5000)
             end
-        else
-            VORPcore.NotifyRightTip(_source, _U("noHorses"), 5000)
-        end
-    end)
+        end)
 end)
 
 RegisterServerEvent('oss_stables:UpdateComponents')
@@ -144,10 +149,11 @@ AddEventHandler('oss_stables:UpdateComponents', function(components, horseId, My
     local encodedComponents = json.encode(components)
     local id = horseId
 
-    MySQL.Async.execute('UPDATE player_horses SET components = ? WHERE identifier = ? AND charid = ? AND id = ?', {encodedComponents, identifier, charid, id},
-    function(done)
-        TriggerClientEvent('oss_stables:SetComponents', _source, MyHorse_entity, components)
-    end)
+    MySQL.Async.execute('UPDATE player_horses SET components = ? WHERE identifier = ? AND charid = ? AND id = ?',
+        { encodedComponents, identifier, charid, id },
+        function(done)
+            TriggerClientEvent('oss_stables:SetComponents', _source, MyHorse_entity, components)
+        end)
 end)
 
 RegisterServerEvent('oss_stables:SellHorse')
@@ -158,20 +164,20 @@ AddEventHandler('oss_stables:SellHorse', function(id)
     local charid = Character.charIdentifier
     local modelHorse = nil
 
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', {identifier, charid},
-    function(horses)
-        for i = 1, #horses do
-            if tonumber(horses[i].id) == tonumber(id) then
-                modelHorse = horses[i].model
-                MySQL.Async.execute('DELETE FROM player_horses WHERE identifier = ? AND charid = ? AND id = ?', {identifier, charid, id},
-                function(done)
-                end)
+    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
+        function(horses)
+            for i = 1, #horses do
+                if tonumber(horses[i].id) == tonumber(id) then
+                    modelHorse = horses[i].model
+                    MySQL.Async.execute('DELETE FROM player_horses WHERE identifier = ? AND charid = ? AND id = ?',
+                        { identifier, charid, id },
+                        function(done)
+                        end)
+                end
             end
-        end
 
-        for _,horseConfig in pairs(Config.Horses) do
-            for models,values in pairs(horseConfig) do
-                if models ~= "breed" then
+            for _, horseConfig in pairs(Config.Horses) do
+                for models, values in pairs(horseConfig.colors) do
                     if models == modelHorse then
                         local sellPrice = values.sellPrice
                         Character.addCurrency(0, sellPrice)
@@ -179,13 +185,11 @@ AddEventHandler('oss_stables:SellHorse', function(id)
                     end
                 end
             end
-        end
-    end)
+        end)
 end)
 
 RegisterServerEvent('oss_stables:RegisterInventory')
 AddEventHandler('oss_stables:RegisterInventory', function(id)
-
     VORPInv.registerInventory("horse_" .. tostring(id), _U("horseInv"), tonumber(Config.invLimit))
 end)
 
@@ -206,11 +210,10 @@ AddEventHandler('oss_stables:GetPlayerItem', function(item)
         else
             VORPcore.NotifyRightTip(_source, _U("noBrush"), 5000)
         end
-
     elseif item == "haycube" then
         local haycube = VORPInv.getItem(_source, "consumable_haycube")
         if haycube then
-            TriggerClientEvent('oss_stables:FeedHorse',_source, haycube)
+            TriggerClientEvent('oss_stables:FeedHorse', _source, haycube)
             VORPInv.subItem(_source, "consumable_haycube", 1)
         else
             VORPcore.NotifyRightTip(_source, _U("noHaycube"), 5000)

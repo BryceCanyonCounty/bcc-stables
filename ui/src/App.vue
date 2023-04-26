@@ -10,7 +10,7 @@ export default {
   name: "DefaultLayout",
   data() {
     return {
-      devmode: true,
+      devmode: false,
       visible: false,
     };
   },
@@ -19,16 +19,20 @@ export default {
   },
   methods: {
     onMessage(event) {
-      switch (event.data.type) {
-        case "toggle":
-          this.visible = event.data.visible;
-          api
-            .post("updatestate", {
-              state: this.visible,
-            })
-            .catch((e) => {
-              console.log(e.message);
-            });
+      switch (event.data.action) {
+        case "show":
+          this.visible = true;
+          this.$store.dispatch("setHorses", event.data.shopData);
+          this.$store.dispatch("setShopName", event.data.location);
+          break;
+        case "updateMyHorses":
+          this.$store.dispatch("setMyHorses", event.data.myHorsesData);
+          break;
+        case "hide":
+          this.visible = false;
+          this.$store.dispatch("setHorses", null);
+          this.$store.dispatch("setShopName", null);
+          this.$store.dispatch("setMyHorses", null);
           break;
         default:
           break;
@@ -48,65 +52,55 @@ export default {
 };
 </script>
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #fff;
-}
+// #app {
+//   font-family: Avenir, Helvetica, Arial, sans-serif;
+//   -webkit-font-smoothing: antialiased;
+//   -moz-osx-font-smoothing: grayscale;
+//   text-align: center;
+//   color: #fff;
+// }
 
-h3 {
-  margin: 40px 0 0;
-}
+// h3 {
+//   margin: 40px 0 0;
+// }
 
-ol {
-  text-align: left;
-}
+// ol {
+//   text-align: left;
+// }
 
-a {
-  color: #42b983;
-}
-a:hover {
-  color: #fff;
-  cursor: pointer;
-}
+// a {
+//   color: #42b983;
+// }
+// a:hover {
+//   color: #fff;
+//   cursor: pointer;
+// }
 
 #content {
-  background-color: rgb(32, 32, 32);
-  border-radius: 6px;
-  max-width: 500px;
-  max-height: 800px;
-  padding: 10px;
-
-  position: absolute;
-  top: 20%;
-  left: 50%;
-
-  transform: translate(-50%, -20%);
+  overflow: hidden;
 }
 
-#close {
-  position: absolute;
-  right: 0;
-  top: 0;
-}
+// #close {
+//   position: absolute;
+//   right: 0;
+//   top: 0;
+// }
 
-nav {
-  padding: 30px;
+// nav {
+//   padding: 30px;
 
-  a {
-    font-weight: bold;
-    color: #fff;
+//   a {
+//     font-weight: bold;
+//     color: #fff;
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+//     &.router-link-exact-active {
+//       color: #42b983;
+//     }
+//   }
 
-  a:hover {
-    color: #42b983;
-    cursor: pointer;
-  }
-}
+//   a:hover {
+//     color: #42b983;
+//     cursor: pointer;
+//   }
+// }
 </style>

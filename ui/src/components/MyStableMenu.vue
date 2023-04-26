@@ -1,23 +1,30 @@
 <template>
-  <div class="scroll-container">
-    <div class="" v-for="(horse, index) in horses" :key="index">
-      <MyStableMenuItem
-        :label="horse.name"
-        :index="horse.id"
-        :selected="activeDropdown"
-        @iExpanded="onChildExpansion($event)"
-      />
+  <div v-if="myHorses">
+    <div v-if="Object.keys(myHorses).length">
+      <div>
+        <MyStableMenuItem
+          :label="horse.name"
+          :index="horse.id"
+          :model="horse.model"
+          :active="horse.selected"
+          :components="JSON.parse(horse.components)"
+          :selected="activeDropdown"
+          v-for="(horse, index) in myHorses"
+          :key="index"
+          @iExpanded="onChildExpansion($event)"
+        />
+      </div>
     </div>
+    <div v-else>No Horses. Head to the Trader.</div>
   </div>
+  <div v-else>Loading...</div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import MyStableMenuItem from "./MyStableMenuItem.vue";
 export default {
   name: "MyStableMenu",
-  props: {
-    horses: Array,
-  },
   data() {
     return {
       activeDropdown: -1,
@@ -25,13 +32,13 @@ export default {
   },
   methods: {
     onChildExpansion(event) {
-      console.log("Event Triggered");
       this.activeDropdown = event;
     },
   },
   components: {
     MyStableMenuItem,
   },
+  computed: mapState(["myHorses", "activeHorse"]),
 };
 </script>
 

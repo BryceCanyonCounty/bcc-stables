@@ -308,7 +308,6 @@ function OpenStable(shopId)
     SendNUIMessage({
         action = "show",
         shopData = GetShopData(),
-        customize = false,
         location = StableName
     })
     TriggerServerEvent('oss_stables:GetMyHorses')
@@ -324,6 +323,7 @@ end
 RegisterNetEvent('oss_stables:ReceiveHorsesData')
 AddEventHandler('oss_stables:ReceiveHorsesData', function(dataHorses)
     SendNUIMessage({
+        action = "updateMyHorses",
         myHorsesData = dataHorses
     })
 end)
@@ -360,14 +360,13 @@ RegisterNUICallback("loadHorse", function(data)
     SetPedConfigFlag(ShowroomHorse_entity, 113, true)                    -- DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, ShowroomHorse_entity)       -- ClearPedEnvDirt
-
-    SendNUIMessage({
-        customize = false
-    })
 end)
 
 -- Buy and Name New Horse
 RegisterNUICallback("BuyHorse", function(data)
+    SendNUIMessage({
+        action = "hide"
+    })
     TriggerServerEvent('oss_stables:BuyHorse', data)
 end)
 
@@ -408,6 +407,9 @@ end)
 
 -- Rename Owned Horse
 RegisterNUICallback("RenameHorse", function(data)
+    SendNUIMessage({
+        action = "hide"
+    })
     local action = "rename"
     TriggerEvent('oss_stables:SetHorseName', data, action)
 end)
@@ -415,7 +417,7 @@ end)
 -- View Player Owned Horses
 RegisterNUICallback("loadMyHorse", function(data)
     local horseModel = data.HorseModel
-    MyHorse_entityId = data.IdHorse
+    MyHorse_entityId = data.HorseId
 
     if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
@@ -444,8 +446,6 @@ RegisterNUICallback("loadMyHorse", function(data)
     SetPedConfigFlag(MyHorse_entity, 113, true)                    -- PCF_DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, MyHorse_entity)       -- ClearPedEnvDirt
-
-    SendNUIMessage({ customize = true })
 
     local componentsHorse = json.decode(data.HorseComp)
     if componentsHorse ~= '[]' then
@@ -478,8 +478,7 @@ RegisterNUICallback("CloseStable", function(data)
     local player = PlayerPedId()
     SetNuiFocus(false, false)
     SendNUIMessage({
-        action = "hide",
-        customize = false
+        action = "hide"
     })
 
     SetEntityVisible(player, true)
@@ -918,41 +917,43 @@ function SetModel(hash)
     Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
 end
 
-Citizen.CreateThread(function()
-    while Adding do
-        Wait(0)
-        for _, v in ipairs(HorseComp) do
-            if v.category == "Saddlecloths" then
-                Saddlecloths[#Saddlecloths + 1] = v.hash
-            elseif v.category == "SaddleHorns" then
-                SaddleHorns[#SaddleHorns + 1] = v.hash
-            elseif v.category == "SaddleBags" then
-                SaddleBags[#SaddleBags + 1] = v.hash
-            elseif v.category == "Tails" then
-                Tails[#Tails + 1] = v.hash
-            elseif v.category == "Manes" then
-                Manes[#Manes + 1] = v.hash
-            elseif v.category == "Saddles" then
-                Saddles[#Saddles + 1] = v.hash
-            elseif v.category == "Stirrups" then
-                Stirrups[#Stirrups + 1] = v.hash
-            elseif v.category == "Bedrolls" then
-                Bedrolls[#Bedrolls + 1] = v.hash
-            elseif v.category == "Masks" then
-                Masks[#Masks + 1] = v.hash
-            elseif v.category == "Mustaches" then
-                Mustaches[#Mustaches + 1] = v.hash
-            end
-        end
-        Adding = false
-    end
-end)
+-- Citizen.CreateThread(function()
+--     while Adding do
+--         Wait(0)
+--         for _, v in ipairs(HorseComp) do
+--             if v.category == "Saddlecloths" then
+--                 Saddlecloths[#Saddlecloths + 1] = v.hash
+--             elseif v.category == "SaddleHorns" then
+--                 SaddleHorns[#SaddleHorns + 1] = v.hash
+--             elseif v.category == "SaddleBags" then
+--                 SaddleBags[#SaddleBags + 1] = v.hash
+--             elseif v.category == "Tails" then
+--                 Tails[#Tails + 1] = v.hash
+--             elseif v.category == "Manes" then
+--                 Manes[#Manes + 1] = v.hash
+--             elseif v.category == "Saddles" then
+--                 Saddles[#Saddles + 1] = v.hash
+--             elseif v.category == "Stirrups" then
+--                 Stirrups[#Stirrups + 1] = v.hash
+--             elseif v.category == "Bedrolls" then
+--                 Bedrolls[#Bedrolls + 1] = v.hash
+--             elseif v.category == "Masks" then
+--                 Masks[#Masks + 1] = v.hash
+--             elseif v.category == "Mustaches" then
+--                 Mustaches[#Mustaches + 1] = v.hash
+--             end
+--         end
+--         Adding = false
+--     end
+-- end)
 
 -- Sell Player Horse
 RegisterNUICallback("sellHorse", function(data)
+    SendNUIMessage({
+        action = "hide"
+    })
     DeleteEntity(MyHorse_entity)
     TriggerServerEvent('oss_stables:SellHorse', tonumber(data.horseId))
-    TriggerServerEvent('oss_stables:GetMyHorses')
     Wait(300)
 
     SendNUIMessage({

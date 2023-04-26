@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import TackShopMenuItem from "./TackShopMenuItem.vue";
 export default {
   name: "TackShopMenu",
@@ -29,6 +30,7 @@ export default {
       console.log(`Selling Horse with the ID of ${id}`);
     },
   },
+  computed: mapState(["comps", "activeHorse"]),
 };
 </script>
 

@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "TackShopMenuItem",
   props: {
@@ -40,6 +41,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(["comps", "activeHorse"]),
     counter() {
       return `${this.curItem}/${this.maxItems}`;
     },
