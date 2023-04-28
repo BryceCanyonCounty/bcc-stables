@@ -12,20 +12,29 @@
           label="Stable"
           :selectedPage="page"
           @click="page = 'Stable'"
+          class="enabled"
         />
         <MenuButton
           label="Trader"
           :selectedPage="page"
           @click="page = 'Trader'"
+          class="enabled"
         />
         <MenuButton
           label="Tack Shop"
           :selectedPage="page"
           @click="page = 'Tack Shop'"
+          :class="{
+            'disabled-btn': isClosed,
+            enabled: !isClosed,
+          }"
+          :disabled="isClosed"
         />
       </div>
 
       <div class="divider-menu-top"></div>
+
+      <!-- Cash Price: {{ compCashPrice }} Gold Price: {{ compGoldPrice }} -->
 
       <div class="scroll-container" v-if="page == 'Stable'">
         <MyStableMenu />
@@ -42,16 +51,32 @@
       <div class="divider-menu-top" style="margin-top: 1rem"></div>
 
       <div class="btn-bottom-main btn-bottom">
-        <button id="save" class="btn-select" @click="menuAction('save')">
+        <button
+          id="save"
+          @click="save()"
+          :disabled="!hasCompsChanged"
+          :class="{
+            disabled: !hasCompsChanged,
+            'btn-select': hasCompsChanged,
+          }"
+        >
           Save
         </button>
-        <button id="rotate_left" class="btn-select" @click="rotate('left')">
+        <button
+          id="rotate_left"
+          class="btn-select btn-rotate"
+          @click="rotate('left')"
+        >
           <i class="fas fa-chevron-left center"></i>
         </button>
-        <div id="rotate_label" class="rotate-text">
-          <h6 class="grey-text center">Rotate</h6>
+        <div class="rotate-text">
+          <span class="grey-text center">Rotate</span>
         </div>
-        <button id="rotate_right" class="btn-select" @click="rotate('right')">
+        <button
+          id="rotate_right"
+          class="btn-select btn-rotate"
+          @click="rotate('right')"
+        >
           <i class="fas fa-chevron-right center"></i>
         </button>
         <button id="cancel" class="btn-select" @click="close()">Cancel</button>
@@ -108,7 +133,15 @@ export default {
       });
     },
   },
-  computed: mapState(["shopName"]),
+  computed: {
+    ...mapState(["shopName", "activeHorse", "compCashPrice", "compGoldPrice"]),
+    isClosed() {
+      return this.activeHorse === null;
+    },
+    hasCompsChanged() {
+      return this.compCashPrice > 0;
+    },
+  },
 };
 </script>
 
@@ -205,8 +238,22 @@ export default {
   margin-bottom: 5px;
 }
 
+.disabled {
+  flex-grow: 1;
+  font-size: 15px;
+  border-radius: 0px;
+  height: 4vh;
+  border: 0px #fff solid;
+  font-family: "robotoslab";
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  color: #4b4a4a;
+  background-color: transparent !important;
+}
+
 .btn-select {
   flex-grow: 1;
+  font-size: 15px;
   border-radius: 0px;
   height: 4vh;
   border: 0px #fff solid;
@@ -226,7 +273,7 @@ export default {
 .rotate-text {
   font-family: "robotoslab";
   font-weight: 500;
-  font-size: 20px;
+  font-size: 15px;
   margin: auto;
   padding: 0px 5px;
 }
@@ -257,5 +304,9 @@ export default {
   overflow-x: hidden;
   height: 54vh;
   width: 100%;
+}
+
+.btn-rotate {
+  color: #d89a2e;
 }
 </style>

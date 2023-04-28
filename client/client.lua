@@ -6,16 +6,6 @@ local OpenReturn
 local OpenGroup = GetRandomIntInRange(0, 0xffffff)
 local ClosedGroup = GetRandomIntInRange(0, 0xffffff)
 -- Horse Tack
-local Saddlecloths = {}
-local SaddleHorns = {}
-local SaddleBags = {}
-local Tails = {}
-local Manes = {}
-local Saddles = {}
-local Stirrups = {}
-local Bedrolls = {}
-local Masks = {}
-local Mustaches = {}
 local SaddlesUsing = nil
 local SaddleclothsUsing = nil
 local StirrupsUsing = nil
@@ -307,7 +297,8 @@ function OpenStable(shopId)
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = "show",
-        shopData = GetShopData(),
+        shopData = Config.Horses,
+        compData = HorseComp,
         location = StableName
     })
     TriggerServerEvent('oss_stables:GetMyHorses')
@@ -329,7 +320,7 @@ AddEventHandler('oss_stables:ReceiveHorsesData', function(dataHorses)
 end)
 
 -- View Horses for Purchase
-RegisterNUICallback("loadHorse", function(data)
+RegisterNUICallback("loadHorse", function(data, cb)
     local horseModel = data.horseModel
 
     if MyHorse_entity ~= nil then
@@ -360,14 +351,17 @@ RegisterNUICallback("loadHorse", function(data)
     SetPedConfigFlag(ShowroomHorse_entity, 113, true)                    -- DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, ShowroomHorse_entity)       -- ClearPedEnvDirt
+    cb('ok')
 end)
 
 -- Buy and Name New Horse
-RegisterNUICallback("BuyHorse", function(data)
+RegisterNUICallback("BuyHorse", function(data, cb)
     SendNUIMessage({
         action = "hide"
     })
     TriggerServerEvent('oss_stables:BuyHorse', data)
+
+    cb('ok')
 end)
 
 RegisterNetEvent('oss_stables:SetHorseName')
@@ -395,7 +389,8 @@ AddEventHandler('oss_stables:SetHorseName', function(data, action)
             SetNuiFocus(true, true)
             SendNUIMessage({
                 action = "show",
-                shopData = GetShopData(),
+                shopData = Config.Horses,
+                compData = HorseComp,
                 location = StableName
             })
 
@@ -406,16 +401,18 @@ AddEventHandler('oss_stables:SetHorseName', function(data, action)
 end)
 
 -- Rename Owned Horse
-RegisterNUICallback("RenameHorse", function(data)
+RegisterNUICallback("RenameHorse", function(data, cb)
     SendNUIMessage({
         action = "hide"
     })
     local action = "rename"
     TriggerEvent('oss_stables:SetHorseName', data, action)
+
+    cb('ok')
 end)
 
 -- View Player Owned Horses
-RegisterNUICallback("loadMyHorse", function(data)
+RegisterNUICallback("loadMyHorse", function(data, cb)
     local horseModel = data.HorseModel
     MyHorse_entityId = data.HorseId
 
@@ -457,11 +454,15 @@ RegisterNUICallback("loadMyHorse", function(data)
             Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
         end
     end
+
+    cb('ok')
 end)
 
 -- Select Active Horse
-RegisterNUICallback("selectHorse", function(data)
+RegisterNUICallback("selectHorse", function(data, cb)
     TriggerServerEvent('oss_stables:SelectHorse', tonumber(data.horseId))
+
+    cb('ok')
 end)
 
 RegisterNetEvent('oss_stables:SetHorseInfo')
@@ -474,7 +475,7 @@ AddEventHandler('oss_stables:SetHorseInfo', function(model, name, components, id
 end)
 
 -- Close Stable Menu
-RegisterNUICallback("CloseStable", function(data)
+RegisterNUICallback("CloseStable", function(data, cb)
     local player = PlayerPedId()
     SetNuiFocus(false, false)
     SendNUIMessage({
@@ -502,6 +503,8 @@ RegisterNUICallback("CloseStable", function(data)
     else
         return
     end
+
+    cb('ok')
 end)
 
 -- Save Horse Tack to Database
@@ -534,7 +537,8 @@ AddEventHandler('oss_stables:StableMenu', function()
 
     SendNUIMessage({
         action = "show",
-        shopData = GetShopData(),
+        shopData = Config.Horses,
+        compData = HorseComp,
         location = StableName
     })
     TriggerServerEvent('oss_stables:GetMyHorses')
@@ -769,144 +773,154 @@ AddEventHandler('oss_stables:FeedHorse', function(data)
 end)
 
 -- Select Horse Tack from Menu
-RegisterNUICallback("Saddles", function(data)
+RegisterNUICallback("Saddles", function(data, cb)
     if tonumber(data.id) == 0 then
         SaddlesUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xBAA7E618, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
-        local num = tonumber(data.id)
-        local hash = Saddles[num]
+        local hash = data.hash
         SetModel(hash)
-        SaddlesUsing = Saddles[num]
+        SaddlesUsing = hash
     end
+
+    cb('ok')
 end)
 
-RegisterNUICallback("Saddlecloths", function(data)
+RegisterNUICallback("Saddlecloths", function(data, cb)
     if tonumber(data.id) == 0 then
         SaddleclothsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
-        local num = tonumber(data.id)
-        local hash = Saddlecloths[num]
+        local hash = data.hash
         SetModel(hash)
-        SaddleclothsUsing = Saddlecloths[num]
+        SaddleclothsUsing = hash
     end
+
+    cb('ok')
 end)
 
-RegisterNUICallback("Stirrups", function(data)
+RegisterNUICallback("Stirrups", function(data, cb)
     if tonumber(data.id) == 0 then
         StirrupsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xDA6DADCA, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
-        local num = tonumber(data.id)
-        local hash = Stirrups[num]
+        local hash = data.hash
         SetModel(hash)
-        StirrupsUsing = Stirrups[num]
+        StirrupsUsing = hash
     end
+
+    cb('ok')
 end)
 
-RegisterNUICallback("SaddleBags", function(data)
+RegisterNUICallback("SaddleBags", function(data, cb)
     if tonumber(data.id) == 0 then
         BagsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x80451C25, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
-        local num = tonumber(data.id)
-        local hash = SaddleBags[num]
+        local hash = data.hash
         SetModel(hash)
-        BagsUsing = SaddleBags[num]
+        BagsUsing = hash
     end
+
+    cb('ok')
 end)
 
-RegisterNUICallback("Manes", function(data)
+RegisterNUICallback("Manes", function(data, cb)
     if tonumber(data.id) == 0 then
         ManesUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xAA0217AB, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
-        local num = tonumber(data.id)
-        local hash = Manes[num]
+        local hash = data.hash
         SetModel(hash)
-        ManesUsing = Manes[num]
+        ManesUsing = hash
     end
+
+    cb('ok')
 end)
 
-RegisterNUICallback("Tails", function(data)
+RegisterNUICallback("Tails", function(data, cb)
     if tonumber(data.id) == 0 then
         TailsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
-        local num = tonumber(data.id)
-        local hash = Tails[num]
+        local hash = data.hash
         SetModel(hash)
-        TailsUsing = Tails[num]
+        TailsUsing = hash
     end
+
+    cb('ok')
 end)
 
-RegisterNUICallback("SaddleHorns", function(data)
+RegisterNUICallback("SaddleHorns", function(data, cb)
     if tonumber(data.id) == 0 then
         SaddleHornsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x5447332, 0)  -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
-        local num = tonumber(data.id)
-        local hash = SaddleHorns[num]
+        local hash = data.hash
         SetModel(hash)
-        SaddleHornsUsing = SaddleHorns[num]
+        SaddleHornsUsing = hash
     end
+
+    cb('ok')
 end)
 
-RegisterNUICallback("Bedrolls", function(data)
+RegisterNUICallback("Bedrolls", function(data, cb)
     if tonumber(data.id) == 0 then
         BedrollsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xEFB31921, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
-        local num = tonumber(data.id)
-        local hash = Bedrolls[num]
+        local hash = data.hash
         SetModel(hash)
-        BedrollsUsing = Bedrolls[num]
+        BedrollsUsing = hash
     end
+
+    cb('ok')
 end)
 
-RegisterNUICallback("Masks", function(data)
+RegisterNUICallback("Masks", function(data, cb)
     if tonumber(data.id) == 0 then
         MasksUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xD3500E5D, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
-        local num = tonumber(data.id)
-        local hash = Masks[num]
+        local hash = data.hash
         SetModel(hash)
-        MasksUsing = Masks[num]
+        MasksUsing = hash
     end
+
+    cb('ok')
 end)
 
-RegisterNUICallback("Mustaches", function(data)
+RegisterNUICallback("Mustaches", function(data, cb)
     if tonumber(data.id) == 0 then
         MustachesUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x30DEFDDF, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
-        local num = tonumber(data.id)
-        local hash = Mustaches[num]
+        local hash = data.hash
         SetModel(hash)
-        MustachesUsing = Mustaches[num]
+        MustachesUsing = hash
     end
+
+    cb('ok')
 end)
 
 function SetModel(hash)
@@ -916,36 +930,6 @@ function SetModel(hash)
     end
     Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
 end
-
--- Citizen.CreateThread(function()
---     while Adding do
---         Wait(0)
---         for _, v in ipairs(HorseComp) do
---             if v.category == "Saddlecloths" then
---                 Saddlecloths[#Saddlecloths + 1] = v.hash
---             elseif v.category == "SaddleHorns" then
---                 SaddleHorns[#SaddleHorns + 1] = v.hash
---             elseif v.category == "SaddleBags" then
---                 SaddleBags[#SaddleBags + 1] = v.hash
---             elseif v.category == "Tails" then
---                 Tails[#Tails + 1] = v.hash
---             elseif v.category == "Manes" then
---                 Manes[#Manes + 1] = v.hash
---             elseif v.category == "Saddles" then
---                 Saddles[#Saddles + 1] = v.hash
---             elseif v.category == "Stirrups" then
---                 Stirrups[#Stirrups + 1] = v.hash
---             elseif v.category == "Bedrolls" then
---                 Bedrolls[#Bedrolls + 1] = v.hash
---             elseif v.category == "Masks" then
---                 Masks[#Masks + 1] = v.hash
---             elseif v.category == "Mustaches" then
---                 Mustaches[#Mustaches + 1] = v.hash
---             end
---         end
---         Adding = false
---     end
--- end)
 
 -- Sell Player Horse
 RegisterNUICallback("sellHorse", function(data)
@@ -958,7 +942,8 @@ RegisterNUICallback("sellHorse", function(data)
 
     SendNUIMessage({
         action = "show",
-        shopData = GetShopData(),
+        shopData = Config.Horses,
+        compData = HorseComp,
         location = StableName
     })
     TriggerServerEvent('oss_stables:GetMyHorses')
@@ -989,7 +974,7 @@ function CreateCamera(shopId)
 end
 
 -- -- Rotate Horses while Viewing
-RegisterNUICallback("rotate", function(data)
+RegisterNUICallback("rotate", function(data, cb)
     local direction = data.RotateHorse
 
     if direction == "left" then
@@ -997,6 +982,7 @@ RegisterNUICallback("rotate", function(data)
     elseif direction == "right" then
         Rotation(-20)
     end
+    cb('ok')
 end)
 
 function Rotation(dir)

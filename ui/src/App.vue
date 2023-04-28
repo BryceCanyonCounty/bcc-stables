@@ -24,15 +24,23 @@ export default {
           this.visible = true;
           this.$store.dispatch("setHorses", event.data.shopData);
           this.$store.dispatch("setShopName", event.data.location);
+          this.$store.dispatch(
+            "setComponents",
+            Object.fromEntries(Object.entries(event.data.compData).sort())
+          );
           break;
         case "updateMyHorses":
           this.$store.dispatch("setMyHorses", event.data.myHorsesData);
           break;
         case "hide":
           this.visible = false;
+          this.$store.dispatch("setMyHorses", null);
           this.$store.dispatch("setHorses", null);
           this.$store.dispatch("setShopName", null);
-          this.$store.dispatch("setMyHorses", null);
+          this.$store.dispatch("setComponents", null);
+          this.$store.dispatch("setSelectedHorse", null);
+          this.$store.dispatch("setCompCashPrice", 0);
+          this.$store.dispatch("setCompGoldPrice", 0);
           break;
         default:
           break;
@@ -52,55 +60,7 @@ export default {
 };
 </script>
 <style lang="scss">
-// #app {
-//   font-family: Avenir, Helvetica, Arial, sans-serif;
-//   -webkit-font-smoothing: antialiased;
-//   -moz-osx-font-smoothing: grayscale;
-//   text-align: center;
-//   color: #fff;
-// }
-
-// h3 {
-//   margin: 40px 0 0;
-// }
-
-// ol {
-//   text-align: left;
-// }
-
-// a {
-//   color: #42b983;
-// }
-// a:hover {
-//   color: #fff;
-//   cursor: pointer;
-// }
-
 #content {
   overflow: hidden;
 }
-
-// #close {
-//   position: absolute;
-//   right: 0;
-//   top: 0;
-// }
-
-// nav {
-//   padding: 30px;
-
-//   a {
-//     font-weight: bold;
-//     color: #fff;
-
-//     &.router-link-exact-active {
-//       color: #42b983;
-//     }
-//   }
-
-//   a:hover {
-//     color: #42b983;
-//     cursor: pointer;
-//   }
-// }
 </style>

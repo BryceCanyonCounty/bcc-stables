@@ -7,6 +7,8 @@ export default createStore({
     shopName: null,
     comps: null,
     activeHorse: null,
+    compCashPrice: 0,
+    compGoldPrice: 0,
   },
   getters: {},
   mutations: {
@@ -25,6 +27,12 @@ export default createStore({
     SET_SELECTED_HORSE(state, payload) {
       state.activeHorse = payload;
     },
+    SET_COMP_CASH_PRICE(state, payload) {
+      state.compCashPrice = payload;
+    },
+    SET_COMP_GOLD_PRICE(state, payload) {
+      state.compGoldPrice = payload;
+    },
   },
   actions: {
     setMyHorses(context, payload) {
@@ -41,6 +49,12 @@ export default createStore({
     },
     setSelectedHorse(context, payload) {
       context.commit("SET_SELECTED_HORSE", payload);
+    },
+    setCompCashPrice(context, payload) {
+      context.commit("SET_COMP_CASH_PRICE", payload);
+    },
+    setCompGoldPrice(context, payload) {
+      context.commit("SET_COMP_GOLD_PRICE", payload);
     },
   },
   modules: {},

@@ -28,7 +28,7 @@ export default {
   },
   emits: ["iExpanded"],
   computed: {
-    ...mapState(["shopName", "myHorses", "horses", "comps", "activeHorse"]),
+    ...mapState(["activeHorse"]),
     isOpen() {
       return this.index == this.selected;
     },
@@ -40,6 +40,10 @@ export default {
       }
     },
     loadHorse() {
+      if (this.activeHorse) {
+        this.$store.dispatch("setSelectedHorse", null);
+      }
+
       api.post("loadHorse", {
         horseModel: this.model,
       });

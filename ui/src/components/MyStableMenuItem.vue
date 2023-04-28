@@ -3,8 +3,17 @@
     <!--  -->
     <div class="col s12 panel">
       <div class="col s12 panel-title" @click="[SelectHorse(), Expand()]">
-        <h6 class="grey-text plus">{{ label }}</h6>
-        <h6 class="grey-text plus" v-if="isActive">Active</h6>
+        <h6 class="grey-text plus">
+          <i
+            class="fas fa-chevron-left center active-horse mr"
+            v-if="isActive"
+          ></i>
+          {{ label }}
+          <i
+            class="fas fa-chevron-right center active-horse ml"
+            v-if="isActive"
+          ></i>
+        </h6>
       </div>
     </div>
     <!--  -->
@@ -25,27 +34,26 @@
 
 <script>
 import api from "@/api";
+import { mapState } from "vuex";
 export default {
   name: "MyStableMenuItem",
   props: {
     label: String,
     index: Number,
     model: String,
-    active: Number,
     components: Object,
     selected: Number,
+    horse: Object,
   },
   emits: ["iExpanded"],
   computed: {
+    ...mapState(["activeHorse"]),
     isOpen() {
       return this.index == this.selected;
     },
     isActive() {
-      return this.active == 1;
+      return this.activeHorse && this.index == this.activeHorse["id"];
     },
-  },
-  mounted() {
-    console.log(`Horse: ${this.label} Active: ${this.active}`);
   },
   methods: {
     Expand() {
@@ -55,6 +63,7 @@ export default {
     },
     SelectHorse() {
       if (!this.isOpen) {
+        this.$store.dispatch("setSelectedHorse", this.horse);
         api
           .post("selectHorse", {
             horseId: this.index,
@@ -161,13 +170,6 @@ export default {
 }
 
 .panel-myhorse.item {
-  /*width: calc(100% - 60px) !important;
-    height: 3vh;
-    background: url('img/input.png'), url('img/input.png');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    margin: auto;*/
   width: calc(100% - 60px) !important;
   background-image: url("/public/img/input.png"), url("/public/img/input.png");
   background-position: center center;
@@ -205,5 +207,18 @@ export default {
 
 .grey-text.plus:hover {
   color: #f0f0f0;
+}
+
+.active-horse {
+  color: #d89a2e;
+  font-size: 12px;
+}
+
+.mr {
+  margin-right: 5px;
+}
+
+.ml {
+  margin-left: 5px;
 }
 </style>

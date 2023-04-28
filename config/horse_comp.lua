@@ -1,5 +1,5 @@
 HorseComp = {
-  SaddleCloths = {
+  ["Saddlecloths"] = {
     { hash = "0x127E0412", cashPrice = 10, goldPrice = 1 },
     { hash = "0x19C5E80C", cashPrice = 10, goldPrice = 1 },
     { hash = "0x20D4A0BF", cashPrice = 10, goldPrice = 1 },
@@ -66,7 +66,7 @@ HorseComp = {
     { hash = "0xFDF4250B", cashPrice = 10, goldPrice = 1 },
     { hash = "0xFFB1DE72", cashPrice = 10, goldPrice = 1 }
   },
-  SaddleHorns = {
+  ["Saddle Horns"] = {
     { hash = "0x107D9598", cashPrice = 10, goldPrice = 1 },
     { hash = "0x2A28C8BE", cashPrice = 10, goldPrice = 1 },
     { hash = "0x333CDC06", cashPrice = 10, goldPrice = 1 },
@@ -82,7 +82,7 @@ HorseComp = {
     { hash = "0xF826E4EB", cashPrice = 10, goldPrice = 1 },
     { hash = "0xF8CAE723", cashPrice = 10, goldPrice = 1 },
   },
-  SaddleBags = {
+  ["Saddle Bags"] = {
     { hash = "0x1D4EDB88", cashPrice = 10, goldPrice = 1 },
     { hash = "0x20AA8620", cashPrice = 10, goldPrice = 1 },
     { hash = "0x293E17B3", cashPrice = 10, goldPrice = 1 },
@@ -104,7 +104,7 @@ HorseComp = {
     { hash = "0xF0C30271", cashPrice = 10, goldPrice = 1 },
     { hash = "0xF8FB69CA", cashPrice = 10, goldPrice = 1 },
   },
-  Tails = {
+  ["Tails"] = {
     { hash = "0x12DBBBAF", cashPrice = 10, goldPrice = 1 },
     { hash = "0x17EB79D3", cashPrice = 10, goldPrice = 1 },
     { hash = "0x1A3B721B", cashPrice = 10, goldPrice = 1 },
@@ -191,7 +191,7 @@ HorseComp = {
     { hash = "0xF6B0AB06", cashPrice = 10, goldPrice = 1 },
     { hash = "0xF867D611", cashPrice = 10, goldPrice = 1 }
   },
-  Manes = {
+  ["Manes"] = {
     { hash = "0x130E341A", cashPrice = 10, goldPrice = 1 },
     { hash = "0x14098229", cashPrice = 10, goldPrice = 1 },
     { hash = "0x16923E26", cashPrice = 10, goldPrice = 1 },
@@ -295,7 +295,7 @@ HorseComp = {
     { hash = "0xFF17AB82", cashPrice = 10, goldPrice = 1 },
     { hash = "0xFFF3B76A", cashPrice = 10, goldPrice = 1 },
   },
-  Saddles = {
+  ["Saddles"] = {
     { hash = "0x106961A8", cashPrice = 10, goldPrice = 1 },
     { hash = "0x14168240", cashPrice = 10, goldPrice = 1 },
     { hash = "0x150D0DAA", cashPrice = 10, goldPrice = 1 },
@@ -433,7 +433,7 @@ HorseComp = {
     { hash = "0xFCE1D7A4", cashPrice = 10, goldPrice = 1 },
     { hash = "0xFD4E14C5", cashPrice = 10, goldPrice = 1 },
   },
-  Stirrups = {
+  ["Stirrups"] = {
     { hash = "0x3B3AB08",  cashPrice = 10, goldPrice = 1 },
     { hash = "0x587DD49F", cashPrice = 10, goldPrice = 1 },
     { hash = "0x67AF7302", cashPrice = 10, goldPrice = 1 },
@@ -446,7 +446,7 @@ HorseComp = {
     { hash = "0xD8AE54FE", cashPrice = 10, goldPrice = 1 },
     { hash = "0xE73FF221", cashPrice = 10, goldPrice = 1 },
   },
-  Bedrolls = {
+  ["Bedrolls"] = {
     { hash = "0x12F0DF9F", cashPrice = 10, goldPrice = 1 },
     { hash = "0x18BB6B30", cashPrice = 10, goldPrice = 1 },
     { hash = "0x1B43F045", cashPrice = 10, goldPrice = 1 },
@@ -478,7 +478,7 @@ HorseComp = {
     { hash = "0xD8258E14", cashPrice = 10, goldPrice = 1 },
     { hash = "0xFFB0391E", cashPrice = 10, goldPrice = 1 },
   },
-  Masks = {
+  ["Masks"] = {
     { hash = "0x08A78F53", cashPrice = 10, goldPrice = 1 },
     { hash = "0x13AC6E51", cashPrice = 10, goldPrice = 1 },
     { hash = "0x226B2F76", cashPrice = 10, goldPrice = 1 },
@@ -531,7 +531,7 @@ HorseComp = {
     { hash = "0xAD6DDEFD", cashPrice = 10, goldPrice = 1 },
     { hash = "0x5B22BA68", cashPrice = 10, goldPrice = 1 },
   },
-  Mustaches = {
+  ["Mustaches"] = {
     { hash = "0x004BBEED", cashPrice = 10, goldPrice = 1 },
     { hash = "0x0960D117", cashPrice = 10, goldPrice = 1 },
     { hash = "0x281A6D81", cashPrice = 10, goldPrice = 1 },

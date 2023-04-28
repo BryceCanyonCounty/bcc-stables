@@ -6,7 +6,7 @@
           :label="horse.name"
           :index="horse.id"
           :model="horse.model"
-          :active="horse.selected"
+          :horse="horse"
           :components="JSON.parse(horse.components)"
           :selected="activeDropdown"
           v-for="(horse, index) in myHorses"

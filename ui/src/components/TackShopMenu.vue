@@ -1,16 +1,11 @@
 <template>
-  <div class="scroll-container">
-    <TackShopMenuItem label="Saddlecloths" :maxItems="65" />
-    <TackShopMenuItem label="Saddles" :maxItems="136" />
-    <TackShopMenuItem label="Stirrups" :maxItems="11" />
-    <TackShopMenuItem label="Saddle Horns" :maxItems="14" />
-    <TackShopMenuItem label="Saddlebags" :maxItems="20" />
-    <TackShopMenuItem label="Bedrolls" :maxItems="30" />
-    <TackShopMenuItem label="Manes" :maxItems="102" />
-    <TackShopMenuItem label="Tails" :maxItems="85" />
-    <TackShopMenuItem label="Masks" :maxItems="51" />
-    <TackShopMenuItem label="Mustaches" :maxItems="16" />
-  </div>
+  <TackShopMenuItem
+    v-for="(comp, index) in comps"
+    :label="index"
+    :maxItems="Object.keys(comp).length"
+    :horseComps="comp"
+    :key="index"
+  />
 </template>
 
 <script>
@@ -30,7 +25,7 @@ export default {
       console.log(`Selling Horse with the ID of ${id}`);
     },
   },
-  computed: mapState(["comps", "activeHorse"]),
+  computed: mapState(["comps"]),
 };
 </script>
 
