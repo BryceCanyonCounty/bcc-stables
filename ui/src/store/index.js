@@ -9,6 +9,7 @@ export default createStore({
     activeHorse: null,
     compCashPrice: 0,
     compGoldPrice: 0,
+    showTackPrice: false,
   },
   getters: {},
   mutations: {
@@ -33,6 +34,9 @@ export default createStore({
     SET_COMP_GOLD_PRICE(state, payload) {
       state.compGoldPrice = payload;
     },
+    SET_SHOW_TACK_PRICE(state, payload) {
+      state.showTackPrice = payload;
+    },
   },
   actions: {
     setMyHorses(context, payload) {
@@ -55,6 +59,9 @@ export default createStore({
     },
     setCompGoldPrice(context, payload) {
       context.commit("SET_COMP_GOLD_PRICE", payload);
+    },
+    setShowTackPrice(context, payload) {
+      context.commit("SET_SHOW_TACK_PRICE", payload);
     },
   },
   modules: {},

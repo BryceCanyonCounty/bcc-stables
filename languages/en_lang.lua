@@ -1,6 +1,5 @@
 ---------------------------------- ENGLISH -------------------------------------------
 Locales["en_lang"] = {
-
     shopPrompt = "Menu",
     returnPrompt = "Return",
     closed = " ~o~: ~e~CLOSED",
@@ -25,5 +24,6 @@ Locales["en_lang"] = {
     horseInv = "Saddlebags",
     noSaddlebags = "You need ~o~saddlebags~q~ to store your items",
     noHorses = "You don't own any horses",
-    selectHorse = "~o~Select~q~ a horse to use from ~o~Stable~q~ menu"
+    selectHorse = "~o~Select~q~ a horse to use from ~o~Stable~q~ menu",
+    purchaseSuccessful = "Purchase Successful!"
 }

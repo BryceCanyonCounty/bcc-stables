@@ -55,43 +55,75 @@ export default {
         Object.keys(currentComps).length &&
         currentComps.includes(comp["hash"])
       ) {
-        this.curItem = parseInt(key);
+        this.curItem = parseInt(key) + 1;
         break;
       }
     }
   },
   computed: {
-    ...mapState(["comps", "activeHorse", "compCashPrice", "compGoldPrice"]),
+    ...mapState([
+      "comps",
+      "activeHorse",
+      "compCashPrice",
+      "compGoldPrice",
+      "showTackPrice",
+    ]),
     counter() {
       return `${this.curItem}/${this.maxItems}`;
     },
   },
   watch: {
     curItem(newVal, oldVal) {
-      if (oldVal > 0) {
+      let oldValue = oldVal - 1;
+      let newValue = newVal - 1;
+
+      if (oldValue > -1 && !this.isOwned(oldValue)) {
         this.$store.dispatch(
           "setCompCashPrice",
-          this.compCashPrice - parseInt(this.horseComps[oldVal]["cashPrice"])
+          this.compCashPrice - parseInt(this.horseComps[oldValue]["cashPrice"])
         );
+
         this.$store.dispatch(
           "setCompGoldPrice",
-          this.compGoldPrice - parseInt(this.horseComps[oldVal]["goldPrice"])
+          this.compGoldPrice - parseInt(this.horseComps[oldValue]["goldPrice"])
         );
       }
 
-      if (newVal > 0) {
+      if (newValue > -1 && !this.isOwned(newValue)) {
         this.$store.dispatch(
           "setCompCashPrice",
-          this.compCashPrice + parseInt(this.horseComps[newVal]["cashPrice"])
+          this.compCashPrice + parseInt(this.horseComps[newValue]["cashPrice"])
         );
+
         this.$store.dispatch(
           "setCompGoldPrice",
-          this.compGoldPrice + parseInt(this.horseComps[newVal]["goldPrice"])
+          this.compGoldPrice + parseInt(this.horseComps[newValue]["goldPrice"])
         );
+      }
+
+      if (
+        this.showTackPrice &&
+        this.compCashPrice == 0 &&
+        this.compGoldPrice == 0
+      ) {
+        this.$store.dispatch("setShowTackPrice", false);
+      } else if (
+        !this.showTackPrice &&
+        this.compCashPrice &&
+        this.compGoldPrice
+      ) {
+        this.$store.dispatch("setShowTackPrice", true);
       }
     },
   },
   methods: {
+    isOwned(index) {
+      let currentComps = JSON.parse(this.activeHorse["components"]);
+      return (
+        Object.keys(currentComps).length &&
+        currentComps.includes(this.horseComps[index]["hash"])
+      );
+    },
     increase() {
       if (++this.curItem > this.maxItems) {
         this.curItem = 0;
@@ -107,8 +139,11 @@ export default {
     updateItem() {
       api
         .post(this.label.replace(/\s+/g, ""), {
-          id: this.curItem,
-          hash: this.horseComps[this.curItem]["hash"],
+          id: this.curItem - 1,
+          hash:
+            this.curItem - 1 == -1
+              ? ""
+              : this.horseComps[this.curItem - 1]["hash"],
         })
         .catch((e) => {
           console.log(e.message);

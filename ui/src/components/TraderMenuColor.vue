@@ -1,30 +1,53 @@
 <template>
-  <div class="col s12 panel-shop item">
-    <div class="col s6 item" @click="loadHorse()">
+  <div class="panel-shop item flex">
+    <!--  -->
+    <div class="item flex flex-auto" @click="loadHorse()">
       <h6 class="grey-text-shop title">{{ horse.color }}</h6>
     </div>
-    <div class="buy-buttons">
+    <!--  -->
+    <div class="buy-buttons flex flex-auto justify-end">
       <!--  -->
-      <button class="btn-small" @click="buyHorse(true)">
+      <button class="btn-small" @click="showModal(true)">
         <img src="img/money.png" /><span>{{ horse.cashPrice }}</span>
       </button>
       <!--  -->
-      <button class="btn-small right-btn" @click="buyHorse(false)">
+      <button class="btn-small right-btn" @click="showModal(false)">
         <img src="img/gold.png" /><span>{{ horse.goldPrice }}</span>
       </button>
       <!--  -->
     </div>
   </div>
+  <ConfirmationModal :visible="isVisible" title="Purchase" @close="hideModal()">
+    <!-- <p style="text-align: center">Purchase by selecting cash or gold.</p> -->
+    <div class="divider-menu-top" style="margin-top: 1rem"></div>
+    <div class="flex cta-wrapper">
+      <button @click="buyHorse()" class="modal-btn flex flex-auto">
+        Confirm
+      </button>
+      <!--  -->
+      <button @click="hideModal" class="modal-btn flex flex-auto">
+        Cancel
+      </button>
+    </div>
+    <div class="divider-menu-bottom"></div>
+  </ConfirmationModal>
 </template>
 
 <script>
 import api from "@/api";
 import { mapState } from "vuex";
+import ConfirmationModal from "./ConfirmationModal.vue";
 export default {
   name: "TraderMenuColor",
   props: {
     horse: Object,
     model: String,
+  },
+  data() {
+    return {
+      isVisible: false,
+      currencyType: null,
+    };
   },
   emits: ["iExpanded"],
   computed: {
@@ -34,6 +57,14 @@ export default {
     },
   },
   methods: {
+    showModal(currencyType) {
+      this.currencyType = currencyType;
+      this.isVisible = true;
+    },
+    hideModal() {
+      this.currencyType = null;
+      this.isVisible = false;
+    },
     Expand() {
       if (!this.isOpen) {
         this.$emit("iExpanded", this.index);
@@ -48,121 +79,56 @@ export default {
         horseModel: this.model,
       });
     },
-    buyHorse(isCash) {
-      if (isCash) {
-        api.post("BuyHorse", {
-          ModelH: this.model,
-          Cash: this.horse.cashPrice,
-          IsCash: isCash,
-        });
-      } else {
-        api.post("BuyHorse", {
-          ModelH: this.model,
-          Gold: this.horse.goldPrice,
-          IsCash: isCash,
-        });
+    buyHorse() {
+      console.log("Attempting to buy Horse");
+      console.log(`Currency Type: ${this.currencyType}`);
+      if (this.currencyType !== null) {
+        console.log("Currency Type not Null");
+        if (this.currencyType) {
+          console.log("Attempting to buy Horse using Cash");
+          api.post("BuyHorse", {
+            ModelH: this.model,
+            Cash: this.horse.cashPrice,
+            IsCash: this.currencyType,
+          });
+        } else {
+          console.log("Attempting to buy Horse using Gold");
+          api.post("BuyHorse", {
+            ModelH: this.model,
+            Gold: this.horse.goldPrice,
+            IsCash: this.currencyType,
+          });
+        }
+        console.log("You have a horse nerd");
       }
     },
+  },
+  components: {
+    ConfirmationModal,
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.mb {
-  margin-bottom: 0.75rem;
+.flex {
+  display: flex;
 }
 
-.mt {
-  margin-top: 0.35rem;
+.flex-auto {
+  flex: 1 1 auto;
 }
-
-.row .col {
-  margin-left: -0.75rem;
-  margin-right: -0.75rem;
-}
-.col.s1 {
-  width: 8.3333333333%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.col.s2 {
-  width: 16.6666666667%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.col.s3 {
-  width: 25%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.col.s4 {
-  width: 33.3333333333%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.col.s5 {
-  width: 41.6666666667%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.col.s6 {
-  width: 50%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.col.s7 {
-  width: 58.3333333333%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.row .col.s8 {
-  width: 66.6666666667%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.col.s9 {
-  width: 75%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.col.s10 {
-  width: 83.3333333333%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.col.s11 {
-  width: 91.6666666667%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
-}
-.col.s12 {
-  width: 100%;
-  margin-left: auto;
-  left: auto;
-  right: auto;
+.justify-end {
+  justify-content: flex-end;
 }
 .item {
-  display: flex;
-  justify-content: left;
-  padding: 3px 3px !important;
+  margin-left: 25px;
 }
 .panel-shop.item {
-  padding: 5px 0px !important;
-  margin: 3px 10px !important;
+  padding: 5px 0px;
+  margin: 3px 10px;
   border-radius: 0px;
-  width: calc(100% - 20px) !important;
+  width: calc(100% - 20px);
   background-color: transparent;
   overflow: hidden;
   background-image: url("/public/img/input.png"), url("/public/img/input.png");
@@ -185,9 +151,9 @@ export default {
 }
 
 .btn-small {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: left !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
   text-decoration: none;
   color: #f0f0f0;
@@ -214,5 +180,58 @@ export default {
 
 .title {
   font-size: 1em;
+}
+.flex {
+  display: flex;
+}
+.flex-auto {
+  flex: 1 1 auto;
+}
+.modal-btn {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: #f0f0f0;
+  user-select: none;
+  text-align: left;
+  width: 75px;
+  letter-spacing: 0.5px;
+  -webkit-transition: background-color 0.2s ease-out;
+  transition: background-color 0.2s ease-out;
+  border: 0px #fff solid;
+}
+.modal-btn:hover {
+  background: url("/public/img/buttonv.png");
+  background-size: 90% 100%;
+  background-repeat: no-repeat;
+  background-position: right;
+  border-radius: 0px;
+}
+.cta-wrapper {
+  background: url("/public/img/input.png");
+  background-position: center;
+  background-size: 100% 100%;
+  height: 4vh;
+}
+
+.divider-menu-top,
+.divider-menu-bottom {
+  width: 90%;
+  height: 4px;
+  margin: auto auto;
+  background-image: url("/public/img/divider_line.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  opacity: 0.6;
+}
+
+.divider-menu-top {
+  margin-bottom: 10px;
+}
+
+.divider-menu-bottom {
+  margin-top: 10px;
 }
 </style>

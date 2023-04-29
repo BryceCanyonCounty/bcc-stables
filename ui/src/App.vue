@@ -41,6 +41,7 @@ export default {
           this.$store.dispatch("setSelectedHorse", null);
           this.$store.dispatch("setCompCashPrice", 0);
           this.$store.dispatch("setCompGoldPrice", 0);
+          this.$store.dispatch("setShowTackPrice", false);
           break;
         default:
           break;

@@ -65,6 +65,34 @@ AddEventHandler('oss_stables:BuyHorse', function(data)
         end)
 end)
 
+RegisterServerEvent('oss_stables:BuyTack')
+AddEventHandler('oss_stables:BuyTack', function(data)
+    local _source = source
+    local Character = VORPcore.getUser(_source).getUsedCharacter
+
+    if tonumber(data.currencyType) == 0 then
+        local charCash = Character.money
+        if charCash >= data.cashPrice then
+            Character.removeCurrency(0, data.cashPrice)
+        else
+            VORPcore.NotifyRightTip(_source, _U("shortCash"), 5000)
+            return
+        end
+    else
+        local charGold = Character.gold
+
+        if charGold >= data.goldPrice then
+            Character.removeCurrency(1, data.goldPrice)
+        else
+            VORPcore.NotifyRightTip(_source, _U("shortGold"), 5000)
+            return
+        end
+    end
+
+    TriggerClientEvent('oss_stables:SaveComps', _source)
+    VORPcore.NotifyRightTip(_source, _U("purchaseSuccessful"), 5000)
+end)
+
 RegisterServerEvent('oss_stables:SaveNewHorse')
 AddEventHandler('oss_stables:SaveNewHorse', function(data, name)
     local _source = source

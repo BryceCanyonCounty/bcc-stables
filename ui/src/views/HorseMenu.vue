@@ -34,8 +34,6 @@
 
       <div class="divider-menu-top"></div>
 
-      <!-- Cash Price: {{ compCashPrice }} Gold Price: {{ compGoldPrice }} -->
-
       <div class="scroll-container" v-if="page == 'Stable'">
         <MyStableMenu />
       </div>
@@ -84,6 +82,28 @@
 
       <div class="divider-menu-bottom"></div>
     </div>
+    <ConfirmationModal
+      :visible="showModal"
+      title="Purchase"
+      @close="hideModal()"
+    >
+      <p style="text-align: center">Purchase by selecting cash or gold.</p>
+      <div class="divider-menu-top" style="margin-top: 1rem"></div>
+      <div class="flex cta-wrapper">
+        <button @click="purchase(0)" class="modal-btn flex flex-auto">
+          <img src="img/money.png" />{{ compCashPrice }}
+        </button>
+        <!--  -->
+        <button @click="purchase(1)" class="modal-btn flex flex-auto">
+          <img src="img/gold.png" />{{ compGoldPrice }}
+        </button>
+        <!--  -->
+        <button @click="hideModal" class="modal-btn flex flex-auto">
+          Cancel
+        </button>
+      </div>
+      <div class="divider-menu-bottom"></div>
+    </ConfirmationModal>
   </div>
 </template>
 
@@ -94,12 +114,14 @@ import MenuButton from "@/components/MenuButton.vue";
 import MyStableMenu from "@/components/MyStableMenu.vue";
 import TraderMenu from "@/components/TraderMenu.vue";
 import TackShopMenu from "@/components/TackShopMenu.vue";
+import ConfirmationModal from "@/components/ConfirmationModal.vue";
 
 export default {
   name: "HorseMenu",
   data() {
     return {
       page: "Stable",
+      showModal: false,
     };
   },
   components: {
@@ -107,12 +129,24 @@ export default {
     MyStableMenu,
     TraderMenu,
     TackShopMenu,
+    ConfirmationModal,
   },
   methods: {
+    hideModal() {
+      this.showModal = false;
+      this.$store.dispatch("setShowTackPrice", true);
+    },
     save() {
+      this.$store.dispatch("setShowTackPrice", false);
+      this.showModal = true;
+    },
+    purchase(currency) {
       api
         .post("CloseStable", {
           MenuAction: "save",
+          cashPrice: this.compCashPrice,
+          goldPrice: this.compGoldPrice,
+          currencyType: currency, // 0 = Cash 1 = Gold
         })
         .catch((e) => {
           console.log(e.message);
@@ -131,6 +165,12 @@ export default {
       api.post("rotate", {
         RotateHorse: direction,
       });
+    },
+    buyWithCash() {
+      console.log("Purchasing with Cash");
+    },
+    buyWithGold() {
+      console.log("Purchasing with Gold");
     },
   },
   computed: {
@@ -168,7 +208,39 @@ export default {
   overflow: hidden;
   transition: all 0.5s;
 }
-
+.flex {
+  display: flex;
+}
+.flex-auto {
+  flex: 1 1 auto;
+}
+.modal-btn {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: #f0f0f0;
+  user-select: none;
+  text-align: left;
+  width: 75px;
+  letter-spacing: 0.5px;
+  -webkit-transition: background-color 0.2s ease-out;
+  transition: background-color 0.2s ease-out;
+  border: 0px #fff solid;
+}
+.modal-btn:hover {
+  background: url("/public/img/buttonv.png");
+  background-size: 90% 100%;
+  background-repeat: no-repeat;
+  background-position: right;
+  border-radius: 0px;
+}
+.cta-wrapper {
+  background: url("/public/img/input.png");
+  background-position: center;
+  background-size: 100% 100%;
+  height: 4vh;
+}
 .header-text {
   position: relative;
   padding: 20px 20px;
@@ -195,7 +267,6 @@ export default {
   background-position: center;
   background-size: 95% 100%;
 }
-
 .main-nav-buttons {
   margin-top: 5px;
   margin-bottom: 15px;

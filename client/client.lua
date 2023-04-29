@@ -499,7 +499,7 @@ RegisterNUICallback("CloseStable", function(data, cb)
 
     local menuAction = data.MenuAction
     if menuAction == "save" then
-        SaveComps()
+        TriggerServerEvent('oss_stables:BuyTack', data)
     else
         return
     end
@@ -508,7 +508,8 @@ RegisterNUICallback("CloseStable", function(data, cb)
 end)
 
 -- Save Horse Tack to Database
-function SaveComps()
+RegisterNetEvent('oss_stables:SaveComps')
+AddEventHandler('oss_stables:SaveComps', function()
     local compData = {
         SaddlesUsing,
         SaddleclothsUsing,
@@ -525,7 +526,8 @@ function SaveComps()
     if compDataEncoded ~= "[]" then
         TriggerServerEvent('oss_stables:UpdateComponents', compData, MyHorse_entityId, MyHorse_entity)
     end
-end
+end)
+
 
 -- Reopen Menu After Sell or Failed Purchase
 RegisterNetEvent('oss_stables:StableMenu')
@@ -774,7 +776,7 @@ end)
 
 -- Select Horse Tack from Menu
 RegisterNUICallback("Saddles", function(data, cb)
-    if tonumber(data.id) == 0 then
+    if tonumber(data.id) == -1 then
         SaddlesUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xBAA7E618, 0) -- RemoveTagFromMetaPed
@@ -789,7 +791,7 @@ RegisterNUICallback("Saddles", function(data, cb)
 end)
 
 RegisterNUICallback("Saddlecloths", function(data, cb)
-    if tonumber(data.id) == 0 then
+    if tonumber(data.id) == -1 then
         SaddleclothsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
@@ -804,7 +806,7 @@ RegisterNUICallback("Saddlecloths", function(data, cb)
 end)
 
 RegisterNUICallback("Stirrups", function(data, cb)
-    if tonumber(data.id) == 0 then
+    if tonumber(data.id) == -1 then
         StirrupsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xDA6DADCA, 0) -- RemoveTagFromMetaPed
@@ -819,7 +821,7 @@ RegisterNUICallback("Stirrups", function(data, cb)
 end)
 
 RegisterNUICallback("SaddleBags", function(data, cb)
-    if tonumber(data.id) == 0 then
+    if tonumber(data.id) == -1 then
         BagsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x80451C25, 0) -- RemoveTagFromMetaPed
@@ -834,7 +836,7 @@ RegisterNUICallback("SaddleBags", function(data, cb)
 end)
 
 RegisterNUICallback("Manes", function(data, cb)
-    if tonumber(data.id) == 0 then
+    if tonumber(data.id) == -1 then
         ManesUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xAA0217AB, 0) -- RemoveTagFromMetaPed
@@ -849,7 +851,7 @@ RegisterNUICallback("Manes", function(data, cb)
 end)
 
 RegisterNUICallback("Tails", function(data, cb)
-    if tonumber(data.id) == 0 then
+    if tonumber(data.id) == -1 then
         TailsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
@@ -864,7 +866,7 @@ RegisterNUICallback("Tails", function(data, cb)
 end)
 
 RegisterNUICallback("SaddleHorns", function(data, cb)
-    if tonumber(data.id) == 0 then
+    if tonumber(data.id) == -1 then
         SaddleHornsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x5447332, 0)  -- RemoveTagFromMetaPed
@@ -879,7 +881,7 @@ RegisterNUICallback("SaddleHorns", function(data, cb)
 end)
 
 RegisterNUICallback("Bedrolls", function(data, cb)
-    if tonumber(data.id) == 0 then
+    if tonumber(data.id) == -1 then
         BedrollsUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xEFB31921, 0) -- RemoveTagFromMetaPed
@@ -894,7 +896,7 @@ RegisterNUICallback("Bedrolls", function(data, cb)
 end)
 
 RegisterNUICallback("Masks", function(data, cb)
-    if tonumber(data.id) == 0 then
+    if tonumber(data.id) == -1 then
         MasksUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xD3500E5D, 0) -- RemoveTagFromMetaPed
@@ -909,7 +911,7 @@ RegisterNUICallback("Masks", function(data, cb)
 end)
 
 RegisterNUICallback("Mustaches", function(data, cb)
-    if tonumber(data.id) == 0 then
+    if tonumber(data.id) == -1 then
         MustachesUsing = 0
         local playerHorse = MyHorse_entity
         Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x30DEFDDF, 0) -- RemoveTagFromMetaPed
@@ -1103,6 +1105,7 @@ AddEventHandler('onResourceStop', function(resourceName)
     PromptDelete(OpenShops)
     PromptDelete(CloseShops)
     PromptDelete(OpenReturn)
+    DestroyAllCams(true)
 
     if MyHorse then
         DeleteEntity(MyHorse)
