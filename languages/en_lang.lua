@@ -1,6 +1,5 @@
 ---------------------------------- ENGLISH -------------------------------------------
 Locales["en_lang"] = {
-
     shopPrompt = "Menu",
     returnPrompt = "Return",
     closed = " ~o~: ~e~CLOSED",
@@ -12,7 +11,6 @@ Locales["en_lang"] = {
     needJob = "To use this stable you need job: ~o~",
     horseLimit = "You can have a maximum of ~o~",
     horses = "~q~ horses!",
-    nameHorse = "Name your horse:",
     soldHorse = "You sold a horse for: $~t6~",
     horseReturned = "Your horse has been ~o~returned",
     noHorse = "You don't have a horse to return",
@@ -26,5 +24,6 @@ Locales["en_lang"] = {
     horseInv = "Saddlebags",
     noSaddlebags = "You need ~o~saddlebags~q~ to store your items",
     noHorses = "You don't own any horses",
-    selectHorse = "~o~Select~q~ a horse to use from ~o~Stable~q~ menu"
+    selectHorse = "~o~Select~q~ a horse to use from ~o~Stable~q~ menu",
+    purchaseSuccessful = "Purchase Successful!"
 }

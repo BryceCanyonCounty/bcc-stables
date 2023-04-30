@@ -1,12 +1,15 @@
-# Stables
+# BCC Stables
 
 #### Important
+
 This is a "work in progress".
 
 #### Description
+
 Stables script for RedM servers using the [VORP framework](https://github.com/VORPCORE). Using the 7 original stable locations from the game. More stable locations may be added using the `config.lua` file.
 
 #### Features
+
 - Buy and sell horses through the stables
 - Cash or gold may be used for payments in the menu
 - Individual inventory for each horse
@@ -19,19 +22,20 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Feed your horse (haycubes), using the horse menu, to increase horse's health and stamina
 - Brushing your horse, using the horse menu, will clean him and give a slight increase in health
 - Configurable cooldown time for feeding and brushing
-- If unable to reach your horse use command: `/horseRespawn` 
 
 #### Dependencies
+
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
 - [vorp_inventory](https://github.com/VORPCORE/vorp_inventory-lua)
 
 #### Installation
-- Add `oss_stables` folder to your resources folder
-- Add `ensure oss_stables` to your `resources.cfg`
-- Run the included database file `oss_stables.sql`
+
+- Add `bcc-stables` folder to your resources folder
+- Add `ensure bcc-stables` to your `resources.cfg`
+- Run the included database file `bcc-stables.sql`
 
 #### Credits
-- lrp_stables
 
-#### GitHub
-- https://github.com/JusCampin/oss_stables
+- lrp_stables
+- [ByteSizd](https://github.com/AndrewR3K) - Vue Boilerplate for RedM
+- [SavSin](https://github.com/DavFount) - UI conversion to VueJS
