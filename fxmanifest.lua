@@ -22,11 +22,11 @@ shared_scripts {
 }
 
 ui_page {
-    "ui/shim.html"
+    "ui/dist/index.html"
 }
 
 files {
-    "ui/shim.html",
+    "ui/dist/index.html",
     "ui/dist/js/*.*",
     "ui/dist/css/*.*",
     "ui/dist/fonts/*.*",
