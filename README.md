@@ -37,4 +37,5 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 #### Credits
 
 - lrp_stables
-- [SavSin](https://github.com/DavFount) - UI conversion to VUE
+- [ByteSizd](https://github.com/AndrewR3K) - Vue Boilerplate for RedM
+- [SavSin](https://github.com/DavFount) - UI conversion to VueJS
