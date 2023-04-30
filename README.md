@@ -37,7 +37,4 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 #### Credits
 
 - lrp_stables
-
-#### GitHub
-
-- https://github.com/JusCampin/oss_stables
+- [SavSin](https://github.com/DavFount) - UI conversion to VUE
