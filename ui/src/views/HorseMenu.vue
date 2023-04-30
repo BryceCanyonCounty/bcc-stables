@@ -52,10 +52,10 @@
         <button
           id="save"
           @click="save()"
-          :disabled="!hasCompsChanged"
+          :disabled="!isSaveEnabled"
           :class="{
-            disabled: !hasCompsChanged,
-            'btn-select': hasCompsChanged,
+            disabled: !isSaveEnabled,
+            'btn-select': isSaveEnabled,
           }"
         >
           Save
@@ -137,6 +137,11 @@ export default {
       this.$store.dispatch("setShowTackPrice", true);
     },
     save() {
+      if(this.compCashPrice == 0 && this.compGoldPrice == 0) {
+        this.purchase(0);
+        return;
+      }
+      
       this.$store.dispatch("setShowTackPrice", false);
       this.showModal = true;
     },
@@ -174,13 +179,13 @@ export default {
     },
   },
   computed: {
-    ...mapState(["shopName", "activeHorse", "compCashPrice", "compGoldPrice"]),
+    ...mapState(["shopName", "activeHorse", "compCashPrice", "compGoldPrice", "allowSave"]),
     isClosed() {
       return this.activeHorse === null;
     },
-    hasCompsChanged() {
-      return this.compCashPrice > 0;
-    },
+    isSaveEnabled() {
+      return this.allowSave
+    }
   },
 };
 </script>

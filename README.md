@@ -1,4 +1,4 @@
-# Stables
+# BCC Stables
 
 #### Important
 
@@ -30,14 +30,13 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 
 #### Installation
 
-- Add `oss_stables` folder to your resources folder
-- Add `ensure oss_stables` to your `resources.cfg`
-- Run the included database file `oss_stables.sql`
+- Add `bcc-stables` folder to your resources folder
+- Add `ensure bcc-stables` to your `resources.cfg`
+- Run the included database file `bcc-stables.sql`
 
 #### Credits
 
 - lrp_stables
-- SavSin - Everything
 
 #### GitHub
 

@@ -21,20 +21,15 @@ export default {
     TackShopCostDisplay,
   },
   methods: {
-    RenameHorse(id) {
-      console.log(`Renaming Horse with the ID of ${id}`);
-    },
-    SellHorse(id) {
-      console.log(`Selling Horse with the ID of ${id}`);
-    },
   },
   computed: {
-    ...mapState(["comps", "compCashPrice", "compGoldPrice", "showTackPrice"]),
+    ...mapState(["comps", "compCashPrice", "compGoldPrice", "showTackPrice", "allowSave"]),
   },
   beforeUnmount() {
     this.$store.dispatch("setCompCashPrice", 0);
     this.$store.dispatch("setCompGoldPrice", 0);
     this.$store.dispatch("setShowTackPrice", false);
+    this.$emit("toggleSave", false);
   },
 };
 </script>

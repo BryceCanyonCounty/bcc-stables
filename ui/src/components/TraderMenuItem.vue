@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <div class="flex panel">
-      <div class="flex flex-auto panel-title" @click="Expand()">
+    <div class="flex panel" @click="Expand()">
+      <div class="flex flex-auto panel-title">
         <h6 class="grey-text plus">{{ horse.breed }}</h6>
       </div>
     </div>
@@ -29,7 +29,7 @@ export default {
     ...mapState(["shopName", "myHorses", "horses", "comps", "activeHorse"]),
     isOpen() {
       return this.index == this.selected;
-    },
+    }
   },
   methods: {
     Expand() {

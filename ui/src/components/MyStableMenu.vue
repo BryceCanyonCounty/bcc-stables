@@ -2,22 +2,28 @@
   <div v-if="myHorses">
     <div v-if="Object.keys(myHorses).length">
       <div>
-        <MyStableMenuItem
-          :label="horse.name"
-          :index="horse.id"
-          :model="horse.model"
-          :horse="horse"
-          :components="JSON.parse(horse.components)"
-          :selected="activeDropdown"
-          v-for="(horse, index) in myHorses"
-          :key="index"
-          @iExpanded="onChildExpansion($event)"
-        />
+        <MyStableMenuItem :label="horse.name" :index="horse.id" :model="horse.model" :horse="horse"
+          :components="JSON.parse(horse.components)" :selected="activeDropdown" v-for="(horse, index) in myHorses"
+          :key="index" @iExpanded="onChildExpansion($event)" />
       </div>
     </div>
-    <div v-else>No Horses. Head to the Trader.</div>
+    <div v-else>
+      <div class="text">
+        <div class="container">
+          <div class="flex panel">
+            <div class="flex flex-auto panel-title">
+              <h6 class="grey-text plus">
+                No Horses!&nbsp;&nbsp;Head to the Trader
+              </h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div v-else>Loading...</div>
+  <div v-else>
+    <img src="img/6cyl_revolver.png" alt="" class="image">
+  </div>
 </template>
 
 <script>
@@ -44,7 +50,87 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
+.loading-text {
+  color: #f0f0f0;
+  text-align: center;
+  font-size: 1.15em;
 }
-</style>
+
+.image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120px;
+  height: 120px;
+  margin: -60px 0 0 -60px;
+  -webkit-animation: spin 4s linear infinite;
+  -moz-animation: spin 4s linear infinite;
+  animation: spin 4s linear infinite;
+  opacity: 0.15;
+}
+
+@-moz-keyframes spin {
+  100% {
+    -moz-transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.container {
+  width: 96%;
+  margin: auto;
+  overflow: hidden;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-auto {
+  flex: 0 1 auto;
+}
+
+.panel {
+  padding: 0px;
+  margin: 3px 10px;
+  border-radius: 0px;
+  // width: calc(100% - 20px) !important;
+  background-color: transparent;
+  overflow: hidden;
+  background: url("/public/img/input.png");
+  background-size: 100% 100%;
+  justify-content: center;
+}
+
+.panel-title {
+  background-size: 100% 100%;
+  padding: 10px 10px;
+  font-size: 1.5em;
+  font-weight: 400;
+  text-align: center;
+}
+
+.panel-title .grey-text {
+  margin: 0;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.panel-title .grey-text {
+  color: #9e9e9e;
+  margin: 0;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}</style>

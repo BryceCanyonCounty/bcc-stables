@@ -59,6 +59,7 @@ export default {
         break;
       }
     }
+    this.updateItem();
   },
   computed: {
     ...mapState([
@@ -67,6 +68,7 @@ export default {
       "compCashPrice",
       "compGoldPrice",
       "showTackPrice",
+      "allowSave"
     ]),
     counter() {
       return `${this.curItem}/${this.maxItems}`;
@@ -113,6 +115,7 @@ export default {
         this.compGoldPrice
       ) {
         this.$store.dispatch("setShowTackPrice", true);
+        this.$store.dispatch("setAllowSave", true);
       }
     },
   },
@@ -160,9 +163,11 @@ export default {
   margin: auto;
   overflow: hidden;
 }
+
 .mb {
   margin-bottom: 0.25rem;
 }
+
 .flex {
   display: flex;
 }
@@ -170,19 +175,23 @@ export default {
 .flex-none {
   flex: none;
 }
+
 .justify-end {
   justify-content: flex-end;
 }
+
 .col {
   margin-left: -0.75rem;
   margin-right: -0.75rem;
 }
+
 .col.s6 {
   width: 50%;
   margin-left: auto;
   left: auto;
   right: auto;
 }
+
 .col.s12 {
   width: 100%;
   margin-left: auto;
@@ -282,5 +291,4 @@ export default {
   background-size: 100% 100%;
   background-repeat: no-repeat;
   color: #f0f0f0;
-}
-</style>
+}</style>

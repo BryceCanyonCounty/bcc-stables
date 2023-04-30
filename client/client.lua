@@ -144,7 +144,7 @@ Citizen.CreateThread(function()
                                 PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
 
                                 if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
-                                    TriggerServerEvent("oss_stables:GetPlayerJob")
+                                    TriggerServerEvent("bcc-stables:GetPlayerJob")
                                     Wait(200)
                                     if PlayerJob then
                                         if CheckJob(shopConfig.allowedJobs, PlayerJob) then
@@ -164,7 +164,7 @@ Citizen.CreateThread(function()
                                             5000)
                                     end
                                 elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
-                                    TriggerServerEvent("oss_stables:GetPlayerJob")
+                                    TriggerServerEvent("bcc-stables:GetPlayerJob")
                                     Wait(200)
                                     if PlayerJob then
                                         if CheckJob(shopConfig.allowedJobs, PlayerJob) then
@@ -231,7 +231,7 @@ Citizen.CreateThread(function()
                             PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
-                                TriggerServerEvent("oss_stables:GetPlayerJob")
+                                TriggerServerEvent("bcc-stables:GetPlayerJob")
                                 Wait(200)
                                 if PlayerJob then
                                     if CheckJob(shopConfig.allowedJobs, PlayerJob) then
@@ -250,7 +250,7 @@ Citizen.CreateThread(function()
                                     VORPcore.NotifyRightTip(_U("needJob") .. JobName .. " " .. shopConfig.jobGrade, 5000)
                                 end
                             elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
-                                TriggerServerEvent("oss_stables:GetPlayerJob")
+                                TriggerServerEvent("bcc-stables:GetPlayerJob")
                                 Wait(200)
                                 if PlayerJob then
                                     if CheckJob(shopConfig.allowedJobs, PlayerJob) then
@@ -301,7 +301,7 @@ function OpenStable(shopId)
         compData = HorseComp,
         location = StableName
     })
-    TriggerServerEvent('oss_stables:GetMyHorses')
+    TriggerServerEvent('bcc-stables:GetMyHorses')
 end
 
 -- Get Horse Data for Purchases
@@ -311,8 +311,8 @@ function GetShopData()
 end
 
 -- Get Horse Data for Players Horses
-RegisterNetEvent('oss_stables:ReceiveHorsesData')
-AddEventHandler('oss_stables:ReceiveHorsesData', function(dataHorses)
+RegisterNetEvent('bcc-stables:ReceiveHorsesData')
+AddEventHandler('bcc-stables:ReceiveHorsesData', function(dataHorses)
     SendNUIMessage({
         action = "updateMyHorses",
         myHorsesData = dataHorses
@@ -359,13 +359,13 @@ RegisterNUICallback("BuyHorse", function(data, cb)
     SendNUIMessage({
         action = "hide"
     })
-    TriggerServerEvent('oss_stables:BuyHorse', data)
+    TriggerServerEvent('bcc-stables:BuyHorse', data)
 
     cb('ok')
 end)
 
-RegisterNetEvent('oss_stables:SetHorseName')
-AddEventHandler('oss_stables:SetHorseName', function(data, action)
+RegisterNetEvent('bcc-stables:SetHorseName')
+AddEventHandler('bcc-stables:SetHorseName', function(data, action)
     SetNuiFocus(false, false)
     SendNUIMessage({ action = "hide" })
 
@@ -380,10 +380,16 @@ AddEventHandler('oss_stables:SetHorseName', function(data, action)
         end
         if (GetOnscreenKeyboardResult()) then
             horseName = GetOnscreenKeyboardResult()
+
+            if(horseName == "") then
+                TriggerEvent('bcc-stables:SetHorseName', data, action)
+                return
+            end
+
             if action == "newHorse" then
-                TriggerServerEvent('oss_stables:SaveNewHorse', data, horseName)
+                TriggerServerEvent('bcc-stables:SaveNewHorse', data, horseName)
             elseif action == "rename" then
-                TriggerServerEvent('oss_stables:UpdateHorseName', data, horseName)
+                TriggerServerEvent('bcc-stables:UpdateHorseName', data, horseName)
             end
 
             SetNuiFocus(true, true)
@@ -395,7 +401,7 @@ AddEventHandler('oss_stables:SetHorseName', function(data, action)
             })
 
             Wait(1000)
-            TriggerServerEvent('oss_stables:GetMyHorses')
+            TriggerServerEvent('bcc-stables:GetMyHorses')
         end
     end)
 end)
@@ -406,7 +412,7 @@ RegisterNUICallback("RenameHorse", function(data, cb)
         action = "hide"
     })
     local action = "rename"
-    TriggerEvent('oss_stables:SetHorseName', data, action)
+    TriggerEvent('bcc-stables:SetHorseName', data, action)
 
     cb('ok')
 end)
@@ -460,13 +466,13 @@ end)
 
 -- Select Active Horse
 RegisterNUICallback("selectHorse", function(data, cb)
-    TriggerServerEvent('oss_stables:SelectHorse', tonumber(data.horseId))
+    TriggerServerEvent('bcc-stables:SelectHorse', tonumber(data.horseId))
 
     cb('ok')
 end)
 
-RegisterNetEvent('oss_stables:SetHorseInfo')
-AddEventHandler('oss_stables:SetHorseInfo', function(model, name, components, id)
+RegisterNetEvent('bcc-stables:SetHorseInfo')
+AddEventHandler('bcc-stables:SetHorseInfo', function(model, name, components, id)
     HorseModel = model
     HorseName = name
     HorseComponents = components
@@ -499,7 +505,7 @@ RegisterNUICallback("CloseStable", function(data, cb)
 
     local menuAction = data.MenuAction
     if menuAction == "save" then
-        TriggerServerEvent('oss_stables:BuyTack', data)
+        TriggerServerEvent('bcc-stables:BuyTack', data)
     else
         return
     end
@@ -508,8 +514,8 @@ RegisterNUICallback("CloseStable", function(data, cb)
 end)
 
 -- Save Horse Tack to Database
-RegisterNetEvent('oss_stables:SaveComps')
-AddEventHandler('oss_stables:SaveComps', function()
+RegisterNetEvent('bcc-stables:SaveComps')
+AddEventHandler('bcc-stables:SaveComps', function()
     local compData = {
         SaddlesUsing,
         SaddleclothsUsing,
@@ -524,14 +530,14 @@ AddEventHandler('oss_stables:SaveComps', function()
     }
     local compDataEncoded = json.encode(compData)
     if compDataEncoded ~= "[]" then
-        TriggerServerEvent('oss_stables:UpdateComponents', compData, MyHorse_entityId, MyHorse_entity)
+        TriggerServerEvent('bcc-stables:UpdateComponents', compData, MyHorse_entityId, MyHorse_entity)
     end
 end)
 
 
 -- Reopen Menu After Sell or Failed Purchase
-RegisterNetEvent('oss_stables:StableMenu')
-AddEventHandler('oss_stables:StableMenu', function()
+RegisterNetEvent('bcc-stables:StableMenu')
+AddEventHandler('bcc-stables:StableMenu', function()
     if ShowroomHorse_entity ~= nil then
         DeleteEntity(ShowroomHorse_entity)
         ShowroomHorse_entity = nil
@@ -543,11 +549,11 @@ AddEventHandler('oss_stables:StableMenu', function()
         compData = HorseComp,
         location = StableName
     })
-    TriggerServerEvent('oss_stables:GetMyHorses')
+    TriggerServerEvent('bcc-stables:GetMyHorses')
 end)
 
-RegisterNetEvent('oss_stables:SetComponents')
-AddEventHandler('oss_stables:SetComponents', function(horseEntity, components)
+RegisterNetEvent('bcc-stables:SetComponents')
+AddEventHandler('bcc-stables:SetComponents', function(horseEntity, components)
     for _, value in pairs(components) do
         NativeSetPedComponentEnabled(horseEntity, value)
     end
@@ -619,7 +625,7 @@ function InitiateHorse()
         end
     end
 
-    TriggerServerEvent('oss_stables:RegisterInventory', MyHorseId)
+    TriggerServerEvent('bcc-stables:RegisterInventory', MyHorseId)
 
     TaskGoToEntity(MyHorse, player, -1, 7.2, 2.0, 0, 0)
     Initializing = false
@@ -672,7 +678,7 @@ function CallHorse()
             end
         end
     else
-        TriggerServerEvent('oss_stables:GetSelectedHorse')
+        TriggerServerEvent('bcc-stables:GetSelectedHorse')
     end
 end
 
@@ -686,7 +692,7 @@ function OpenInventory()
         if not hasSaddlebags then
             VORPcore.NotifyRightTip(_U("noSaddlebags"), 5000)
         else
-            TriggerServerEvent('oss_stables:OpenInventory', MyHorseId)
+            TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
         end
     end
 end
@@ -709,7 +715,7 @@ Citizen.CreateThread(function()
         -- Brush Horse (Key: B in Horse Menu)
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x63A38F2C) then -- IsDisabledControlJustPressed
             if not BrushCooldown then
-                TriggerServerEvent('oss_stables:GetPlayerItem', 'brush')
+                TriggerServerEvent('bcc-stables:GetPlayerItem', 'brush')
             else
                 VORPcore.NotifyRightTip(_U("notDirty"), 5000)
             end
@@ -717,7 +723,7 @@ Citizen.CreateThread(function()
         -- Feed Horse (Key: R in Horse Menu)
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x0D55A0F0) then -- IsDisabledControlJustPressed
             if not FeedCooldown then
-                TriggerServerEvent('oss_stables:GetPlayerItem', 'haycube')
+                TriggerServerEvent('bcc-stables:GetPlayerItem', 'haycube')
             else
                 VORPcore.NotifyRightTip(_U("notHungry"), 5000)
             end
@@ -725,8 +731,8 @@ Citizen.CreateThread(function()
     end
 end)
 
-RegisterNetEvent('oss_stables:BrushHorse')
-AddEventHandler('oss_stables:BrushHorse', function(data)
+RegisterNetEvent('bcc-stables:BrushHorse')
+AddEventHandler('bcc-stables:BrushHorse', function(data)
     local horsebrush = data.name
     if horsebrush == "horsebrush" then
         Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat("Interaction_Brush"),
@@ -750,8 +756,8 @@ AddEventHandler('oss_stables:BrushHorse', function(data)
     end
 end)
 
-RegisterNetEvent('oss_stables:FeedHorse')
-AddEventHandler('oss_stables:FeedHorse', function(data)
+RegisterNetEvent('bcc-stables:FeedHorse')
+AddEventHandler('bcc-stables:FeedHorse', function(data)
     local haycube = data.name
     if haycube == "consumable_haycube" then
         Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat("Interaction_Food"),
@@ -939,7 +945,7 @@ RegisterNUICallback("sellHorse", function(data)
         action = "hide"
     })
     DeleteEntity(MyHorse_entity)
-    TriggerServerEvent('oss_stables:SellHorse', tonumber(data.horseId))
+    TriggerServerEvent('bcc-stables:SellHorse', tonumber(data.horseId))
     Wait(300)
 
     SendNUIMessage({
@@ -948,7 +954,7 @@ RegisterNUICallback("sellHorse", function(data)
         compData = HorseComp,
         location = StableName
     })
-    TriggerServerEvent('oss_stables:GetMyHorses')
+    TriggerServerEvent('bcc-stables:GetMyHorses')
 end)
 
 -- Return Player Horse at Stable
@@ -1087,8 +1093,8 @@ function CheckJob(allowedJob, playerJob)
     return false
 end
 
-RegisterNetEvent("oss_stables:SendPlayerJob")
-AddEventHandler("oss_stables:SendPlayerJob", function(Job, grade)
+RegisterNetEvent("bcc-stables:SendPlayerJob")
+AddEventHandler("bcc-stables:SendPlayerJob", function(Job, grade)
     PlayerJob = Job
     JobGrade = grade
 end)
@@ -1106,6 +1112,7 @@ AddEventHandler('onResourceStop', function(resourceName)
     PromptDelete(CloseShops)
     PromptDelete(OpenReturn)
     DestroyAllCams(true)
+    DisplayRadar(true)
 
     if MyHorse then
         DeleteEntity(MyHorse)

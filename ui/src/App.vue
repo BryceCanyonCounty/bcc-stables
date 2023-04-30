@@ -42,6 +42,7 @@ export default {
           this.$store.dispatch("setCompCashPrice", 0);
           this.$store.dispatch("setCompGoldPrice", 0);
           this.$store.dispatch("setShowTackPrice", false);
+          this.$store.dispatch("setAllowSave", false);
           break;
         default:
           break;

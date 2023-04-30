@@ -28,5 +28,8 @@ ui_page {
 files {
     "ui/shim.html",
     "ui/dist/js/*.*",
-    "ui/dist/css/*.*"
+    "ui/dist/css/*.*",
+    "ui/dist/fonts/*.*",
+    "ui/dist/img/*.*",
+	"ui/dist/style.css"
 }
