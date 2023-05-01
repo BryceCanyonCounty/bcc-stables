@@ -19,6 +19,10 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Brushing your horse, using the horse menu, will clean him and give a slight increase in health
 - Configurable cooldown time for feeding and brushing
 
+#### Commands
+
+`/horseRespawn` Respawn your horse while bypassing the distance check
+
 #### Dependencies
 
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
