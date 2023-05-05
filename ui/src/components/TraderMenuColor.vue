@@ -19,6 +19,7 @@
       <!--  -->
     </div>
   </div>
+
   <ConfirmationModal :visible="isVisible" title="Purchase" @close="hideModal()">
     <!-- <p style="text-align: center">Purchase by selecting cash or gold.</p> -->
     <div class="divider-menu-top" style="margin-top: 1rem"></div>
@@ -28,6 +29,28 @@
       </button>
       <!--  -->
       <button @click="hideModal" class="modal-btn flex flex-auto">
+        Cancel
+      </button>
+    </div>
+    <div class="divider-menu-bottom"></div>
+  </ConfirmationModal>
+
+  <ConfirmationModal
+    :visible="genderVisible"
+    title="Select Gender"
+    @close="hideGenderModal()"
+  >
+    <!-- <p style="text-align: center">Purchase by selecting cash or gold.</p> -->
+    <div class="divider-menu-top" style="margin-top: 1rem"></div>
+    <div class="flex cta-wrapper">
+      <button @click="setGender('male')" class="modal-btn flex flex-auto">
+        Male
+      </button>
+      <button @click="setGender('female')" class="modal-btn flex flex-auto">
+        Female
+      </button>
+      <!--  -->
+      <button @click="hideGenderModal" class="modal-btn flex flex-auto">
         Cancel
       </button>
     </div>
@@ -48,7 +71,9 @@ export default {
   data() {
     return {
       isVisible: false,
+      genderVisible: false,
       currencyType: null,
+      gender: "male",
     };
   },
   computed: {
@@ -60,11 +85,20 @@ export default {
   methods: {
     showModal(currencyType) {
       this.currencyType = currencyType;
-      this.isVisible = true;
+      this.genderVisible = true;
     },
     hideModal() {
       this.currencyType = null;
       this.isVisible = false;
+    },
+    hideGenderModal() {
+      this.currencyType = null;
+      this.genderVisible = false;
+    },
+    setGender(gender) {
+      this.gender = gender;
+      this.genderVisible = false;
+      this.isVisible = true;
     },
     loadHorse() {
       if (this.activeHorse) {
@@ -82,12 +116,14 @@ export default {
             ModelH: this.model,
             Cash: this.horse.cashPrice,
             IsCash: this.currencyType,
+            gender: this.gender,
           });
         } else {
           api.post("BuyHorse", {
             ModelH: this.model,
             Gold: this.horse.goldPrice,
             IsCash: this.currencyType,
+            gender: this.gender,
           });
         }
       }
