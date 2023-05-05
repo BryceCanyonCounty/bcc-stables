@@ -1,6 +1,5 @@
 <template>
-  <div class="panel-shop item flex"
-  @click="loadHorse()">
+  <div class="panel-shop item flex" @click="loadHorse()">
     <!--  -->
     <div class="item flex flex-auto">
       <h6 class="grey-text-shop title">
@@ -10,25 +9,25 @@
     <!--  -->
     <div class="buy-buttons flex flex-auto justify-end">
       <!--  -->
-      <button class="btn-small" @click=" showModal(true) ">
+      <button class="btn-small" @click="showModal(true)">
         <img src="img/money.png" /><span>{{ horse.cashPrice }}</span>
       </button>
       <!--  -->
-      <button class="btn-small right-btn" @click=" showModal(false) ">
+      <button class="btn-small right-btn" @click="showModal(false)">
         <img src="img/gold.png" /><span>{{ horse.goldPrice }}</span>
       </button>
       <!--  -->
     </div>
   </div>
-  <ConfirmationModal :visible=" isVisible " title="Purchase" @close=" hideModal() ">
+  <ConfirmationModal :visible="isVisible" title="Purchase" @close="hideModal()">
     <!-- <p style="text-align: center">Purchase by selecting cash or gold.</p> -->
     <div class="divider-menu-top" style="margin-top: 1rem"></div>
     <div class="flex cta-wrapper">
-      <button @click=" buyHorse() " class="modal-btn flex flex-auto">
+      <button @click="buyHorse()" class="modal-btn flex flex-auto">
         Confirm
       </button>
       <!--  -->
-      <button @click=" hideModal " class="modal-btn flex flex-auto">
+      <button @click="hideModal" class="modal-btn flex flex-auto">
         Cancel
       </button>
     </div>
@@ -56,7 +55,7 @@ export default {
     ...mapState(["activeHorse"]),
     isActive() {
       return this.active;
-    }
+    },
   },
   methods: {
     showModal(currencyType) {
@@ -77,26 +76,20 @@ export default {
       });
     },
     buyHorse() {
-      console.log("Attempting to buy Horse");
-      console.log(`Currency Type: ${this.currencyType}`);
       if (this.currencyType !== null) {
-        console.log("Currency Type not Null");
         if (this.currencyType) {
-          console.log("Attempting to buy Horse using Cash");
           api.post("BuyHorse", {
             ModelH: this.model,
             Cash: this.horse.cashPrice,
             IsCash: this.currencyType,
           });
         } else {
-          console.log("Attempting to buy Horse using Gold");
           api.post("BuyHorse", {
             ModelH: this.model,
             Gold: this.horse.goldPrice,
             IsCash: this.currencyType,
           });
         }
-        console.log("You have a horse nerd");
       }
     },
   },
@@ -245,4 +238,5 @@ export default {
 
 .divider-menu-bottom {
   margin-top: 10px;
-}</style>
+}
+</style>
