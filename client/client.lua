@@ -315,6 +315,7 @@ end)
 RegisterNUICallback("loadHorse", function(data, cb)
     local horseModel = data.horseModel
 
+    cb('ok')
     if MyHorse_entity ~= nil then
         DeleteEntity(MyHorse_entity)
         MyHorse_entity = nil
@@ -343,17 +344,15 @@ RegisterNUICallback("loadHorse", function(data, cb)
     SetPedConfigFlag(ShowroomHorse_entity, 113, true)                    -- DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, ShowroomHorse_entity)       -- ClearPedEnvDirt
-    cb('ok')
 end)
 
 -- Buy and Name New Horse
 RegisterNUICallback("BuyHorse", function(data, cb)
+    cb('ok')
     SendNUIMessage({
         action = "hide"
     })
     TriggerServerEvent('bcc-stables:BuyHorse', data)
-
-    cb('ok')
 end)
 
 RegisterNetEvent('bcc-stables:SetHorseName')
@@ -373,7 +372,7 @@ AddEventHandler('bcc-stables:SetHorseName', function(data, action)
         if (GetOnscreenKeyboardResult()) then
             horseName = GetOnscreenKeyboardResult()
 
-            if(horseName == "") then
+            if (horseName == "") then
                 TriggerEvent('bcc-stables:SetHorseName', data, action)
                 return
             end
@@ -400,18 +399,19 @@ end)
 
 -- Rename Owned Horse
 RegisterNUICallback("RenameHorse", function(data, cb)
+    cb('ok')
     SendNUIMessage({
         action = "hide"
     })
     local action = "rename"
     TriggerEvent('bcc-stables:SetHorseName', data, action)
-
-    cb('ok')
 end)
 
 -- View Player Owned Horses
 RegisterNUICallback("loadMyHorse", function(data, cb)
     local horseModel = data.HorseModel
+    cb('ok')
+
     MyHorse_entityId = data.HorseId
 
     if ShowroomHorse_entity ~= nil then
@@ -452,15 +452,12 @@ RegisterNUICallback("loadMyHorse", function(data, cb)
             Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse_entity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
         end
     end
-
-    cb('ok')
 end)
 
 -- Select Active Horse
 RegisterNUICallback("selectHorse", function(data, cb)
-    TriggerServerEvent('bcc-stables:SelectHorse', tonumber(data.horseId))
-
     cb('ok')
+    TriggerServerEvent('bcc-stables:SelectHorse', tonumber(data.horseId))
 end)
 
 RegisterNetEvent('bcc-stables:SetHorseInfo')
@@ -475,6 +472,8 @@ end)
 -- Close Stable Menu
 RegisterNUICallback("CloseStable", function(data, cb)
     local player = PlayerPedId()
+    cb('ok')
+
     SetNuiFocus(false, false)
     SendNUIMessage({
         action = "hide"
@@ -501,8 +500,6 @@ RegisterNUICallback("CloseStable", function(data, cb)
     else
         return
     end
-
-    cb('ok')
 end)
 
 -- Save Horse Tack to Database
@@ -767,6 +764,8 @@ end)
 
 -- Select Horse Tack from Menu
 RegisterNUICallback("Saddles", function(data, cb)
+    cb('ok')
+
     if tonumber(data.id) == -1 then
         SaddlesUsing = 0
         local playerHorse = MyHorse_entity
@@ -777,11 +776,11 @@ RegisterNUICallback("Saddles", function(data, cb)
         SetModel(hash)
         SaddlesUsing = hash
     end
-
-    cb('ok')
 end)
 
 RegisterNUICallback("Saddlecloths", function(data, cb)
+    cb('ok')
+
     if tonumber(data.id) == -1 then
         SaddleclothsUsing = 0
         local playerHorse = MyHorse_entity
@@ -792,11 +791,11 @@ RegisterNUICallback("Saddlecloths", function(data, cb)
         SetModel(hash)
         SaddleclothsUsing = hash
     end
-
-    cb('ok')
 end)
 
 RegisterNUICallback("Stirrups", function(data, cb)
+    cb('ok')
+
     if tonumber(data.id) == -1 then
         StirrupsUsing = 0
         local playerHorse = MyHorse_entity
@@ -807,11 +806,11 @@ RegisterNUICallback("Stirrups", function(data, cb)
         SetModel(hash)
         StirrupsUsing = hash
     end
-
-    cb('ok')
 end)
 
 RegisterNUICallback("SaddleBags", function(data, cb)
+    cb('ok')
+
     if tonumber(data.id) == -1 then
         BagsUsing = 0
         local playerHorse = MyHorse_entity
@@ -822,11 +821,11 @@ RegisterNUICallback("SaddleBags", function(data, cb)
         SetModel(hash)
         BagsUsing = hash
     end
-
-    cb('ok')
 end)
 
 RegisterNUICallback("Manes", function(data, cb)
+    cb('ok')
+
     if tonumber(data.id) == -1 then
         ManesUsing = 0
         local playerHorse = MyHorse_entity
@@ -837,11 +836,11 @@ RegisterNUICallback("Manes", function(data, cb)
         SetModel(hash)
         ManesUsing = hash
     end
-
-    cb('ok')
 end)
 
 RegisterNUICallback("Tails", function(data, cb)
+    cb('ok')
+
     if tonumber(data.id) == -1 then
         TailsUsing = 0
         local playerHorse = MyHorse_entity
@@ -852,11 +851,11 @@ RegisterNUICallback("Tails", function(data, cb)
         SetModel(hash)
         TailsUsing = hash
     end
-
-    cb('ok')
 end)
 
 RegisterNUICallback("SaddleHorns", function(data, cb)
+    cb('ok')
+
     if tonumber(data.id) == -1 then
         SaddleHornsUsing = 0
         local playerHorse = MyHorse_entity
@@ -867,11 +866,11 @@ RegisterNUICallback("SaddleHorns", function(data, cb)
         SetModel(hash)
         SaddleHornsUsing = hash
     end
-
-    cb('ok')
 end)
 
 RegisterNUICallback("Bedrolls", function(data, cb)
+    cb('ok')
+
     if tonumber(data.id) == -1 then
         BedrollsUsing = 0
         local playerHorse = MyHorse_entity
@@ -882,8 +881,6 @@ RegisterNUICallback("Bedrolls", function(data, cb)
         SetModel(hash)
         BedrollsUsing = hash
     end
-
-    cb('ok')
 end)
 
 RegisterNUICallback("Masks", function(data, cb)
@@ -902,6 +899,8 @@ RegisterNUICallback("Masks", function(data, cb)
 end)
 
 RegisterNUICallback("Mustaches", function(data, cb)
+    cb('ok')
+
     if tonumber(data.id) == -1 then
         MustachesUsing = 0
         local playerHorse = MyHorse_entity
@@ -912,8 +911,6 @@ RegisterNUICallback("Mustaches", function(data, cb)
         SetModel(hash)
         MustachesUsing = hash
     end
-
-    cb('ok')
 end)
 
 function SetModel(hash)
@@ -970,12 +967,13 @@ end
 RegisterNUICallback("rotate", function(data, cb)
     local direction = data.RotateHorse
 
+    cb('ok')
+
     if direction == "left" then
         Rotation(20)
     elseif direction == "right" then
         Rotation(-20)
     end
-    cb('ok')
 end)
 
 function Rotation(dir)
