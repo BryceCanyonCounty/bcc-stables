@@ -4,8 +4,6 @@
   </div>
 </template>
 <script>
-import api from "./api";
-
 export default {
   name: "DefaultLayout",
   data() {
@@ -47,16 +45,6 @@ export default {
         default:
           break;
       }
-    },
-    closeApp() {
-      this.visible = false;
-      api
-        .post("updatestate", {
-          state: this.visible,
-        })
-        .catch((e) => {
-          console.log(e.message);
-        });
     },
   },
 };

@@ -137,11 +137,11 @@ export default {
       this.$store.dispatch("setShowTackPrice", true);
     },
     save() {
-      if(this.compCashPrice == 0 && this.compGoldPrice == 0) {
+      if (this.compCashPrice == 0 && this.compGoldPrice == 0) {
         this.purchase(0);
         return;
       }
-      
+
       this.$store.dispatch("setShowTackPrice", false);
       this.showModal = true;
     },
@@ -171,21 +171,21 @@ export default {
         RotateHorse: direction,
       });
     },
-    buyWithCash() {
-      console.log("Purchasing with Cash");
-    },
-    buyWithGold() {
-      console.log("Purchasing with Gold");
-    },
   },
   computed: {
-    ...mapState(["shopName", "activeHorse", "compCashPrice", "compGoldPrice", "allowSave"]),
+    ...mapState([
+      "shopName",
+      "activeHorse",
+      "compCashPrice",
+      "compGoldPrice",
+      "allowSave",
+    ]),
     isClosed() {
       return this.activeHorse === null;
     },
     isSaveEnabled() {
-      return this.allowSave
-    }
+      return this.allowSave;
+    },
   },
 };
 </script>
