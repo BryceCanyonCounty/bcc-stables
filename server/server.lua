@@ -102,8 +102,8 @@ AddEventHandler('bcc-stables:SaveNewHorse', function(data, name)
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.execute('INSERT INTO player_horses (identifier, charid, name, model) VALUES (?, ?, ?, ?)',
-        { identifier, charid, tostring(name), data.ModelH },
+    MySQL.Async.execute('INSERT INTO player_horses (identifier, charid, name, model, gender) VALUES (?, ?, ?, ?, ?)',
+        { identifier, charid, tostring(name), data.ModelH, data.gender },
         function(done)
         end)
 end)
@@ -160,7 +160,7 @@ AddEventHandler('bcc-stables:GetSelectedHorse', function()
                 for i = 1, #horses do
                     if horses[i].selected == 1 then
                         TriggerClientEvent('bcc-stables:SetHorseInfo', _source, horses[i].model, horses[i].name,
-                            horses[i].components, horses[i].id)
+                            horses[i].components, horses[i].id, horses[i].gender)
                     end
                 end
             else

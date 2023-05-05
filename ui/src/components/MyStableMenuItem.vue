@@ -9,6 +9,7 @@
             v-if="isActive"
           ></i>
           {{ label }}
+          <GenderIndicator :gender="horse.gender" />
           <i
             class="fas fa-chevron-right center active-horse ml"
             v-if="isActive"
@@ -48,6 +49,8 @@
 import api from "@/api";
 import { mapState } from "vuex";
 import ConfirmationModal from "./ConfirmationModal.vue";
+import GenderIndicator from "./GenderIndicator.vue";
+
 export default {
   name: "MyStableMenuItem",
   props: {
@@ -93,6 +96,7 @@ export default {
         api.post("loadMyHorse", {
           HorseId: this.index,
           HorseModel: this.model,
+          HorseGender: this.horse.gender,
           HorseComp: JSON.stringify(this.components),
         });
       }
@@ -121,6 +125,7 @@ export default {
   },
   components: {
     ConfirmationModal,
+    GenderIndicator,
   },
 };
 </script>

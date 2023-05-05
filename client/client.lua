@@ -33,6 +33,7 @@ local SpawnPoint = {}
 local MyHorse_entityId
 local HorseModel
 local HorseName
+local HorseGender
 local HorseComponents = {}
 local Initializing = false
 
@@ -434,13 +435,17 @@ RegisterNUICallback("loadMyHorse", function(data, cb)
     end
 
     MyHorse_entity = CreatePed(modelHash, SpawnPoint.x, SpawnPoint.y, SpawnPoint.z - 0.98, SpawnPoint.h, false, 0)
-    Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true) -- SetRandomOutfitVariation
-    Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity)       -- PlaceObjectOnGroundProperly
-    Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyHorse_entity, true) -- FreezeEntityPosition
+    Citizen.InvokeNative(0x283978A15512B2FE, MyHorse_entity, true)           -- SetRandomOutfitVariation
+    Citizen.InvokeNative(0x58A850EAEE20FAA3, MyHorse_entity)                 -- PlaceObjectOnGroundProperly
+    Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyHorse_entity, true)           -- FreezeEntityPosition
+    if data.HorseGender == 'female' then
+        Citizen.InvokeNative(0x5653AB26C82938CF, MyHorse_entity, 41611, 1.0) -- SetCharExpression
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse_entity)             -- UpdatePedVariation
+    end
     SetBlockingOfNonTemporaryEvents(MyHorse_entity, true)
-    SetPedConfigFlag(MyHorse_entity, 113, true)                    -- PCF_DisableShockingEvents
+    SetPedConfigFlag(MyHorse_entity, 113, true)              -- PCF_DisableShockingEvents
     Wait(300)
-    Citizen.InvokeNative(0x6585D955A68452A5, MyHorse_entity)       -- ClearPedEnvDirt
+    Citizen.InvokeNative(0x6585D955A68452A5, MyHorse_entity) -- ClearPedEnvDirt
 
     local componentsHorse = json.decode(data.HorseComp)
     if componentsHorse ~= '[]' then
@@ -461,11 +466,12 @@ RegisterNUICallback("selectHorse", function(data, cb)
 end)
 
 RegisterNetEvent('bcc-stables:SetHorseInfo')
-AddEventHandler('bcc-stables:SetHorseInfo', function(model, name, components, id)
+AddEventHandler('bcc-stables:SetHorseInfo', function(model, name, components, id, gender)
     HorseModel = model
     HorseName = name
     HorseComponents = components
     MyHorseId = id
+    HorseGender = gender
     InitiateHorse()
 end)
 
@@ -603,6 +609,10 @@ function InitiateHorse()
     Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0)                             -- PlaceEntityOnGroundProperly
     Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse)                        -- SetPlayerOwnsMount
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse, true)                          -- SetRandomOutfitVariation
+    if HorseGender == 'female' then
+        Citizen.InvokeNative(0x5653AB26C82938CF, MyHorse, 41611, 1.0)                -- SetCharExpression
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse)                            -- UpdatePedVariation
+    end
     SetPedConfigFlag(MyHorse, 113, true)                                             -- DisableShockingEvents
     SetPedConfigFlag(MyHorse, 297, true)                                             -- EnableHorseLeading
     SetPedConfigFlag(MyHorse, 312, true)                                             -- DisableHorseGunshotFleeResponse
