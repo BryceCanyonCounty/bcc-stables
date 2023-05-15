@@ -60,8 +60,8 @@ AddEventHandler('bcc-stables:BuyHorse', function(data)
                     return
                 end
             end
-            local action = "newHorse"
-            TriggerClientEvent('bcc-stables:SetHorseName', _source, data, action)
+            local rename = false
+            TriggerClientEvent('bcc-stables:SetHorseName', _source, data, rename)
         end)
 end)
 

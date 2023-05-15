@@ -27,7 +27,7 @@ local BrushCooldown = false
 local FeedCooldown = false
 local ShopEntity
 local MyEntity
-local MyHorse = 0
+local MyHorse = nil
 local MyHorseId
 local SpawnPoint = {}
 local MyEntityID
@@ -35,7 +35,7 @@ local HorseModel
 local HorseName
 local HorseGender
 local HorseComponents = {}
-local Initializing = false
+local Spawning = false
 local Spawned = false
 
 TriggerEvent("getCore", function(core)
@@ -350,9 +350,11 @@ RegisterNUICallback("BuyHorse", function(data, cb)
 end)
 
 RegisterNetEvent('bcc-stables:SetHorseName')
-AddEventHandler('bcc-stables:SetHorseName', function(data, action)
+AddEventHandler('bcc-stables:SetHorseName', function(data, rename)
     SetNuiFocus(false, false)
-    SendNUIMessage({ action = "hide" })
+    SendNUIMessage({
+        action = "hide"
+    })
 
     Wait(200)
     local horseName = ""
@@ -367,13 +369,13 @@ AddEventHandler('bcc-stables:SetHorseName', function(data, action)
             horseName = GetOnscreenKeyboardResult()
 
             if (horseName == "") then
-                TriggerEvent('bcc-stables:SetHorseName', data, action)
+                TriggerEvent('bcc-stables:SetHorseName', data, rename)
                 return
             end
 
-            if action == "newHorse" then
+            if not rename then
                 TriggerServerEvent('bcc-stables:SaveNewHorse', data, horseName)
-            elseif action == "rename" then
+            else
                 TriggerServerEvent('bcc-stables:UpdateHorseName', data, horseName)
             end
 
@@ -397,8 +399,8 @@ RegisterNUICallback("RenameHorse", function(data, cb)
     SendNUIMessage({
         action = "hide"
     })
-    local action = "rename"
-    TriggerEvent('bcc-stables:SetHorseName', data, action)
+    local rename = true
+    TriggerEvent('bcc-stables:SetHorseName', data, rename)
 end)
 
 -- View Player Owned Horses
@@ -458,7 +460,7 @@ AddEventHandler('bcc-stables:SetHorseInfo', function(model, name, components, id
     HorseComponents = components
     MyHorseId = id
     HorseGender = gender
-    InitiateHorse()
+    SpawnHorse()
 end)
 
 -- Close Stable Menu
@@ -545,15 +547,15 @@ function NativeSetPedComponentEnabled(ped, component)
 end
 
 -- Spawn Player Horse
-function InitiateHorse()
-    if Initializing then
+function SpawnHorse()
+    if Spawning then
         return
     end
-    Initializing = true
+    Spawning = true
 
-    if MyHorse ~= 0 then
+    if MyHorse ~= nil then
         DeleteEntity(MyHorse)
-        MyHorse = 0
+        MyHorse = nil
     end
 
     local model = joaat(HorseModel)
@@ -597,7 +599,6 @@ function InitiateHorse()
     end
     SetPedConfigFlag(MyHorse, 113, true)                                             -- DisableShockingEvents
     SetPedConfigFlag(MyHorse, 297, true)                                             -- EnableHorseLeading
-    SetPedConfigFlag(MyHorse, 312, true)                                             -- DisableHorseGunshotFleeResponse
     SetPedConfigFlag(MyHorse, 546, true)                                             -- IgnoreOwnershipForHorseFeedAndBrush
 
     local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
@@ -615,7 +616,7 @@ function InitiateHorse()
 
     Spawned = true
     SendHorse()
-    Initializing = false
+    Spawning = false
 end
 
 -- Horse Actions
@@ -639,7 +640,7 @@ end)
 
 function CallHorse()
     local player = PlayerPedId()
-    if MyHorse ~= 0 then
+    if MyHorse ~= nil then
         if GetScriptTaskStatus(MyHorse, 0x4924437D, 0) ~= 0 then
             local pcoords = GetEntityCoords(player)
             local hcoords = GetEntityCoords(MyHorse)
@@ -647,7 +648,7 @@ function CallHorse()
             if callDist >= 100 then
                 DeleteEntity(MyHorse)
                 Wait(1000)
-                MyHorse = 0
+                MyHorse = nil
                 TriggerServerEvent('bcc-stables:GetSelectedHorse')
             else
                 Spawned = true
@@ -694,7 +695,7 @@ end
 
 -- Send Horse Away
 function FleeHorse()
-    if MyHorse ~= 0 then
+    if MyHorse ~= nil then
         TaskAnimalFlee(MyHorse, PlayerPedId(), -1)
         Wait(10000)
         DeleteEntity(MyHorse)
@@ -953,11 +954,11 @@ end)
 
 -- Return Player Horse at Stable
 function ReturnHorse(shopId)
-    if MyHorse == 0 then
+    if MyHorse == nil then
         VORPcore.NotifyRightTip(_U("noHorse"), 5000)
-    elseif MyHorse ~= 0 then
+    elseif MyHorse ~= nil then
         DeleteEntity(MyHorse)
-        MyHorse = 0
+        MyHorse = nil
         VORPcore.NotifyRightTip(_U("horseReturned"), 5000)
     end
 end
@@ -1001,7 +1002,7 @@ function Rotation(dir)
 end
 
 RegisterCommand('horseRespawn', function(source, args, rawCommand)
-    Initializing = false
+    Spawning = false
     TriggerServerEvent('bcc-stables:GetSelectedHorse')
 end)
 
@@ -1104,7 +1105,9 @@ AddEventHandler('onResourceStop', function(resourceName)
     end
     if InMenu == true then
         SetNuiFocus(false, false)
-        SendNUIMessage({ action = "hide" })
+        SendNUIMessage({
+            action = "hide"
+        })
     end
     ClearPedTasksImmediately(PlayerPedId())
     PromptDelete(OpenShops)
@@ -1113,9 +1116,9 @@ AddEventHandler('onResourceStop', function(resourceName)
     DestroyAllCams(true)
     DisplayRadar(true)
 
-    if MyHorse then
+    if MyHorse ~= nil then
         DeleteEntity(MyHorse)
-        MyHorse = 0
+        MyHorse = nil
     end
     for _, shopConfig in pairs(Config.stables) do
         if shopConfig.BlipHandle then
