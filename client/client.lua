@@ -36,6 +36,7 @@ local HorseName
 local HorseGender
 local HorseComponents = {}
 local Initializing = false
+local Spawned = false
 
 TriggerEvent("getCore", function(core)
     VORPcore = core
@@ -612,7 +613,8 @@ function InitiateHorse()
 
     TriggerServerEvent('bcc-stables:RegisterInventory', MyHorseId)
 
-    TaskGoToEntity(MyHorse, player, -1, 7.2, 2.0, 0, 0)
+    Spawned = true
+    SendHorse()
     Initializing = false
 end
 
@@ -646,13 +648,33 @@ function CallHorse()
                 DeleteEntity(MyHorse)
                 Wait(1000)
                 MyHorse = 0
+                TriggerServerEvent('bcc-stables:GetSelectedHorse')
             else
-                TaskGoToEntity(MyHorse, player, -1, 4, 2.0, 0, 0)
+                Spawned = true
+                SendHorse()
             end
         end
     else
         TriggerServerEvent('bcc-stables:GetSelectedHorse')
     end
+end
+
+-- Move horse to Player
+function SendHorse()
+    CreateThread(function()
+        local player = PlayerPedId()
+        Citizen.InvokeNative(0x6A071245EB0D1882, MyHorse, player, -1, 10.2, 2.0, 0.0, 0) -- TaskGoToEntity
+        while Spawned == true do
+            local coords = GetEntityCoords(player)
+            local hCoords = GetEntityCoords(MyHorse)
+            local distance = #(coords - hCoords)
+            if (distance < 10.0) then
+                ClearPedTasks(MyHorse, true, true)
+                Spawned = false
+            end
+            Wait(1000)
+        end
+    end)
 end
 
 -- Open Horse Inventory
