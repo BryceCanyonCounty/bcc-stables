@@ -1,4 +1,5 @@
 local VORPcore = {}
+local VORPutils = {}
 -- Prompts
 local OpenShops
 local CloseShops
@@ -40,6 +41,10 @@ local Spawned = false
 
 TriggerEvent("getCore", function(core)
     VORPcore = core
+end)
+
+TriggerEvent("getUtils", function(utils)
+    VORPutils = utils
 end)
 
 -- Start Stables
@@ -598,7 +603,8 @@ function SpawnHorse()
         Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse)                            -- UpdatePedVariation
     end
     SetPedConfigFlag(MyHorse, 113, true)                                             -- DisableShockingEvents
-    SetPedConfigFlag(MyHorse, 297, true)                                             -- EnableHorseLeading
+    SetPedConfigFlag(MyHorse, 297, true)                                             -- ForceInteractionLockonOnTargetPed
+    SetPedConfigFlag(MyHorse, 312, true)                                             -- DisableHorseGunshotFleeResponse
     SetPedConfigFlag(MyHorse, 546, true)                                             -- IgnoreOwnershipForHorseFeedAndBrush
 
     local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
@@ -624,9 +630,9 @@ CreateThread(function()
     while true do
         Wait(1)
         -- Whistle for Horse (key: H)
-        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- IsDisabledControlJustPressed
-            CallHorse()
-        end
+        --if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x24978A28) then -- IsDisabledControlJustPressed
+            --CallHorse()
+        --end
         -- Open Saddlebags (key: U)
         if Citizen.InvokeNative(0x580417101DDB492F, 2, 0xD8F73058) then -- IsControlJustPressed
             OpenInventory()
@@ -638,25 +644,45 @@ CreateThread(function()
     end
 end)
 
-function CallHorse()
+CreateThread(function()
+    VORPutils.Events:RegisterEventListener('EVENT_PED_WHISTLE', function(args)
+        WhistleHorse(args[1], args[2])
+    end)
+end)
+
+function WhistleHorse(whistler, whistleType)
     local player = PlayerPedId()
-    if MyHorse ~= nil then
-        if GetScriptTaskStatus(MyHorse, 0x4924437D, 0) ~= 0 then
-            local pcoords = GetEntityCoords(player)
-            local hcoords = GetEntityCoords(MyHorse)
-            local callDist = #(pcoords - hcoords)
-            if callDist >= 100 then
-                DeleteEntity(MyHorse)
-                Wait(1000)
-                MyHorse = nil
-                TriggerServerEvent('bcc-stables:GetSelectedHorse')
-            else
-                Spawned = true
-                SendHorse()
+    if whistler == player then
+        if MyHorse then
+            local longWhistle = false
+            if whistleType == joaat('WHISTLEHORSELONG') then
+                longWhistle = true
             end
+            if not longWhistle then
+                if Citizen.InvokeNative(0x77F1BEB8863288D5, MyHorse, 0x4924437D, 0) ~= 0 then -- GetScriptTaskStatus
+                    local pcoords = GetEntityCoords(player)
+                    local hcoords = GetEntityCoords(MyHorse)
+                    local callDist = #(pcoords - hcoords)
+                    if callDist >= 100 then
+                        DeleteEntity(MyHorse)
+                        Wait(1000)
+                        MyHorse = nil
+                        TriggerServerEvent('bcc-stables:GetSelectedHorse')
+                    else
+                        Spawned = true
+                        SendHorse()
+                    end
+                end
+            else
+                if Citizen.InvokeNative(0x77F1BEB8863288D5, MyHorse, 0x3EF867F4, 0) ~= 1 then -- GetScriptTaskStatus
+                    Citizen.InvokeNative(0x304AE42E357B8C7E, MyHorse, player, math.random(1.0, 4.0), math.random(5.0, 8.0), 0.0, 0.7, -1, 3.0, 1) -- TaskFollowToOffsetOfEntity
+                else
+                    ClearPedTasks(MyHorse)
+                end
+            end
+        else
+            TriggerServerEvent('bcc-stables:GetSelectedHorse')
         end
-    else
-        TriggerServerEvent('bcc-stables:GetSelectedHorse')
     end
 end
 
@@ -666,14 +692,14 @@ function SendHorse()
         local player = PlayerPedId()
         Citizen.InvokeNative(0x6A071245EB0D1882, MyHorse, player, -1, 10.2, 2.0, 0.0, 0) -- TaskGoToEntity
         while Spawned == true do
+            Wait(0)
             local coords = GetEntityCoords(player)
             local hCoords = GetEntityCoords(MyHorse)
             local distance = #(coords - hCoords)
-            if (distance < 10.0) then
-                ClearPedTasks(MyHorse, true, true)
+            if (distance <= 10.0) then
+                ClearPedTasks(MyHorse)
                 Spawned = false
             end
-            Wait(1000)
         end
     end)
 end
