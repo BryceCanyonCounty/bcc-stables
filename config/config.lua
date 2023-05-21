@@ -49,7 +49,7 @@ Config.stables = {
 		npcModel = "u_m_m_bwmstablehand_01",                             -- Sets Model for NPCs
 		npc = { x = -365.08, y = 791.21, z = 116.18, h = 179.76 },       -- Location for NPC and Stable
 		horseCam = { x = -368.48, y = 789.89, z = 116.16 },              -- Camera Location to View Horse When In-Menu
-		spawnPoint = { x = -371.35, y = 786.71, z = 116.17, h = 269.3 }, -- Location for Horse Preview When In-Menu
+		spawn = { x = -371.35, y = 786.71, z = 116.17, h = 269.3 }, -- Location for Horse Preview When In-Menu
 		allowedJobs = {},                                                -- If Empty, Everyone Can Use / Insert Job to limit access - ex. "police"
 		jobGrade = 0,                                                    -- Enter Minimum Rank / Job Grade to Access Shop
 		shopHours = false,                                               -- If You Want the Shops to Use Open and Closed Hours
@@ -70,7 +70,7 @@ Config.stables = {
 		npcModel = "u_m_m_bwmstablehand_01",
 		npc = { x = -1817.85, y = -564.86, z = 156.06, h = 335.86 },
 		horseCam = { x = -1822.55, y = -563.93, z = 156.13 },
-		spawnPoint = { x = -1823.94, y = -560.85, z = 156.06, h = 257.86 },
+		spawn = { x = -1823.94, y = -560.85, z = 156.06, h = 257.86 },
 		allowedJobs = {},
 		jobGrade = 0,
 		shopHours = false,
@@ -91,7 +91,7 @@ Config.stables = {
 		npcModel = "u_m_m_bwmstablehand_01",
 		npc = { x = 2967.53, y = 792.71, z = 51.4, h = 353.62 },
 		horseCam = { x = 2970.67, y = 793.65, z = 51.4 },
-		spawnPoint = { x = 2971.66, y = 796.82, z = 51.4, h = 96.54 },
+		spawn = { x = 2971.66, y = 796.82, z = 51.4, h = 96.54 },
 		allowedJobs = {},
 		jobGrade = 0,
 		shopHours = false,
@@ -112,7 +112,7 @@ Config.stables = {
 		npcModel = "u_m_m_bwmstablehand_01",
 		npc = { x = 1210.73, y = -189.78, z = 101.39, h = 107.52 },
 		horseCam = { x = 1211.89, y = -192.76, z = 101.46 },
-		spawnPoint = { x = 1210.5, y = -196.25, z = 101.38, h = 15.61 },
+		spawn = { x = 1210.5, y = -196.25, z = 101.38, h = 15.61 },
 		allowedJobs = {},
 		jobGrade = 0,
 		shopHours = false,
@@ -133,7 +133,7 @@ Config.stables = {
 		npcModel = "u_m_m_bwmstablehand_01",
 		npc = { x = 2505.53, y = -1453.93, z = 46.32, h = 99.45 },
 		horseCam = { x = 2505.65, y = -1441.49, z = 46.29 },
-		spawnPoint = { x = 2502.59, y = -1438.62, z = 46.32, h = 182.93 },
+		spawn = { x = 2502.59, y = -1438.62, z = 46.32, h = 182.93 },
 		allowedJobs = {},
 		jobGrade = 0,
 		shopHours = false,
@@ -154,7 +154,7 @@ Config.stables = {
 		npcModel = "u_m_m_bwmstablehand_01",
 		npc = { x = -871.0, y = -1369.63, z = 43.53, h = 6.64 },
 		horseCam = { x = -867.11, y = -1368.86, z = 43.54 },
-		spawnPoint = { x = -864.7, y = -1366.19, z = 43.55, h = 88.47 },
+		spawn = { x = -864.7, y = -1366.19, z = 43.55, h = 88.47 },
 		allowedJobs = {},
 		jobGrade = 0,
 		shopHours = false,
@@ -175,7 +175,7 @@ Config.stables = {
 		npcModel = "u_m_m_bwmstablehand_01",
 		npc = { x = -5515.2, y = -3040.17, z = -2.39, h = 180.76 },
 		horseCam = { x = -5521.37, y = -3041.23, z = -2.39 },
-		spawnPoint = { x = -5524.48, y = -3044.31, z = -2.39, h = 263.98 },
+		spawn = { x = -5524.48, y = -3044.31, z = -2.39, h = 263.98 },
 		allowedJobs = {},
 		jobGrade = 0,
 		shopHours = false,
@@ -196,7 +196,7 @@ Config.stables = {
 		npcModel = "u_m_m_bwmstablehand_01",
 		npc = {x = 1340.28, y = -6853.88, z = 47.19, h = 68.92 },
 		horseCam = {x = 1337.84, y = -6853.13, z = 47.23},
-		spawnPoint = {x = 1335.06, y = -6850.62, z = 47.34, h = 185.14 },
+		spawn = {x = 1335.06, y = -6850.62, z = 47.34, h = 185.14 },
 		allowedJobs = {},
 		jobGrade = 0,
 		shopHours = false,
