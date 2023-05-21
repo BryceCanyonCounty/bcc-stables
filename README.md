@@ -2,7 +2,7 @@
 
 #### Description
 
-Stables script for RedM servers using the [VORP framework](https://github.com/VORPCORE). Using the 7 original stable locations from the game. More stable locations may be added using the `config.lua` file.
+Stables script for RedM servers using the [VORP framework](https://github.com/VORPCORE). Using the 7 original stable locations from the game. More stable locations may be added in the `config.lua` file.
 
 #### Features
 
@@ -18,6 +18,11 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Feed your horse (haycubes), using the horse menu, to increase horse's health and stamina
 - Brushing your horse, using the horse menu, will clean him and give a slight increase in health
 - Configurable cooldown time for feeding and brushing
+- Choose horse gender at purchase
+
+#### Tips
+
+- Whistleing -- A short whistle will call your horse. A long one will set your horse to follow you. A second long whistle or mounting your horse will cancel following.
 
 #### Commands
 
@@ -27,6 +32,7 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
 - [vorp_inventory](https://github.com/VORPCORE/vorp_inventory-lua)
+- [vorp_utils](https://github.com/VORPCORE/vorp_utils)
 
 #### Installation
 
