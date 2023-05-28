@@ -17,13 +17,11 @@ Locales["en_lang"] = {
     brushCooldown = "Your horse can be ~o~brushed~q~ again in ~o~",
     feedCooldown = "Your horse can be ~o~fed~q~ again in ~o~",
     minutes = "~q~ minutes",
-    noBrush = "You don't have a ~o~horsebrush",
-    noHaycube = "You need some ~o~haycubes~q~ to feed your horse",
     notDirty = "Your horse is not ready to be brushed yet",
     notHungry = "Your horse is not hungry right now",
     horseInv = "Saddlebags",
     noSaddlebags = "You need ~o~saddlebags~q~ to store your items",
     noHorses = "You don't own any horses",
-    selectHorse = "~o~Select~q~ a horse to use from ~o~Stable~q~ menu",
-    purchaseSuccessful = "Purchase Successful!"
+    purchaseSuccessful = "Purchase Successful!",
+    tooFar = "You're not close enough to your horse"
 }
