@@ -26,6 +26,7 @@ export default {
             "setComponents",
             Object.fromEntries(Object.entries(event.data.compData).sort())
           );
+          this.$store.dispatch("setCurrencyType", event.data.currencyType);
           break;
         case "updateMyHorses":
           this.$store.dispatch("setMyHorses", event.data.myHorsesData);
@@ -41,6 +42,7 @@ export default {
           this.$store.dispatch("setCompGoldPrice", 0);
           this.$store.dispatch("setShowTackPrice", false);
           this.$store.dispatch("setAllowSave", false);
+          this.$store.dispatch("setCurrencyType", null);
           break;
         default:
           break;

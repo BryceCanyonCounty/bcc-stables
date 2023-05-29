@@ -11,6 +11,7 @@ export default createStore({
     compGoldPrice: 0,
     showTackPrice: false,
     allowSave: false,
+    currencyType: null,
   },
   getters: {},
   mutations: {
@@ -41,6 +42,9 @@ export default createStore({
     SET_ALLOW_SAVE(state, payload) {
       state.allowSave = payload;
     },
+    SET_CURRENCY_TYPE(state, payload) {
+      state.currencyType = payload;
+    },
   },
   actions: {
     setMyHorses(context, payload) {
@@ -69,6 +73,9 @@ export default createStore({
     },
     setAllowSave(context, payload) {
       context.commit("SET_ALLOW_SAVE", payload);
+    },
+    setCurrencyType(context, payload) {
+      context.commit("SET_CURRENCY_TYPE", payload);
     },
   },
   modules: {},
