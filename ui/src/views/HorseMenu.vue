@@ -63,7 +63,8 @@
         <button
           id="rotate_left"
           class="btn-select btn-rotate"
-          @click="rotate('left')"
+          @mousedown="startRotate('left')"
+          @mouseleave="onMouseLeave"
         >
           <i class="fas fa-chevron-left center"></i>
         </button>
@@ -73,7 +74,8 @@
         <button
           id="rotate_right"
           class="btn-select btn-rotate"
-          @click="rotate('right')"
+          @mousedown="startRotate('right')"
+          @mouseleave="onMouseLeave"
         >
           <i class="fas fa-chevron-right center"></i>
         </button>
@@ -99,7 +101,7 @@
         </button>
         <!--  -->
         <button @click="hideModal" class="modal-btn flex flex-auto">
-          Cancel
+          {{ isSaveEnabled ? "Cancel" : "Close" }}
         </button>
       </div>
       <div class="divider-menu-bottom"></div>
@@ -122,6 +124,8 @@ export default {
     return {
       page: "Stable",
       showModal: false,
+      isRotating: false,
+      rotateTimer: null,
     };
   },
   components: {
@@ -130,6 +134,12 @@ export default {
     TraderMenu,
     TackShopMenu,
     ConfirmationModal,
+  },
+  mounted() {
+    window.addEventListener("mouseup", this.mouseUp, false);
+  },
+  unmounted() {
+    window.removeEventListener("mouseup", this.mouseUp);
   },
   methods: {
     hideModal() {
@@ -166,10 +176,31 @@ export default {
           console.log(e.message);
         });
     },
+    mouseUp() {
+      this.isRotating = false;
+      this.stopRotate();
+    },
+    onMouseLeave() {
+      this.stopRotate();
+    },
+    startRotate(direction) {
+      this.rotate(direction);
+      this.isRotating = true;
+    },
+    stopRotate() {
+      if (this.rotateTimer !== null) {
+        clearTimeout(this.rotateTimer);
+        this.rotateTimer = null;
+      }
+    },
     rotate(direction) {
       api.post("rotate", {
         RotateHorse: direction,
       });
+
+      this.rotateTimer = setTimeout(() => {
+        this.rotate(direction);
+      }, 15);
     },
   },
   computed: {

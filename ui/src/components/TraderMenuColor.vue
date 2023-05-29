@@ -8,15 +8,32 @@
     </div>
     <!--  -->
     <div class="buy-buttons flex flex-auto justify-end">
-      <!--  -->
-      <button class="btn-small" @click="showModal(true)">
-        <img src="img/money.png" /><span>{{ horse.cashPrice }}</span>
+      <button
+        style="display: flex; justify-content: flex-start"
+        class="btn-small"
+        :class="{
+          mr: !useGold,
+        }"
+        @click="openConfirmationModal(true)"
+        v-if="useCash"
+      >
+        <img src="img/money.png" class="ml-1" />
+        <span class="ml-1">
+          {{ horse.cashPrice }}
+        </span>
       </button>
       <!--  -->
-      <button class="btn-small right-btn" @click="showModal(false)">
-        <img src="img/gold.png" /><span>{{ horse.goldPrice }}</span>
+      <button
+        style="display: flex; justify-content: flex-start"
+        class="btn-small right-btn"
+        @click="openConfirmationModal(false)"
+        v-if="useGold"
+      >
+        <img src="img/gold.png" class="ml-1" />
+        <span class="ml-1">
+          {{ horse.goldPrice }}
+        </span>
       </button>
-      <!--  -->
     </div>
   </div>
 
@@ -72,27 +89,33 @@ export default {
     return {
       isVisible: false,
       genderVisible: false,
-      currencyType: null,
+      curType: null,
       gender: "male",
     };
   },
   computed: {
-    ...mapState(["activeHorse"]),
+    ...mapState(["activeHorse", "currencyType"]),
     isActive() {
       return this.active;
     },
+    useCash() {
+      return this.currencyType < 1 || this.currencyType > 1;
+    },
+    useGold() {
+      return this.currencyType > 0;
+    },
   },
   methods: {
-    showModal(currencyType) {
-      this.currencyType = currencyType;
+    showModal(curType) {
+      this.curType = curType;
       this.genderVisible = true;
     },
     hideModal() {
-      this.currencyType = null;
+      this.curType = null;
       this.isVisible = false;
     },
     hideGenderModal() {
-      this.currencyType = null;
+      this.curType = null;
       this.genderVisible = false;
     },
     setGender(gender) {
@@ -110,19 +133,19 @@ export default {
       });
     },
     buyHorse() {
-      if (this.currencyType !== null) {
-        if (this.currencyType) {
+      if (this.curType !== null) {
+        if (this.curType) {
           api.post("BuyHorse", {
             ModelH: this.model,
             Cash: this.horse.cashPrice,
-            IsCash: this.currencyType,
+            IsCash: this.curType,
             gender: this.gender,
           });
         } else {
           api.post("BuyHorse", {
             ModelH: this.model,
             Gold: this.horse.goldPrice,
-            IsCash: this.currencyType,
+            IsCash: this.curType,
             gender: this.gender,
           });
         }
@@ -147,6 +170,17 @@ export default {
 
 .justify-end {
   justify-content: flex-end;
+}
+.justify-start {
+  justify-content: flex-start;
+}
+
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
+.mr {
+  margin-right: 1rem;
 }
 
 .item {
