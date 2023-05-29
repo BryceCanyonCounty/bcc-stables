@@ -14,7 +14,7 @@
         :class="{
           mr: !useGold,
         }"
-        @click="openConfirmationModal(true)"
+        @click="showModal(true)"
         v-if="useCash"
       >
         <img src="img/money.png" class="ml-1" />
@@ -26,7 +26,7 @@
       <button
         style="display: flex; justify-content: flex-start"
         class="btn-small right-btn"
-        @click="openConfirmationModal(false)"
+        @click="showModal(false)"
         v-if="useGold"
       >
         <img src="img/gold.png" class="ml-1" />
@@ -134,22 +134,19 @@ export default {
     },
     buyHorse() {
       if (this.curType !== null) {
-        if (this.curType) {
-          api.post("BuyHorse", {
-            ModelH: this.model,
-            Cash: this.horse.cashPrice,
-            IsCash: this.curType,
-            gender: this.gender,
-          });
-        } else {
-          api.post("BuyHorse", {
-            ModelH: this.model,
-            Gold: this.horse.goldPrice,
-            IsCash: this.curType,
-            gender: this.gender,
-          });
-        }
+        api.post("BuyHorse", {
+          ModelH: this.model,
+          Cash: this.horse.cashPrice,
+          Gold: this.horse.goldPrice,
+          IsCash: this.curType,
+          gender: this.gender,
+        });
       }
+
+      this.isVisible = false;
+      this.genderVisible = false;
+      this.curType = null;
+      this.gender = "male";
     },
   },
   components: {
