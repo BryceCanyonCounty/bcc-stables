@@ -6,8 +6,7 @@ end)
 
 VORPInv = exports.vorp_inventory:vorp_inventoryApi()
 
-RegisterServerEvent('bcc-stables:GetMyHorses')
-AddEventHandler('bcc-stables:GetMyHorses', function()
+RegisterNetEvent('bcc-stables:GetMyHorses', function()
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -19,8 +18,7 @@ AddEventHandler('bcc-stables:GetMyHorses', function()
     end)
 end)
 
-RegisterServerEvent('bcc-stables:BuyHorse')
-AddEventHandler('bcc-stables:BuyHorse', function(data)
+RegisterNetEvent('bcc-stables:BuyHorse', function(data)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -65,8 +63,7 @@ AddEventHandler('bcc-stables:BuyHorse', function(data)
     end)
 end)
 
-RegisterServerEvent('bcc-stables:BuyTack')
-AddEventHandler('bcc-stables:BuyTack', function(data)
+RegisterNetEvent('bcc-stables:BuyTack', function(data)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
 
@@ -94,8 +91,7 @@ AddEventHandler('bcc-stables:BuyTack', function(data)
     TriggerClientEvent('bcc-stables:SaveComps', _source)
 end)
 
-RegisterServerEvent('bcc-stables:SaveNewHorse')
-AddEventHandler('bcc-stables:SaveNewHorse', function(data, name)
+RegisterNetEvent('bcc-stables:SaveNewHorse', function(data, name)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -106,8 +102,7 @@ AddEventHandler('bcc-stables:SaveNewHorse', function(data, name)
     end)
 end)
 
-RegisterServerEvent('bcc-stables:UpdateHorseName')
-AddEventHandler('bcc-stables:UpdateHorseName', function(data, name)
+RegisterNetEvent('bcc-stables:UpdateHorseName', function(data, name)
     local horseId = data.horseId
 
     MySQL.Async.execute('UPDATE player_horses SET name = ? WHERE id = ?', { name, horseId },
@@ -115,8 +110,7 @@ AddEventHandler('bcc-stables:UpdateHorseName', function(data, name)
     end)
 end)
 
-RegisterServerEvent('bcc-stables:SelectHorse')
-AddEventHandler('bcc-stables:SelectHorse', function(id)
+RegisterNetEvent('bcc-stables:SelectHorse', function(id)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -126,25 +120,19 @@ AddEventHandler('bcc-stables:SelectHorse', function(id)
     function(horse)
         for i = 1, #horse do
             local horseId = horse[i].id
-            MySQL.Async.execute(
-                'UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?',
-                { 0, identifier, charid, horseId },
-                function(done)
-                end)
-
-            Wait(300)
-
-            if horse[i].id == id then
-                MySQL.Async.execute('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', { 1, identifier, charid, id },
-                function(done)
-                end)
-            end
+            MySQL.Async.execute('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', { 0, identifier, charid, horseId },
+            function(done)
+                if horse[i].id == id then
+                    MySQL.Async.execute('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', { 1, identifier, charid, id },
+                    function(done)
+                    end)
+                end
+            end)
         end
     end)
 end)
 
-RegisterServerEvent('bcc-stables:GetSelectedHorse')
-AddEventHandler('bcc-stables:GetSelectedHorse', function()
+RegisterNetEvent('bcc-stables:GetSelectedHorse', function()
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -164,8 +152,7 @@ AddEventHandler('bcc-stables:GetSelectedHorse', function()
     end)
 end)
 
-RegisterServerEvent('bcc-stables:UpdateComponents')
-AddEventHandler('bcc-stables:UpdateComponents', function(components, horseId, MyHorse_entity)
+RegisterNetEvent('bcc-stables:UpdateComponents', function(components, horseId, MyHorse_entity)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -179,8 +166,7 @@ AddEventHandler('bcc-stables:UpdateComponents', function(components, horseId, My
     end)
 end)
 
-RegisterServerEvent('bcc-stables:SellHorse')
-AddEventHandler('bcc-stables:SellHorse', function(id)
+RegisterNetEvent('bcc-stables:SellHorse', function(id)
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local identifier = Character.identifier
@@ -209,22 +195,27 @@ AddEventHandler('bcc-stables:SellHorse', function(id)
     end)
 end)
 
-RegisterServerEvent('bcc-stables:RegisterInventory')
-AddEventHandler('bcc-stables:RegisterInventory', function(id)
+-- Inventory
+RegisterNetEvent('bcc-stables:RegisterInventory', function(id)
     VORPInv.registerInventory('horse_' .. tostring(id), _U('horseInv'), tonumber(Config.invLimit))
 end)
 
-RegisterServerEvent('bcc-stables:OpenInventory')
-AddEventHandler('bcc-stables:OpenInventory', function(id)
+RegisterNetEvent('bcc-stables:OpenInventory', function(id)
     local _source = source
     VORPInv.OpenInv(_source, 'horse_' .. tostring(id))
 end)
 
+-- Horse Care
 VORPInv.RegisterUsableItem('consumable_haycube', function(data)
     local _source = data.source
+    local item = 'consumable_haycube'
     VORPInv.CloseInv(_source)
-    VORPInv.subItem(_source, 'consumable_haycube', 1)
-    TriggerClientEvent('bcc-stables:FeedHorse', _source, data)
+    TriggerClientEvent('bcc-stables:FeedHorse', _source, item)
+end)
+
+RegisterNetEvent('bcc-stables:RemoveItem', function(item)
+    local _source = source
+    VORPInv.subItem(_source, item, 1)
 end)
 
 VORPInv.RegisterUsableItem('horsebrush', function(data)
@@ -233,8 +224,8 @@ VORPInv.RegisterUsableItem('horsebrush', function(data)
     TriggerClientEvent('bcc-stables:BrushHorse', _source, data)
 end)
 
-RegisterServerEvent('bcc-stables:GetPlayerJob')
-AddEventHandler('bcc-stables:GetPlayerJob', function()
+-- Job Check
+RegisterNetEvent('bcc-stables:GetPlayerJob', function()
     local _source = source
     local Character = VORPcore.getUser(_source).getUsedCharacter
     local CharacterJob = Character.job
