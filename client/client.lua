@@ -78,8 +78,7 @@ CreateThread(function()
                             end
                         end
                         if Config.stables[shopId].BlipHandle then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle,
-                                joaat(Config.BlipColors[shopConfig.blipColorClosed])) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(Config.BlipColors[shopConfig.blipColorClosed])) -- BlipAddModifier
                         end
                         if shopConfig.NPC then
                             DeleteEntity(shopConfig.NPC)
@@ -98,11 +97,7 @@ CreateThread(function()
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, CloseShops) then -- UiPromptHasStandardModeCompleted
                                 Wait(100)
-                                VORPcore.NotifyRightTip(
-                                    shopConfig.shopName ..
-                                    _U('hours') ..
-                                    shopConfig.shopOpen .. _U('to') .. shopConfig.shopClose .. _U('hundred'),
-                                    4000)
+                                VORPcore.NotifyRightTip(shopConfig.shopName .. _U('hours') .. shopConfig.shopOpen .. _U('to') .. shopConfig.shopClose .. _U('hundred'), 4000)
                             end
                         end
                     elseif hour >= shopConfig.shopOpen then
@@ -115,8 +110,7 @@ CreateThread(function()
                         end
                         if not next(shopConfig.allowedJobs) then
                             if Config.stables[shopId].BlipHandle then
-                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle,
-                                    joaat(Config.BlipColors[shopConfig.blipColorOpen])) -- BlipAddModifier
+                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(Config.BlipColors[shopConfig.blipColorOpen])) -- BlipAddModifier
                             end
                             local coordsDist = vector3(coords.x, coords.y, coords.z)
                             local coordsShop = vector3(shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z)
@@ -137,8 +131,7 @@ CreateThread(function()
                         else
                             -- Using Stable Hours - Stable Open - Job Locked
                             if Config.stables[shopId].BlipHandle then
-                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle,
-                                    joaat(Config.BlipColors[shopConfig.blipColorJob])) -- BlipAddModifier
+                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(Config.BlipColors[shopConfig.blipColorJob])) -- BlipAddModifier
                             end
                             local coordsDist = vector3(coords.x, coords.y, coords.z)
                             local coordsShop = vector3(shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z)
@@ -158,16 +151,13 @@ CreateThread(function()
                                                 DisplayRadar(false)
                                                 OpenStable(shopId)
                                             else
-                                                VORPcore.NotifyRightTip(
-                                                    _U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
+                                                VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
                                             end
                                         else
-                                            VORPcore.NotifyRightTip(
-                                                _U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
+                                            VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
                                         end
                                     else
-                                        VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade,
-                                            5000)
+                                        VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
                                     end
                                 elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                     TriggerServerEvent('bcc-stables:GetPlayerJob')
@@ -177,16 +167,13 @@ CreateThread(function()
                                             if tonumber(shopConfig.jobGrade) <= tonumber(JobGrade) then
                                                 ReturnHorse()
                                             else
-                                                VORPcore.NotifyRightTip(
-                                                    _U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
+                                                VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
                                             end
                                         else
-                                            VORPcore.NotifyRightTip(
-                                                _U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
+                                            VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
                                         end
                                     else
-                                        VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade,
-                                            5000)
+                                        VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
                                     end
                                 end
                             end
@@ -202,8 +189,7 @@ CreateThread(function()
                     end
                     if not next(shopConfig.allowedJobs) then
                         if Config.stables[shopId].BlipHandle then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle,
-                                joaat(Config.BlipColors[shopConfig.blipColorOpen])) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(Config.BlipColors[shopConfig.blipColorOpen])) -- BlipAddModifier
                         end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
                         local coordsShop = vector3(shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z)
@@ -224,8 +210,7 @@ CreateThread(function()
                     else
                         -- Not Using Stable Hours - Stable Always Open - Job Locked
                         if Config.stables[shopId].BlipHandle then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle,
-                                joaat(Config.BlipColors[shopConfig.blipColorJob])) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.stables[shopId].BlipHandle, joaat(Config.BlipColors[shopConfig.blipColorJob])) -- BlipAddModifier
                         end
                         local coordsDist = vector3(coords.x, coords.y, coords.z)
                         local coordsShop = vector3(shopConfig.npc.x, shopConfig.npc.y, shopConfig.npc.z)
@@ -245,12 +230,10 @@ CreateThread(function()
                                             DisplayRadar(false)
                                             OpenStable(shopId)
                                         else
-                                            VORPcore.NotifyRightTip(
-                                                _U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
+                                            VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
                                         end
                                     else
-                                        VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade,
-                                            5000)
+                                        VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
                                     end
                                 else
                                     VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
@@ -263,12 +246,10 @@ CreateThread(function()
                                         if tonumber(shopConfig.jobGrade) <= tonumber(JobGrade) then
                                             ReturnHorse()
                                         else
-                                            VORPcore.NotifyRightTip(
-                                                _U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
+                                            VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
                                         end
                                     else
-                                        VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade,
-                                            5000)
+                                        VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
                                     end
                                 else
                                     VORPcore.NotifyRightTip(_U('needJob') .. JobName .. ' ' .. shopConfig.jobGrade, 5000)
@@ -331,8 +312,7 @@ RegisterNUICallback('loadHorse', function(data, cb)
     end
 
     local shopConfig = Config.stables[ShopId]
-    ShopEntity = CreatePed(model, shopConfig.spawn.x, shopConfig.spawn.y, shopConfig.spawn.z - 0.98, shopConfig.spawn.h,
-        false, 0)
+    ShopEntity = CreatePed(model, shopConfig.spawn.x, shopConfig.spawn.y, shopConfig.spawn.z - 0.98, shopConfig.spawn.h, false, false)
     Citizen.InvokeNative(0x283978A15512B2FE, ShopEntity, true) -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, ShopEntity)       -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, ShopEntity, true) -- FreezeEntityPosition
@@ -430,8 +410,7 @@ RegisterNUICallback('loadMyHorse', function(data, cb)
     LoadModel(model)
 
     local shopConfig = Config.stables[ShopId]
-    MyEntity = CreatePed(model, shopConfig.spawn.x, shopConfig.spawn.y, shopConfig.spawn.z - 0.98, shopConfig.spawn.h,
-        false, 0)
+    MyEntity = CreatePed(model, shopConfig.spawn.x, shopConfig.spawn.y, shopConfig.spawn.z - 0.98, shopConfig.spawn.h, false, false)
     Citizen.InvokeNative(0x283978A15512B2FE, MyEntity, true)           -- SetRandomOutfitVariation
     Citizen.InvokeNative(0x58A850EAEE20FAA3, MyEntity)                 -- PlaceObjectOnGroundProperly
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyEntity, true)           -- FreezeEntityPosition
@@ -600,9 +579,9 @@ function SpawnHorse()
     end
 
     if spawnPosition then
-        MyHorse = CreatePed(model, spawnPosition, GetEntityHeading(player), true, true)
+        MyHorse = CreatePed(model, spawnPosition, GetEntityHeading(player), true, false)
     else
-        MyHorse = CreatePed(model, x, y, groundZ + 2, GetEntityHeading(player), true, true)
+        MyHorse = CreatePed(model, x, y, groundZ + 2, GetEntityHeading(player), true, false)
     end
     SetModelAsNoLongerNeeded(model)
 
@@ -681,8 +660,7 @@ function WhistleHorse(whistler, whistleType)
                 end
             else
                 if Citizen.InvokeNative(0x77F1BEB8863288D5, MyHorse, 0x3EF867F4, 0) ~= 1 then -- GetScriptTaskStatus
-                    Citizen.InvokeNative(0x304AE42E357B8C7E, MyHorse, player, math.random(1.0, 4.0),
-                        math.random(5.0, 8.0), 0.0, 0.7, -1, 3.0, 1)                          -- TaskFollowToOffsetOfEntity
+                    Citizen.InvokeNative(0x304AE42E357B8C7E, MyHorse, player, math.random(1.0, 4.0), math.random(5.0, 8.0), 0.0, 0.7, -1, 3.0, 1)                          -- TaskFollowToOffsetOfEntity
                 else
                     ClearPedTasks(MyHorse)
                 end
@@ -716,10 +694,15 @@ function OpenInventory()
     local pcoords = GetEntityCoords(PlayerPedId())
     local hcoords = GetEntityCoords(MyHorse)
     local invDist = #(pcoords - hcoords)
-    if invDist <= 1.0 then
-        local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459)
-        if not hasSaddlebags then
-            VORPcore.NotifyRightTip(_U('noSaddlebags'), 5000)
+    if invDist <= 1.5 then
+        if Config.useSaddlebags then
+            local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459)
+            if hasSaddlebags then
+                TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
+            else
+                VORPcore.NotifyRightTip(_U('noSaddlebags'), 5000)
+                return
+            end
         else
             TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
         end
@@ -744,8 +727,7 @@ AddEventHandler('bcc-stables:BrushHorse', function()
     local dist = #(pcoords - hcoords)
     if dist <= 2.0 then
         if not BrushCooldown then
-            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, joaat('Interaction_Brush'),
-                joaat('p_brushHorse02x'), 1)                                                       -- TaskAnimalInteraction
+            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, joaat('Interaction_Brush'), joaat('p_brushHorse02x'), 1)                                                       -- TaskAnimalInteraction
             local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0)                    -- GetAttributeCoreValue
             Wait(5000)
             Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.brushHealthBoost) -- SetAttributeCoreValue
@@ -769,20 +751,20 @@ AddEventHandler('bcc-stables:BrushHorse', function()
 end)
 
 RegisterNetEvent('bcc-stables:FeedHorse')
-AddEventHandler('bcc-stables:FeedHorse', function()
+AddEventHandler('bcc-stables:FeedHorse', function(item)
     local player = PlayerPedId()
     local pcoords = GetEntityCoords(player)
     local hcoords = GetEntityCoords(MyHorse)
     local dist = #(pcoords - hcoords)
     if dist <= 2.0 then
         if not FeedCooldown then
-            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, joaat('Interaction_Food'),
-                joaat('s_horsnack_haycube01x'), 1)                                                  -- TaskAnimalInteraction
+            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, joaat('Interaction_Food'), joaat('s_horsnack_haycube01x'), 1)                                                  -- TaskAnimalInteraction
             local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0)                     -- GetAttributeCoreValue
             local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1)                    -- GetAttributeCoreValue
             Wait(3000)
             Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health + Config.feedHealthBoost)   -- SetAttributeCoreValue
             Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, stamina + Config.feedStaminaBoost) -- SetAttributeCoreValue
+            TriggerServerEvent('bcc-stables:RemoveItem', item)
 
             local fCooldown = math.ceil(Config.feedCooldown / 60000)
             VORPcore.NotifyRightTip(_U('feedCooldown') .. fCooldown .. _U('minutes'), 5000)
