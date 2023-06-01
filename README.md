@@ -1,4 +1,4 @@
-# BCC Stables
+# bcc-stables
 
 #### Description
 
@@ -7,7 +7,7 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 #### Features
 
 - Buy and sell horses through the stables
-- Cash or gold may be used for payments in the menu
+- Cash and/or gold may be used for payments in the menu
 - Individual inventory for each horse
 - Shop hours may be set individually for each stable or disabled to allow the stable to remain open
 - Stable blips are colored and changeable per stable location
@@ -15,8 +15,8 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Stable access can be limited by job and jobgrade
 - Max player horses is set in the config (default: 5)
 - Return horse at stable (when open) or using the flee button in the horse menu
-- Feed your horse (haycubes), using the horse menu, to increase horse's health and stamina
-- Brushing your horse, using the horse menu, will clean him and give a slight increase in health
+- Feed your horse (haycubes) to increase horse's health and stamina
+- Brushing your horse will clean him and give a slight increase in health
 - Configurable cooldown time for feeding and brushing
 - Choose horse gender at purchase
 
@@ -39,9 +39,15 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Add `bcc-stables` folder to your resources folder
 - Add `ensure bcc-stables` to your `resources.cfg`
 - Run the included database file `bcc-stables.sql`
+- Update vorp_utils
+- Restart server
 
 #### Credits
 
 - lrp_stables
 - [ByteSizd](https://github.com/AndrewR3K) - Vue Boilerplate for RedM
 - [SavSin](https://github.com/DavFount) - UI conversion to VueJS
+
+#### GitHub
+
+- https://github.com/BryceCanyonCounty/bcc-stables
