@@ -32,14 +32,11 @@ RegisterNetEvent('bcc-stables:BuyHorse', function(data)
             TriggerClientEvent('bcc-stables:StableMenu', _source)
             return
         end
-
         Wait(200)
 
         if data.IsCash then
-            local charCash = Character.money
             local cashPrice = data.Cash
-
-            if charCash >= cashPrice then
+            if Character.money >= cashPrice then
                 Character.removeCurrency(0, cashPrice)
             else
                 VORPcore.NotifyRightTip(_source, _U('shortCash'), 5000)
@@ -47,10 +44,8 @@ RegisterNetEvent('bcc-stables:BuyHorse', function(data)
                 return
             end
         else
-            local charGold = Character.gold
             local goldPrice = data.Gold
-
-            if charGold >= goldPrice then
+            if Character.gold >= goldPrice then
                 Character.removeCurrency(1, goldPrice)
             else
                 VORPcore.NotifyRightTip(_source, _U('shortGold'), 5000)
@@ -58,8 +53,7 @@ RegisterNetEvent('bcc-stables:BuyHorse', function(data)
                 return
             end
         end
-        local rename = false
-        TriggerClientEvent('bcc-stables:SetHorseName', _source, data, rename)
+        TriggerClientEvent('bcc-stables:SetHorseName', _source, data, false)
     end)
 end)
 
@@ -69,17 +63,14 @@ RegisterNetEvent('bcc-stables:BuyTack', function(data)
 
     if tonumber(data.cashPrice) > 0 and tonumber(data.goldPrice) > 0 then
         if tonumber(data.currencyType) == 0 then
-            local charCash = Character.money
-            if charCash >= data.cashPrice then
+            if Character.money >= data.cashPrice then
                 Character.removeCurrency(0, data.cashPrice)
             else
                 VORPcore.NotifyRightTip(_source, _U('shortCash'), 5000)
                 return
             end
         else
-            local charGold = Character.gold
-
-            if charGold >= data.goldPrice then
+            if Character.gold >= data.goldPrice then
                 Character.removeCurrency(1, data.goldPrice)
             else
                 VORPcore.NotifyRightTip(_source, _U('shortGold'), 5000)
@@ -158,9 +149,8 @@ RegisterNetEvent('bcc-stables:UpdateComponents', function(components, horseId, M
     local identifier = Character.identifier
     local charid = Character.charIdentifier
     local encodedComponents = json.encode(components)
-    local id = horseId
 
-    MySQL.Async.execute('UPDATE player_horses SET components = ? WHERE identifier = ? AND charid = ? AND id = ?', { encodedComponents, identifier, charid, id },
+    MySQL.Async.execute('UPDATE player_horses SET components = ? WHERE identifier = ? AND charid = ? AND id = ?', { encodedComponents, identifier, charid, horseId },
     function(done)
         TriggerClientEvent('bcc-stables:SetComponents', _source, MyHorse_entity, components)
     end)
@@ -183,7 +173,7 @@ RegisterNetEvent('bcc-stables:SellHorse', function(id)
                     for _, horseConfig in pairs(Config.Horses) do
                         for models, values in pairs(horseConfig.colors) do
                             if models == modelHorse then
-                                local sellPrice = values.sellPrice
+                                local sellPrice = (Config.sellPrice * values.cashPrice)
                                 Character.addCurrency(0, sellPrice)
                                 VORPcore.NotifyRightTip(_source, _U('soldHorse') .. sellPrice, 5000)
                             end
@@ -197,7 +187,7 @@ end)
 
 -- Inventory
 RegisterNetEvent('bcc-stables:RegisterInventory', function(id)
-    VORPInv.registerInventory('horse_' .. tostring(id), _U('horseInv'), tonumber(Config.invLimit))
+    VORPInv.registerInventory('horse_' .. tostring(id), _U('horseInv'), tonumber(Config.invLimit), true, false, true)
 end)
 
 RegisterNetEvent('bcc-stables:OpenInventory', function(id)
