@@ -7,20 +7,20 @@ end)
 VORPInv = exports.vorp_inventory:vorp_inventoryApi()
 
 RegisterNetEvent('bcc-stables:GetMyHorses', function()
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
     MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
     function(horses)
-        TriggerClientEvent('bcc-stables:ReceiveHorsesData', _source, horses)
+        TriggerClientEvent('bcc-stables:ReceiveHorsesData', src, horses)
     end)
 end)
 
 RegisterNetEvent('bcc-stables:BuyHorse', function(data)
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
     local maxHorses = Config.maxHorses
@@ -28,8 +28,8 @@ RegisterNetEvent('bcc-stables:BuyHorse', function(data)
     MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
     function(horses)
         if #horses >= maxHorses then
-            VORPcore.NotifyRightTip(_source, _U('horseLimit') .. maxHorses .. _U('horses'), 5000)
-            TriggerClientEvent('bcc-stables:StableMenu', _source)
+            VORPcore.NotifyRightTip(src, _U('horseLimit') .. maxHorses .. _U('horses'), 5000)
+            TriggerClientEvent('bcc-stables:StableMenu', src)
             return
         end
         Wait(200)
@@ -39,8 +39,8 @@ RegisterNetEvent('bcc-stables:BuyHorse', function(data)
             if Character.money >= cashPrice then
                 Character.removeCurrency(0, cashPrice)
             else
-                VORPcore.NotifyRightTip(_source, _U('shortCash'), 5000)
-                TriggerClientEvent('bcc-stables:StableMenu', _source)
+                VORPcore.NotifyRightTip(src, _U('shortCash'), 5000)
+                TriggerClientEvent('bcc-stables:StableMenu', src)
                 return
             end
         else
@@ -48,43 +48,43 @@ RegisterNetEvent('bcc-stables:BuyHorse', function(data)
             if Character.gold >= goldPrice then
                 Character.removeCurrency(1, goldPrice)
             else
-                VORPcore.NotifyRightTip(_source, _U('shortGold'), 5000)
-                TriggerClientEvent('bcc-stables:StableMenu', _source)
+                VORPcore.NotifyRightTip(src, _U('shortGold'), 5000)
+                TriggerClientEvent('bcc-stables:StableMenu', src)
                 return
             end
         end
-        TriggerClientEvent('bcc-stables:SetHorseName', _source, data, false)
+        TriggerClientEvent('bcc-stables:SetHorseName', src, data, false)
     end)
 end)
 
 RegisterNetEvent('bcc-stables:BuyTack', function(data)
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
 
     if tonumber(data.cashPrice) > 0 and tonumber(data.goldPrice) > 0 then
         if tonumber(data.currencyType) == 0 then
             if Character.money >= data.cashPrice then
                 Character.removeCurrency(0, data.cashPrice)
             else
-                VORPcore.NotifyRightTip(_source, _U('shortCash'), 5000)
+                VORPcore.NotifyRightTip(src, _U('shortCash'), 5000)
                 return
             end
         else
             if Character.gold >= data.goldPrice then
                 Character.removeCurrency(1, data.goldPrice)
             else
-                VORPcore.NotifyRightTip(_source, _U('shortGold'), 5000)
+                VORPcore.NotifyRightTip(src, _U('shortGold'), 5000)
                 return
             end
         end
-        VORPcore.NotifyRightTip(_source, _U('purchaseSuccessful'), 5000)
+        VORPcore.NotifyRightTip(src, _U('purchaseSuccessful'), 5000)
     end
-    TriggerClientEvent('bcc-stables:SaveComps', _source)
+    TriggerClientEvent('bcc-stables:SaveComps', src)
 end)
 
 RegisterNetEvent('bcc-stables:SaveNewHorse', function(data, name)
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
@@ -102,8 +102,8 @@ RegisterNetEvent('bcc-stables:UpdateHorseName', function(data, name)
 end)
 
 RegisterNetEvent('bcc-stables:SelectHorse', function(id)
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
@@ -124,8 +124,8 @@ RegisterNetEvent('bcc-stables:SelectHorse', function(id)
 end)
 
 RegisterNetEvent('bcc-stables:GetSelectedHorse', function()
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
@@ -134,31 +134,31 @@ RegisterNetEvent('bcc-stables:GetSelectedHorse', function()
         if #horses ~= 0 then
             for i = 1, #horses do
                 if horses[i].selected == 1 then
-                    TriggerClientEvent('bcc-stables:SetHorseInfo', _source, horses[i].model, horses[i].name, horses[i].components, horses[i].id, horses[i].gender)
+                    TriggerClientEvent('bcc-stables:SetHorseInfo', src, horses[i].model, horses[i].name, horses[i].components, horses[i].id, horses[i].gender)
                 end
             end
         else
-            VORPcore.NotifyRightTip(_source, _U('noHorses'), 5000)
+            VORPcore.NotifyRightTip(src, _U('noHorses'), 5000)
         end
     end)
 end)
 
 RegisterNetEvent('bcc-stables:UpdateComponents', function(components, horseId, MyHorse_entity)
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
     local encodedComponents = json.encode(components)
 
     MySQL.Async.execute('UPDATE player_horses SET components = ? WHERE identifier = ? AND charid = ? AND id = ?', { encodedComponents, identifier, charid, horseId },
     function(done)
-        TriggerClientEvent('bcc-stables:SetComponents', _source, MyHorse_entity, components)
+        TriggerClientEvent('bcc-stables:SetComponents', src, MyHorse_entity, components)
     end)
 end)
 
 RegisterNetEvent('bcc-stables:SellHorse', function(id)
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
     local modelHorse = nil
@@ -175,7 +175,7 @@ RegisterNetEvent('bcc-stables:SellHorse', function(id)
                             if models == modelHorse then
                                 local sellPrice = (Config.sellPrice * values.cashPrice)
                                 Character.addCurrency(0, sellPrice)
-                                VORPcore.NotifyRightTip(_source, _U('soldHorse') .. sellPrice, 5000)
+                                VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 5000)
                             end
                         end
                     end
@@ -191,35 +191,41 @@ RegisterNetEvent('bcc-stables:RegisterInventory', function(id)
 end)
 
 RegisterNetEvent('bcc-stables:OpenInventory', function(id)
-    local _source = source
-    VORPInv.OpenInv(_source, 'horse_' .. tostring(id))
+    local src = source
+    VORPInv.OpenInv(src, 'horse_' .. tostring(id))
 end)
 
 -- Horse Care
 VORPInv.RegisterUsableItem('consumable_haycube', function(data)
-    local _source = data.source
+    local src = data.source
     local item = 'consumable_haycube'
-    VORPInv.CloseInv(_source)
-    TriggerClientEvent('bcc-stables:FeedHorse', _source, item)
+    VORPInv.CloseInv(src)
+    TriggerClientEvent('bcc-stables:FeedHorse', src, item)
 end)
 
 RegisterNetEvent('bcc-stables:RemoveItem', function(item)
-    local _source = source
-    VORPInv.subItem(_source, item, 1)
+    local src = source
+    VORPInv.subItem(src, item, 1)
 end)
 
 VORPInv.RegisterUsableItem('horsebrush', function(data)
-    local _source = data.source
-    VORPInv.CloseInv(_source)
-    TriggerClientEvent('bcc-stables:BrushHorse', _source, data)
+    local src = data.source
+    VORPInv.CloseInv(src)
+    TriggerClientEvent('bcc-stables:BrushHorse', src, data)
+end)
+
+VORPInv.RegisterUsableItem('oil_lantern', function(data)
+    local src = data.source
+    VORPInv.CloseInv(src)
+    TriggerClientEvent('bcc-stables:UseLantern', src, data)
 end)
 
 -- Job Check
 RegisterNetEvent('bcc-stables:GetPlayerJob', function()
-    local _source = source
-    local Character = VORPcore.getUser(_source).getUsedCharacter
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
     local CharacterJob = Character.job
     local CharacterGrade = Character.jobGrade
 
-    TriggerClientEvent('bcc-stables:SendPlayerJob', _source, CharacterJob, CharacterGrade)
+    TriggerClientEvent('bcc-stables:SendPlayerJob', src, CharacterJob, CharacterGrade)
 end)
