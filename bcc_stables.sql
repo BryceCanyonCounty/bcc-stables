@@ -11,3 +11,5 @@ CREATE TABLE IF NOT EXISTS `player_horses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS (`gender` ENUM('male', 'female') DEFAULT 'male');
+
+INSERT INTO `items`(`item`, `label`, `limit`, `can_remove`, `type`, `usable`) VALUES ('oil_lantern', 'Oil Lantern', 1, 1, 'item_standard', 1);
