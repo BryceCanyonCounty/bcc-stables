@@ -22,14 +22,18 @@ shared_scripts {
 }
 
 ui_page {
-    "ui/dist/index.html"
+    'ui/dist/index.html'
 }
 
 files {
-    "ui/dist/index.html",
-    "ui/dist/js/*.*",
-    "ui/dist/css/*.*",
-    "ui/dist/fonts/*.*",
-    "ui/dist/img/*.*",
-	"ui/dist/style.css"
+    'ui/dist/index.html',
+    'ui/dist/js/*.*',
+    'ui/dist/css/*.*',
+    'ui/dist/fonts/*.*',
+    'ui/dist/img/*.*',
+	'ui/dist/style.css'
+}
+
+dependencies {
+    'vorp_utils'
 }
