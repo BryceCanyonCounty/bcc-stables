@@ -18,6 +18,7 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Configurable cooldown time for feeding and brushing
 - Choose horse gender at purchase
 - Distance-based NPC spawns
+- Use oil lantern from inventory to equip a lantern to your horse
 
 #### Tips
 - Whistleing -- A short whistle will call your horse. A long one will set your horse to follow you. A second long whistle or mounting your horse will cancel following.
@@ -34,6 +35,7 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Add `bcc-stables` folder to your resources folder
 - Add `ensure bcc-stables` to your `resources.cfg`
 - Run the included database file `bcc-stables.sql`
+- Add oil_lantern image to: `...\vorp_inventory\html\img`
 - Update vorp_utils
 - Restart server
 
