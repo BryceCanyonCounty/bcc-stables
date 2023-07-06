@@ -80,8 +80,7 @@ CreateThread(function()
                             DeleteEntity(shopCfg.NPC)
                             shopCfg.NPC = nil
                         end
-                        local scoords = vector3(shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z)
-                        local dist = #(pcoords - scoords)
+                        local dist = #(pcoords - shopCfg.npc)
                         if dist <= shopCfg.sDistance then
                             sleep = false
                             local shopClosed = CreateVarString(10, 'LITERAL_STRING', shopCfg.shopName .. _U('closed'))
@@ -101,8 +100,7 @@ CreateThread(function()
                             if Config.shops[shop].Blip then
                                 Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
                             end
-                            local scoords = vector3(shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z)
-                            local dist = #(pcoords - scoords)
+                            local dist = #(pcoords - shopCfg.npc)
                             if dist <= shopCfg.nDistance then
                                 if not shopCfg.NPC and shopCfg.npcOn then
                                     AddNPC(shop)
@@ -130,8 +128,7 @@ CreateThread(function()
                             if Config.shops[shop].Blip then
                                 Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
                             end
-                            local scoords = vector3(shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z)
-                            local dist = #(pcoords - scoords)
+                            local dist = #(pcoords - shopCfg.npc)
                             if dist <= shopCfg.nDistance then
                                 if not shopCfg.NPC and shopCfg.npcOn then
                                     AddNPC(shop)
@@ -193,8 +190,7 @@ CreateThread(function()
                         if Config.shops[shop].Blip then
                             Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
                         end
-                        local scoords = vector3(shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z)
-                        local dist = #(pcoords - scoords)
+                        local dist = #(pcoords - shopCfg.npc)
                         if dist <= shopCfg.nDistance then
                             if not shopCfg.NPC and shopCfg.npcOn then
                                 AddNPC(shop)
@@ -222,8 +218,7 @@ CreateThread(function()
                         if Config.shops[shop].Blip then
                             Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
                         end
-                        local scoords = vector3(shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z)
-                        local dist = #(pcoords - scoords)
+                        local dist = #(pcoords - shopCfg.npc)
                         if dist <= shopCfg.nDistance then
                             if not shopCfg.NPC and shopCfg.npcOn then
                                 AddNPC(shop)
@@ -1132,7 +1127,7 @@ end
 -- Blips
 function AddBlip(shop)
     local shopCfg = Config.shops[shop]
-    shopCfg.Blip = Citizen.InvokeNative(0x554d9d53f696d002, 1664425300, shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z) -- BlipAddForCoords
+    shopCfg.Blip = Citizen.InvokeNative(0x554d9d53f696d002, 1664425300, shopCfg.npc) -- BlipAddForCoords
     SetBlipSprite(shopCfg.Blip, shopCfg.blipSprite, 1)
     SetBlipScale(shopCfg.Blip, 0.2)
     Citizen.InvokeNative(0x9CB1A1623062F402, shopCfg.Blip, shopCfg.blipName) -- SetBlipName
@@ -1143,7 +1138,7 @@ function AddNPC(shop)
     local shopCfg = Config.shops[shop]
     local model = joaat(shopCfg.npcModel)
     LoadModel(model)
-    local npc = CreatePed(shopCfg.npcModel, shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z - 1.0, shopCfg.npc.w, false, true, true, true)
+    local npc = CreatePed(shopCfg.npcModel, shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z - 1.0, shopCfg.npcHeading, false, true, true, true)
     Citizen.InvokeNative(0x283978A15512B2FE, npc, true) -- SetRandomOutfitVariation
     SetEntityCanBeDamaged(npc, false)
     SetEntityInvincible(npc, true)
