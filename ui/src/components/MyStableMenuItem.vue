@@ -147,7 +147,7 @@ export default {
   width: calc(100% - 20px);
   background-color: transparent;
   overflow: hidden;
-  background: url("~@/img/input.png");
+  background: url("../assets/img/input.png");
   background-size: 100% 100%;
 }
 
@@ -168,7 +168,8 @@ export default {
 
 .panel-myhorse.item {
   width: calc(100% - 60px);
-  background-image: url("~@/img/input.png"), url("~@/img/input.png");
+  background-image: url("../assets/img/input.png"),
+    url("../assets/img/input.png");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
@@ -195,7 +196,7 @@ export default {
 }
 
 .item-myhorse:hover {
-  background: url("~@/img/buttonv.png");
+  background: url("../assets/img/buttonv.png");
   background-size: 90% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -239,14 +240,14 @@ export default {
   border: 0px #fff solid;
 }
 .modal-btn:hover {
-  background: url("~@/img/buttonv.png");
+  background: url("../assets/img/buttonv.png");
   background-size: 90% 100%;
   background-repeat: no-repeat;
   background-position: right;
   border-radius: 0px;
 }
 .cta-wrapper {
-  background: url("~@/img/input.png");
+  background: url("../assets/img/input.png");
   background-position: center;
   background-size: 100% 100%;
   height: 4vh;
@@ -257,7 +258,7 @@ export default {
   width: 90%;
   height: 4px;
   margin: auto auto;
-  background-image: url("~@/img/divider_line.png");
+  background-image: url("../assets/img/divider_line.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;

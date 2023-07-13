@@ -30,7 +30,7 @@
     </div>
   </div>
   <div v-else>
-    <img src="~@/img/6cyl_revolver.png" alt="" class="image" />
+    <img src="../assets/img/6cyl_revolver.png" alt="" class="image" />
   </div>
 </template>
 
@@ -117,7 +117,7 @@ export default {
   // width: calc(100% - 20px) !important;
   background-color: transparent;
   overflow: hidden;
-  background: url("~@/img/input.png");
+  background: url("../assets/img/input.png");
   background-size: 100% 100%;
   justify-content: center;
 }

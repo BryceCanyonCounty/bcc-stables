@@ -247,7 +247,7 @@ export default {
   top: 5%;
   width: 420px;
   color: #e7e7e7 !important;
-  background: url("~@/img/bgPanel.png");
+  background: url("../assets/img/bgPanel.png");
   background-size: 100% 100%;
   display: block;
 }
@@ -280,14 +280,14 @@ export default {
   border: 0px #fff solid;
 }
 .modal-btn:hover {
-  background: url("~@/img/buttonv.png");
+  background: url("../assets/img/buttonv.png");
   background-size: 90% 100%;
   background-repeat: no-repeat;
   background-position: right;
   border-radius: 0px;
 }
 .cta-wrapper {
-  background: url("~@/img/input.png");
+  background: url("../assets/img/input.png");
   background-position: center;
   background-size: 100% 100%;
   height: 4vh;
@@ -301,7 +301,7 @@ export default {
   color: #f0f0f0;
   font-family: "crock";
   text-align: center;
-  background: url("~@/img/menu_header.png");
+  background: url("../assets/img/menu_header.png");
   background-position: center;
   background-size: 85% 85%;
   background-repeat: no-repeat;
@@ -314,7 +314,7 @@ export default {
   border-radius: 0px;
   padding: 0px 20px;
   height: 5vh;
-  background: url("~@/img/input.png");
+  background: url("../assets/img/input.png");
   background-position: center;
   background-size: 95% 100%;
 }
@@ -328,7 +328,7 @@ export default {
   width: 90%;
   height: 4px;
   margin: auto auto;
-  background-image: url("~@/img/divider_line.png");
+  background-image: url("../assets/img/divider_line.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
@@ -350,7 +350,7 @@ export default {
   border-radius: 0px;
   padding: 0px 20px;
   height: 4vh;
-  background: url("~@/img/input.png");
+  background: url("../assets/img/input.png");
   background-position: center;
   background-size: 95% 100%;
 }
@@ -387,7 +387,7 @@ export default {
 }
 
 .btn-select:hover {
-  background: url("~@/img/buttonv.png");
+  background: url("../assets/img/buttonv.png");
   background-size: 100% 100%;
   color: #f0f0f0;
 }
