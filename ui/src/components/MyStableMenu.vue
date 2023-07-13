@@ -2,9 +2,17 @@
   <div v-if="myHorses">
     <div v-if="Object.keys(myHorses).length">
       <div>
-        <MyStableMenuItem :label="horse.name" :index="horse.id" :model="horse.model" :horse="horse"
-          :components="JSON.parse(horse.components)" :selected="activeDropdown" v-for="(horse, index) in myHorses"
-          :key="index" @iExpanded="onChildExpansion($event)" />
+        <MyStableMenuItem
+          :label="horse.name"
+          :index="horse.id"
+          :model="horse.model"
+          :horse="horse"
+          :components="JSON.parse(horse.components)"
+          :selected="activeDropdown"
+          v-for="(horse, index) in myHorses"
+          :key="index"
+          @iExpanded="onChildExpansion($event)"
+        />
       </div>
     </div>
     <div v-else>
@@ -22,7 +30,7 @@
     </div>
   </div>
   <div v-else>
-    <img src="img/6cyl_revolver.png" alt="" class="image">
+    <img src="~@/img/6cyl_revolver.png" alt="" class="image" />
   </div>
 </template>
 
@@ -109,7 +117,7 @@ export default {
   // width: calc(100% - 20px) !important;
   background-color: transparent;
   overflow: hidden;
-  background: url("/public/img/input.png");
+  background: url("~@/img/input.png");
   background-size: 100% 100%;
   justify-content: center;
 }
@@ -133,4 +141,5 @@ export default {
   margin: 0;
   margin-top: 5px;
   margin-bottom: 5px;
-}</style>
+}
+</style>

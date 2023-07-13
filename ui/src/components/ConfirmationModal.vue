@@ -69,7 +69,7 @@ export default {
   width: 80%;
   max-width: 15vw;
   padding: 1rem;
-  background: url("/public/img/bgPanel.png");
+  background: url("~@/img/bgPanel.png");
   background-size: 100% 100%;
   border-radius: 0.5rem;
 }
@@ -81,7 +81,7 @@ export default {
   margin-bottom: 1rem;
   font-family: "crock";
   font-size: 1.5em;
-  background: url("/public/img/menu_header.png");
+  background: url("~@/img/menu_header.png");
   background-position: center;
   background-size: 100% 100%;
   background-repeat: no-repeat;

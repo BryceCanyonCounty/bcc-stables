@@ -29,7 +29,7 @@ export default {
     ...mapState(["shopName", "myHorses", "horses", "comps", "activeHorse"]),
     isOpen() {
       return this.index == this.selected;
-    }
+    },
   },
   methods: {
     Expand() {
@@ -69,7 +69,7 @@ export default {
   // width: calc(100% - 20px) !important;
   background-color: transparent;
   overflow: hidden;
-  background: url("/public/img/input.png");
+  background: url("~@/img/input.png");
   background-size: 100% 100%;
   justify-content: center;
 }

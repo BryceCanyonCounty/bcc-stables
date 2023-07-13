@@ -191,20 +191,18 @@ export default {
   width: calc(100% - 20px);
   background-color: transparent;
   overflow: hidden;
-  background-image: url("/public/img/input.png"), url("/public/img/input.png");
+  background-image: url("~@/img/input.png"), url("~@/img/input.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
 }
 
 .panel-shop.item:hover {
-  background-image: url("/public/img/selected.png"),
-    url("/public/img/selection_box.png");
+  background-image: url("~@/img/selected.png"), url("~@/img/selection_box.png");
 }
 
 .panel-shop.item.active {
-  background-image: url("/public/img/selected.png"),
-    url("/public/img/selection_box.png");
+  background-image: url("~@/img/selected.png"), url("~@/img/selection_box.png");
 }
 
 .grey-text-shop.title {
@@ -215,6 +213,7 @@ export default {
 
 .buy-buttons {
   display: flex;
+  background: transparent;
 }
 
 .btn-small {
@@ -231,10 +230,11 @@ export default {
   -webkit-transition: background-color 0.2s ease-out;
   transition: background-color 0.2s ease-out;
   border: 0px #fff solid;
+  background: transparent;
 }
 
 .btn-small:hover {
-  background: url("/public/img/buttonv.png");
+  background: url("~@/img/buttonv.png");
   background-size: 90% 100%;
   background-repeat: no-repeat;
   background-position: right;
@@ -273,7 +273,7 @@ export default {
 }
 
 .modal-btn:hover {
-  background: url("/public/img/buttonv.png");
+  background: url("~@/img/buttonv.png");
   background-size: 90% 100%;
   background-repeat: no-repeat;
   background-position: right;
@@ -281,7 +281,7 @@ export default {
 }
 
 .cta-wrapper {
-  background: url("/public/img/input.png");
+  background: url("~@/img/input.png");
   background-position: center;
   background-size: 100% 100%;
   height: 4vh;
@@ -292,7 +292,7 @@ export default {
   width: 90%;
   height: 4px;
   margin: auto auto;
-  background-image: url("/public/img/divider_line.png");
+  background-image: url("~@/img/divider_line.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;

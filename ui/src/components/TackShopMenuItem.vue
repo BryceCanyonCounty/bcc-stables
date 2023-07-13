@@ -200,7 +200,7 @@ export default {
 }
 
 .panel-cust {
-  background: url("/public/img/input.png");
+  background: url("~@/img/input.png");
   background-size: 100% 100%;
   padding: 0px;
   margin: 3px 10px;
@@ -238,7 +238,7 @@ export default {
   width: 33.3333333333%;
   height: 46px;
   background-color: transparent;
-  background-image: url("/public/img/input.png");
+  background-image: url("~@/img/input.png");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
@@ -287,7 +287,7 @@ export default {
 }
 
 .btn:hover {
-  background: url("/public/img/buttonv.png");
+  background: url("~@/img/buttonv.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   color: #f0f0f0;
