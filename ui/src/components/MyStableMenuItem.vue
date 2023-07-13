@@ -34,7 +34,7 @@
     <div class="divider-menu-top" style="margin-top: 1rem"></div>
     <div class="flex cta-wrapper">
       <button @click="SellHorse" class="modal-btn flex flex-auto">
-        <img src="img/money.png" />Sell
+        <img src="../assets/img/money.png" />Sell
       </button>
       <!--  -->
       <button @click="toggleModal" class="modal-btn flex flex-auto">

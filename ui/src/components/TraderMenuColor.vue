@@ -17,7 +17,7 @@
         @click="showModal(true)"
         v-if="useCash"
       >
-        <img src="img/money.png" class="ml-1" />
+        <img src="../assets/img/money.png" class="ml-1" />
         <span class="ml-1">
           {{ horse.cashPrice }}
         </span>
@@ -29,7 +29,7 @@
         @click="showModal(false)"
         v-if="useGold"
       >
-        <img src="img/gold.png" class="ml-1" />
+        <img src="../assets/img/gold.png" class="ml-1" />
         <span class="ml-1">
           {{ horse.goldPrice }}
         </span>

@@ -97,7 +97,7 @@
           class="modal-btn flex flex-auto"
           v-if="useCash"
         >
-          <img src="img/money.png" />{{ compCashPrice }}
+          <img src="../assets/img/money.png" />{{ compCashPrice }}
         </button>
         <!--  -->
         <button
@@ -105,7 +105,7 @@
           class="modal-btn flex flex-auto"
           v-if="useGold"
         >
-          <img src="img/gold.png" />{{ compGoldPrice }}
+          <img src="../assets/img/gold.png" />{{ compGoldPrice }}
         </button>
         <!--  -->
         <button @click="hideModal" class="modal-btn flex flex-auto">
