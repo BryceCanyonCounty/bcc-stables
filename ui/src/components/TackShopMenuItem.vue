@@ -68,7 +68,7 @@ export default {
       "compCashPrice",
       "compGoldPrice",
       "showTackPrice",
-      "allowSave"
+      "allowSave",
     ]),
     counter() {
       return `${this.curItem}/${this.maxItems}`;
@@ -291,4 +291,5 @@ export default {
   background-size: 100% 100%;
   background-repeat: no-repeat;
   color: #f0f0f0;
-}</style>
+}
+</style>

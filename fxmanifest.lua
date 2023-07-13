@@ -31,9 +31,11 @@ files {
     'ui/dist/css/*.*',
     'ui/dist/fonts/*.*',
     'ui/dist/img/*.*',
-	'ui/dist/style.css'
+    'ui/dist/style.css'
 }
 
 dependencies {
     'vorp_utils'
 }
+
+version '1.1.0'
