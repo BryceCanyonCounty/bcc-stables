@@ -34,7 +34,7 @@
     <div class="divider-menu-top" style="margin-top: 1rem"></div>
     <div class="flex cta-wrapper">
       <button @click="SellHorse" class="modal-btn flex flex-auto">
-        <img src="img/money.png" />Sell
+        <img src="../assets/img/money.png" />Sell
       </button>
       <!--  -->
       <button @click="toggleModal" class="modal-btn flex flex-auto">
@@ -141,19 +141,19 @@ export default {
   margin-bottom: 0.25rem;
 }
 .panel {
-  padding: 0px !important;
-  margin: 3px 10px !important;
+  padding: 0px;
+  margin: 3px 10px;
   border-radius: 0px;
-  width: calc(100% - 20px) !important;
+  width: calc(100% - 20px);
   background-color: transparent;
   overflow: hidden;
-  background: url("/public/img/input.png");
+  background: url("../assets/img/input.png");
   background-size: 100% 100%;
 }
 
 .panel-title {
   background-size: 100% 100%;
-  padding: 10px 10px !important;
+  padding: 10px 10px;
   font-size: 1.5em;
   font-weight: 400;
   text-align: center;
@@ -167,8 +167,9 @@ export default {
 }
 
 .panel-myhorse.item {
-  width: calc(100% - 60px) !important;
-  background-image: url("/public/img/input.png"), url("/public/img/input.png");
+  width: calc(100% - 60px);
+  background-image: url("../assets/img/input.png"),
+    url("../assets/img/input.png");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
@@ -178,7 +179,7 @@ export default {
 .item {
   display: flex;
   justify-content: left;
-  padding: 3px 3px !important;
+  padding: 3px 3px;
 }
 
 .item-myhorse {
@@ -187,7 +188,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5px 3px !important;
+  padding: 5px 3px;
   width: 50%;
   margin: auto;
   color: #9e9e9e;
@@ -195,11 +196,11 @@ export default {
 }
 
 .item-myhorse:hover {
-  background: url("/public/img/buttonv.png");
+  background: url("../assets/img/buttonv.png");
   background-size: 90% 100%;
   background-position: center;
   background-repeat: no-repeat;
-  color: #f0f0f0 !important;
+  color: #f0f0f0;
 }
 
 .grey-text.plus:hover {
@@ -239,14 +240,14 @@ export default {
   border: 0px #fff solid;
 }
 .modal-btn:hover {
-  background: url("/public/img/buttonv.png");
+  background: url("../assets/img/buttonv.png");
   background-size: 90% 100%;
   background-repeat: no-repeat;
   background-position: right;
   border-radius: 0px;
 }
 .cta-wrapper {
-  background: url("/public/img/input.png");
+  background: url("../assets/img/input.png");
   background-position: center;
   background-size: 100% 100%;
   height: 4vh;
@@ -257,7 +258,7 @@ export default {
   width: 90%;
   height: 4px;
   margin: auto auto;
-  background-image: url("/public/img/divider_line.png");
+  background-image: url("../assets/img/divider_line.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;

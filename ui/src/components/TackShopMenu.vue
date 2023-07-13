@@ -20,10 +20,15 @@ export default {
     TackShopMenuItem,
     TackShopCostDisplay,
   },
-  methods: {
-  },
+  methods: {},
   computed: {
-    ...mapState(["comps", "compCashPrice", "compGoldPrice", "showTackPrice", "allowSave"]),
+    ...mapState([
+      "comps",
+      "compCashPrice",
+      "compGoldPrice",
+      "showTackPrice",
+      "allowSave",
+    ]),
   },
   beforeUnmount() {
     this.$store.dispatch("setCompCashPrice", 0);

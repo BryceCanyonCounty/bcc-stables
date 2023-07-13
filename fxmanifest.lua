@@ -3,6 +3,7 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 
 game 'rdr3'
 lua54 'yes'
+author 'BCC @Apollyon'
 
 
 client_scripts {
@@ -22,18 +23,19 @@ shared_scripts {
 }
 
 ui_page {
-    'ui/dist/index.html'
+    'ui/index.html'
 }
 
 files {
-    'ui/dist/index.html',
-    'ui/dist/js/*.*',
-    'ui/dist/css/*.*',
-    'ui/dist/fonts/*.*',
-    'ui/dist/img/*.*',
-	'ui/dist/style.css'
+    "ui/index.html",
+    "ui/js/*.*",
+    "ui/css/*.*",
+    "ui/fonts/*.*",
+    "ui/img/*.*",
 }
 
 dependencies {
     'vorp_utils'
 }
+
+version '1.1.0'

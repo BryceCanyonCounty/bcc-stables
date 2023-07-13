@@ -17,7 +17,7 @@
         @click="showModal(true)"
         v-if="useCash"
       >
-        <img src="img/money.png" class="ml-1" />
+        <img src="../assets/img/money.png" class="ml-1" />
         <span class="ml-1">
           {{ horse.cashPrice }}
         </span>
@@ -29,7 +29,7 @@
         @click="showModal(false)"
         v-if="useGold"
       >
-        <img src="img/gold.png" class="ml-1" />
+        <img src="../assets/img/gold.png" class="ml-1" />
         <span class="ml-1">
           {{ horse.goldPrice }}
         </span>
@@ -191,20 +191,21 @@ export default {
   width: calc(100% - 20px);
   background-color: transparent;
   overflow: hidden;
-  background-image: url("/public/img/input.png"), url("/public/img/input.png");
+  background-image: url("../assets/img/input.png"),
+    url("../assets/img/input.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
 }
 
 .panel-shop.item:hover {
-  background-image: url("/public/img/selected.png"),
-    url("/public/img/selection_box.png");
+  background-image: url("../assets/img/selected.png"),
+    url("../assets/img/selection_box.png");
 }
 
 .panel-shop.item.active {
-  background-image: url("/public/img/selected.png"),
-    url("/public/img/selection_box.png");
+  background-image: url("../assets/img/selected.png"),
+    url("../assets/img/selection_box.png");
 }
 
 .grey-text-shop.title {
@@ -215,6 +216,7 @@ export default {
 
 .buy-buttons {
   display: flex;
+  background: transparent;
 }
 
 .btn-small {
@@ -231,10 +233,11 @@ export default {
   -webkit-transition: background-color 0.2s ease-out;
   transition: background-color 0.2s ease-out;
   border: 0px #fff solid;
+  background: transparent;
 }
 
 .btn-small:hover {
-  background: url("/public/img/buttonv.png");
+  background: url("../assets/img/buttonv.png");
   background-size: 90% 100%;
   background-repeat: no-repeat;
   background-position: right;
@@ -273,7 +276,7 @@ export default {
 }
 
 .modal-btn:hover {
-  background: url("/public/img/buttonv.png");
+  background: url("../assets/img/buttonv.png");
   background-size: 90% 100%;
   background-repeat: no-repeat;
   background-position: right;
@@ -281,7 +284,7 @@ export default {
 }
 
 .cta-wrapper {
-  background: url("/public/img/input.png");
+  background: url("../assets/img/input.png");
   background-position: center;
   background-size: 100% 100%;
   height: 4vh;
@@ -292,7 +295,7 @@ export default {
   width: 90%;
   height: 4px;
   margin: auto auto;
-  background-image: url("/public/img/divider_line.png");
+  background-image: url("../assets/img/divider_line.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;

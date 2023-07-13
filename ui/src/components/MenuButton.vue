@@ -53,13 +53,13 @@ export default {
 }
 
 .enabled:hover {
-  background: url("/public/img/input.png");
+  background: url("../assets/img/input.png");
   background-size: 100% 100%;
   color: #f0f0f0;
 }
 
 .enabled.active {
-  background: url("/public/img/input.png");
+  background: url("../assets/img/input.png");
   background-size: 100% 100%;
   color: #f0f0f0;
 }
