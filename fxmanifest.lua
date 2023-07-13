@@ -23,7 +23,7 @@ shared_scripts {
 }
 
 ui_page {
-    'ui/dist/index.html'
+    'ui/index.html'
 }
 
 files {
@@ -32,7 +32,6 @@ files {
     "ui/css/*.*",
     "ui/fonts/*.*",
     "ui/img/*.*",
-    "ui/media/*.*"
 }
 
 dependencies {
