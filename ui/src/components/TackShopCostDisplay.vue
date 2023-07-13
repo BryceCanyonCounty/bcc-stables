@@ -7,11 +7,19 @@
       </div>
       <div class="modal-body">
         <div class="flex cta-wrapper">
-          <button @click="buyWithCash" class="modal-btn flex flex-auto">
+          <button
+            @click="buyWithCash"
+            class="modal-btn flex flex-auto"
+            v-if="useCash"
+          >
             <img src="img/money.png" />{{ compCashPrice }}
           </button>
           <!--  -->
-          <button @click="buyWithGold" class="modal-btn flex flex-auto">
+          <button
+            @click="buyWithGold"
+            class="modal-btn flex flex-auto"
+            v-if="useGold"
+          >
             <img src="img/gold.png" />{{ compGoldPrice }}
           </button>
         </div>
@@ -40,9 +48,15 @@ export default {
     },
   },
   computed: {
-    ...mapState(["compCashPrice", "compGoldPrice"]),
+    ...mapState(["compCashPrice", "compGoldPrice", "currencyType"]),
     isActive() {
       return this.label == this.selectedPage;
+    },
+    useCash() {
+      return this.currencyType < 1 || this.currencyType > 1;
+    },
+    useGold() {
+      return this.currencyType > 0;
     },
   },
 };

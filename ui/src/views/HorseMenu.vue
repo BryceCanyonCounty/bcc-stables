@@ -92,11 +92,19 @@
       <p style="text-align: center">Purchase by selecting cash or gold.</p>
       <div class="divider-menu-top" style="margin-top: 1rem"></div>
       <div class="flex cta-wrapper">
-        <button @click="purchase(0)" class="modal-btn flex flex-auto">
+        <button
+          @click="purchase(0)"
+          class="modal-btn flex flex-auto"
+          v-if="useCash"
+        >
           <img src="img/money.png" />{{ compCashPrice }}
         </button>
         <!--  -->
-        <button @click="purchase(1)" class="modal-btn flex flex-auto">
+        <button
+          @click="purchase(1)"
+          class="modal-btn flex flex-auto"
+          v-if="useGold"
+        >
           <img src="img/gold.png" />{{ compGoldPrice }}
         </button>
         <!--  -->
@@ -210,12 +218,19 @@ export default {
       "compCashPrice",
       "compGoldPrice",
       "allowSave",
+      "currencyType",
     ]),
     isClosed() {
       return this.activeHorse === null;
     },
     isSaveEnabled() {
       return this.allowSave;
+    },
+    useCash() {
+      return this.currencyType < 1 || this.currencyType > 1;
+    },
+    useGold() {
+      return this.currencyType > 0;
     },
   },
 };
