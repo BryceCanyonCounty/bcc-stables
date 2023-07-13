@@ -1,9 +1,11 @@
 # bcc-stables
 
 #### Description
+
 Stables script for RedM servers using the [VORP framework](https://github.com/VORPCORE). Using the 7 original stable locations from the game. More stable locations may be added in the `config.lua` file.
 
 #### Features
+
 - Buy and sell horses through the stables
 - Cash and/or gold may be used for payments in the menu
 - Individual inventory for each horse
@@ -21,17 +23,22 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Use oil lantern from inventory to equip a lantern to your horse
 
 #### Tips
+
 - Whistleing -- A short whistle will call your horse. A long one will set your horse to follow you. A second long whistle or mounting your horse will cancel following.
 
 #### Commands
+
 `/horseRespawn` Respawn your horse while bypassing the distance check
 
 #### Dependencies
+
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
 - [vorp_inventory](https://github.com/VORPCORE/vorp_inventory-lua)
 - [vorp_utils](https://github.com/VORPCORE/vorp_utils)
 
 #### Installation
+
+- Download the latest release `bcc-stables.zip` at [/releases/latest](https://github.com/BryceCanyonCounty/bcc-stables/releases/latest)
 - Add `bcc-stables` folder to your resources folder
 - Add `ensure bcc-stables` to your `resources.cfg`
 - Run the included database file `bcc-stables.sql`
@@ -40,10 +47,12 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Restart server
 
 #### Credits
+
 - lrp_stables
 - vorp_stores
 - [ByteSizd](https://github.com/AndrewR3K) - Vue Boilerplate for RedM
 - [SavSin](https://github.com/DavFount) - UI conversion to VueJS
 
 #### GitHub
+
 - https://github.com/BryceCanyonCounty/bcc-stables
