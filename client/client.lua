@@ -17,9 +17,6 @@ local SaddleHornsUsing = nil
 local BedrollsUsing = nil
 local MasksUsing = nil
 local MustachesUsing = nil
--- Job Check
-local PlayerJob
-local JobGrade
 -- Misc.
 local InMenu = false
 local StableName
@@ -40,7 +37,6 @@ local UsingLantern = false
 TriggerEvent('getCore', function(core)
     VORPcore = core
 end)
-
 TriggerEvent('getUtils', function(utils)
     VORPutils = utils
 end)
@@ -54,7 +50,7 @@ CreateThread(function()
     while true do
         Wait(0)
         local player = PlayerPedId()
-        local pcoords = GetEntityCoords(player)
+        local pCoords = GetEntityCoords(player)
         local sleep = true
         local hour = GetClockHours()
 
@@ -63,47 +59,42 @@ CreateThread(function()
                 if shopCfg.shopHours then
                     -- Using Stable Hours - Stable Closed
                     if hour >= shopCfg.shopClose or hour < shopCfg.shopOpen then
-                        if Config.blipOnClosed then
-                            if not Config.shops[shop].Blip and shopCfg.blipOn then
-                                AddBlip(shop)
-                            end
+                        if shopCfg.blipOn and Config.blipOnClosed and not Config.shops[shop].Blip then
+                            AddBlip(shop)
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipClosed])) -- BlipAddModifier
                         else
                             if Config.shops[shop].Blip then
                                 RemoveBlip(Config.shops[shop].Blip)
                                 Config.shops[shop].Blip = nil
                             end
                         end
-                        if Config.shops[shop].Blip then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipClosed])) -- BlipAddModifier
-                        end
                         if shopCfg.NPC then
                             DeleteEntity(shopCfg.NPC)
                             shopCfg.NPC = nil
                         end
-                        local dist = #(pcoords - shopCfg.npc)
-                        if dist <= shopCfg.sDistance then
+                        local sDist = #(pCoords - shopCfg.npc)
+                        if sDist <= shopCfg.sDistance then
                             sleep = false
                             local shopClosed = CreateVarString(10, 'LITERAL_STRING', shopCfg.shopName .. _U('closed'))
                             PromptSetActiveGroupThisFrame(ClosedGroup, shopClosed)
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, CloseShops) then -- UiPromptHasStandardModeCompleted
-                                Wait(100)
                                 VORPcore.NotifyRightTip(shopCfg.shopName .. _U('hours') .. shopCfg.shopOpen .. _U('to') .. shopCfg.shopClose .. _U('hundred'), 4000)
                             end
                         end
                     elseif hour >= shopCfg.shopOpen then
                         -- Using Stable Hours - Stable Open
-                        if not Config.shops[shop].Blip and shopCfg.blipOn then
+                        if shopCfg.blipOn and not Config.shops[shop].Blip then
                             AddBlip(shop)
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
                         end
                         if not next(shopCfg.allowedJobs) then
-                            if Config.shops[shop].Blip then
-                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
-                            end
-                            local dist = #(pcoords - shopCfg.npc)
-                            if dist <= shopCfg.nDistance then
-                                if not shopCfg.NPC and shopCfg.npcOn then
-                                    AddNPC(shop)
+                            local sDist = #(pCoords - shopCfg.npc)
+                            if shopCfg.npcOn then
+                                if sDist <= shopCfg.nDistance then
+                                    if not shopCfg.NPC then
+                                        AddNPC(shop)
+                                    end
                                 end
                             else
                                 if shopCfg.NPC then
@@ -111,13 +102,12 @@ CreateThread(function()
                                     shopCfg.NPC = nil
                                 end
                             end
-                            if dist <= shopCfg.sDistance then
+                            if sDist <= shopCfg.sDistance then
                                 sleep = false
                                 local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
                                 PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
 
                                 if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
-                                    DisplayRadar(false)
                                     OpenStable(shop)
                                 elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                     ReturnHorse()
@@ -128,10 +118,12 @@ CreateThread(function()
                             if Config.shops[shop].Blip then
                                 Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
                             end
-                            local dist = #(pcoords - shopCfg.npc)
-                            if dist <= shopCfg.nDistance then
-                                if not shopCfg.NPC and shopCfg.npcOn then
-                                    AddNPC(shop)
+                            local sDist = #(pCoords - shopCfg.npc)
+                            if shopCfg.npcOn then
+                                if sDist <= shopCfg.nDistance then
+                                    if not shopCfg.NPC then
+                                        AddNPC(shop)
+                                    end
                                 end
                             else
                                 if shopCfg.NPC then
@@ -139,61 +131,45 @@ CreateThread(function()
                                     shopCfg.NPC = nil
                                 end
                             end
-                            if dist <= shopCfg.sDistance then
+                            if sDist <= shopCfg.sDistance then
                                 sleep = false
                                 local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
                                 PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
 
+                                local args = shop
                                 if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
-                                    TriggerServerEvent('bcc-stables:GetPlayerJob')
-                                    Wait(200)
-                                    if PlayerJob then
-                                        if CheckJob(shopCfg.allowedJobs, PlayerJob) then
-                                            if tonumber(shopCfg.jobGrade) <= tonumber(JobGrade) then
-                                                DisplayRadar(false)
-                                                OpenStable(shop)
-                                            else
-                                                VORPcore.NotifyRightTip(_U('needJob'), 5000)
-                                            end
+                                    VORPcore.RpcCall('CheckPlayerJob', function(result)
+                                        if result then
+                                            OpenStable(shop)
                                         else
-                                            VORPcore.NotifyRightTip(_U('needJob'), 5000)
+                                            return
                                         end
-                                    else
-                                        VORPcore.NotifyRightTip(_U('needJob'), 5000)
-                                    end
+                                    end, args)
                                 elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
-                                    TriggerServerEvent('bcc-stables:GetPlayerJob')
-                                    Wait(200)
-                                    if PlayerJob then
-                                        if CheckJob(shopCfg.allowedJobs, PlayerJob) then
-                                            if tonumber(shopCfg.jobGrade) <= tonumber(JobGrade) then
-                                                ReturnHorse()
-                                            else
-                                                VORPcore.NotifyRightTip(_U('needJob'), 5000)
-                                            end
+                                    VORPcore.RpcCall('CheckPlayerJob', function(result)
+                                        if result then
+                                            ReturnHorse()
                                         else
-                                            VORPcore.NotifyRightTip(_U('needJob'), 5000)
+                                            return
                                         end
-                                    else
-                                        VORPcore.NotifyRightTip(_U('needJob'), 5000)
-                                    end
+                                    end, args)
                                 end
                             end
                         end
                     end
                 else
                     -- Not Using Stable Hours - Stable Always Open
-                    if not Config.shops[shop].Blip and shopCfg.blipOn then
+                    if shopCfg.blipOn and not Config.shops[shop].Blip then
                         AddBlip(shop)
+                        Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
                     end
                     if not next(shopCfg.allowedJobs) then
-                        if Config.shops[shop].Blip then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
-                        end
-                        local dist = #(pcoords - shopCfg.npc)
-                        if dist <= shopCfg.nDistance then
-                            if not shopCfg.NPC and shopCfg.npcOn then
-                                AddNPC(shop)
+                        local sDist = #(pCoords - shopCfg.npc)
+                        if shopCfg.npcOn then
+                            if sDist <= shopCfg.nDistance then
+                                if not shopCfg.NPC then
+                                    AddNPC(shop)
+                                end
                             end
                         else
                             if shopCfg.NPC then
@@ -201,13 +177,12 @@ CreateThread(function()
                                 shopCfg.NPC = nil
                             end
                         end
-                        if dist <= shopCfg.sDistance then
+                        if sDist <= shopCfg.sDistance then
                             sleep = false
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
                             PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
-                                DisplayRadar(false)
                                 OpenStable(shop)
                             elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                 ReturnHorse()
@@ -218,10 +193,12 @@ CreateThread(function()
                         if Config.shops[shop].Blip then
                             Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
                         end
-                        local dist = #(pcoords - shopCfg.npc)
-                        if dist <= shopCfg.nDistance then
-                            if not shopCfg.NPC and shopCfg.npcOn then
-                                AddNPC(shop)
+                        local sDist = #(pCoords - shopCfg.npc)
+                        if shopCfg.npcOn then
+                            if sDist <= shopCfg.nDistance then
+                                if not shopCfg.NPC then
+                                    AddNPC(shop)
+                                end
                             end
                         else
                             if shopCfg.NPC then
@@ -229,44 +206,28 @@ CreateThread(function()
                                 shopCfg.NPC = nil
                             end
                         end
-                        if dist <= shopCfg.sDistance then
+                        if sDist <= shopCfg.sDistance then
                             sleep = false
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
                             PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
 
+                            local args = shop
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
-                                TriggerServerEvent('bcc-stables:GetPlayerJob')
-                                Wait(200)
-                                if PlayerJob then
-                                    if CheckJob(shopCfg.allowedJobs, PlayerJob) then
-                                        if tonumber(shopCfg.jobGrade) <= tonumber(JobGrade) then
-                                            DisplayRadar(false)
-                                            OpenStable(shop)
-                                        else
-                                            VORPcore.NotifyRightTip(_U('needJob'), 5000)
-                                        end
+                                VORPcore.RpcCall('CheckPlayerJob', function(result)
+                                    if result then
+                                        OpenStable(shop)
                                     else
-                                        VORPcore.NotifyRightTip(_U('needJob'), 5000)
+                                        return
                                     end
-                                else
-                                    VORPcore.NotifyRightTip(_U('needJob'), 5000)
-                                end
+                                end, args)
                             elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
-                                TriggerServerEvent('bcc-stables:GetPlayerJob')
-                                Wait(200)
-                                if PlayerJob then
-                                    if CheckJob(shopCfg.allowedJobs, PlayerJob) then
-                                        if tonumber(shopCfg.jobGrade) <= tonumber(JobGrade) then
-                                            ReturnHorse()
-                                        else
-                                            VORPcore.NotifyRightTip(_U('needJob'), 5000)
-                                        end
+                                VORPcore.RpcCall('CheckPlayerJob', function(result)
+                                    if result then
+                                        ReturnHorse()
                                     else
-                                        VORPcore.NotifyRightTip(_U('needJob'), 5000)
+                                        return
                                     end
-                                else
-                                    VORPcore.NotifyRightTip(_U('needJob'), 5000)
-                                end
+                                end, args)
                             end
                         end
                     end
@@ -281,6 +242,7 @@ end)
 
 -- Open Main Menu
 function OpenStable(shop)
+    DisplayRadar(false)
     InMenu = true
     Shop = shop
     StableName = Config.shops[Shop].shopName
@@ -294,7 +256,6 @@ function OpenStable(shop)
         currencyType = Config.currencyType
     })
     SetNuiFocus(true, true)
-
     TriggerServerEvent('bcc-stables:GetMyHorses')
 end
 
@@ -340,9 +301,6 @@ end)
 -- Buy and Name New Horse
 RegisterNUICallback('BuyHorse', function(data, cb)
     cb('ok')
-    SendNUIMessage({
-        action = 'hide'
-    })
     TriggerServerEvent('bcc-stables:BuyHorse', data)
 end)
 
@@ -354,7 +312,7 @@ RegisterNetEvent('bcc-stables:SetHorseName', function(data, rename)
     Wait(200)
 
     CreateThread(function()
-        AddTextEntry('FMMC_MPM_NA', 'Name your horse:')
+        AddTextEntry('FMMC_MPM_NA', _U('nameHorse'))
         DisplayOnscreenKeyboard(1, 'FMMC_MPM_NA', '', '', '', '', '', 30)
         while UpdateOnscreenKeyboard() == 0 do
             DisableAllControlActions(0)
@@ -365,35 +323,31 @@ RegisterNetEvent('bcc-stables:SetHorseName', function(data, rename)
             if string.len(horseName) > 0 then
                 if not rename then
                     TriggerServerEvent('bcc-stables:SaveNewHorse', data, horseName)
+                    return
                 else
                     TriggerServerEvent('bcc-stables:UpdateHorseName', data, horseName)
+                    return
                 end
             else
                 TriggerEvent('bcc-stables:SetHorseName', data, rename)
                 return
             end
-
-            SendNUIMessage({
-                action = 'show',
-                shopData = Config.Horses,
-                compData = HorseComp,
-                location = StableName,
-                currencyType = Config.currencyType
-            })
-            SetNuiFocus(true, true)
-            Wait(1000)
-
-            TriggerServerEvent('bcc-stables:GetMyHorses')
         end
+        SendNUIMessage({
+            action = 'show',
+            shopData = Config.Horses,
+            compData = HorseComp,
+            location = StableName,
+            currencyType = Config.currencyType
+        })
+        SetNuiFocus(true, true)
+        TriggerServerEvent('bcc-stables:GetMyHorses')
     end)
 end)
 
 -- Rename Owned Horse
 RegisterNUICallback('RenameHorse', function(data, cb)
     cb('ok')
-    SendNUIMessage({
-        action = 'hide'
-    })
     TriggerEvent('bcc-stables:SetHorseName', data, true)
 end)
 
@@ -460,21 +414,16 @@ end)
 -- Close Stable Menu
 RegisterNUICallback('CloseStable', function(data, cb)
     cb('ok')
-    local player = PlayerPedId()
-
     SendNUIMessage({
         action = 'hide'
     })
     SetNuiFocus(false, false)
 
     Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Leaderboard_Hide', 'MP_Leaderboard_Sounds', true, 0) -- PlaySoundFrontend
-    SetEntityVisible(player, true)
-
     if ShopEntity then
         DeleteEntity(ShopEntity)
         ShopEntity = nil
     end
-
     if MyEntity then
         DeleteEntity(MyEntity)
         MyEntity = nil
@@ -484,6 +433,7 @@ RegisterNUICallback('CloseStable', function(data, cb)
     DestroyAllCams(true)
     DisplayRadar(true)
     InMenu = false
+    ClearPedTasksImmediately(PlayerPedId())
 
     if data.MenuAction == 'save' then
         TriggerServerEvent('bcc-stables:BuyTack', data)
@@ -527,6 +477,7 @@ RegisterNetEvent('bcc-stables:StableMenu', function()
         location = StableName,
         currencyType = Config.currencyType
     })
+    SetNuiFocus(true, true)
     TriggerServerEvent('bcc-stables:GetMyHorses')
 end)
 
@@ -591,7 +542,6 @@ function SpawnHorse(horseModel, horseName, gender)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse) -- UpdatePedVariation
     end
     Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse) -- SetPlayerOwnsMount
-    Citizen.InvokeNative(0xBF25EB89375A37AD, 1, GetPedRelationshipGroupHash(MyHorse), joaat('PLAYER')) -- SetRelationshipBetweenGroups
 
     -- SetPedConfigFlag
     Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 113, true) -- DisableShockingEvents
@@ -629,7 +579,7 @@ end
 AddEventHandler('bcc-stables:HorseTag', function(horseTag)
     while MyHorse do
         Wait(1000)
-        local dist = GetDistance(PlayerPedId(), MyHorse)
+        local dist = #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(MyHorse))
         if dist < 15 and Citizen.InvokeNative(0xAAB0FE202E9FC9F0, MyHorse, -1) then -- IsMountSeatFree
             Citizen.InvokeNative(0x93171DDDAB274EB8, horseTag, 2) -- SetMpGamerTagVisibility
         else
@@ -671,7 +621,7 @@ function WhistleHorse(whistler, whistleType)
             end
             if not longWhistle then
                 if Citizen.InvokeNative(0x77F1BEB8863288D5, MyHorse, 0x4924437D, 0) ~= 0 then -- GetScriptTaskStatus
-                    local dist = GetDistance(player, MyHorse)
+                    local dist = #(GetEntityCoords(player) - GetEntityCoords(MyHorse))
                     if dist >= 100 then
                         DeleteEntity(MyHorse)
                         Wait(1000)
@@ -702,7 +652,7 @@ function SendHorse()
         Citizen.InvokeNative(0x6A071245EB0D1882, MyHorse, player, -1, 10.2, 2.0, 0.0, 0) -- TaskGoToEntity
         while Spawned == true do
             Wait(0)
-            local dist = GetDistance(player, MyHorse)
+            local dist = #(GetEntityCoords(player) - GetEntityCoords(MyHorse))
             if (dist <= 10.0) then
                 ClearPedTasks(MyHorse)
                 Spawned = false
@@ -713,7 +663,7 @@ end
 
 -- Open Horse Inventory
 function OpenInventory()
-    local dist = GetDistance(PlayerPedId(), MyHorse)
+    local dist = #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(MyHorse))
     if dist <= 1.5 then
         if Config.useSaddlebags then
             local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459)
@@ -741,7 +691,7 @@ end
 
 RegisterNetEvent('bcc-stables:BrushHorse', function()
     local player = PlayerPedId()
-    local dist = GetDistance(player, MyHorse)
+    local dist = #(GetEntityCoords(player) - GetEntityCoords(MyHorse))
     if dist <= 2.0 then
         if not BrushCooldown then
             Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, joaat('Interaction_Brush'), joaat('p_brushHorse02x'), 1) -- TaskAnimalInteraction
@@ -786,7 +736,7 @@ end)
 
 RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     local player = PlayerPedId()
-    local dist = GetDistance(player, MyHorse)
+    local dist = #(GetEntityCoords(player) - GetEntityCoords(MyHorse))
     if dist <= 2.0 then
         if not FeedCooldown then
             Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, joaat('Interaction_Food'), joaat('s_horsnack_haycube01x'), 1) -- TaskAnimalInteraction
@@ -828,7 +778,7 @@ end)
 
 -- Equip Horse Lantern
 RegisterNetEvent('bcc-stables:UseLantern', function()
-    local dist = GetDistance(PlayerPedId(), MyHorse)
+    local dist = #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(MyHorse))
     if dist <= 2.0 then
         if not UsingLantern then
             Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse, 0x635E387C, 1, 1, 1) -- ApplyShopItemToPed
@@ -993,22 +943,9 @@ end
 -- Sell Player Horse
 RegisterNUICallback('sellHorse', function(data, cb)
     cb('ok')
-    SendNUIMessage({
-        action = 'hide'
-    })
     DeleteEntity(MyEntity)
     Cam = false
     TriggerServerEvent('bcc-stables:SellHorse', tonumber(data.horseId))
-    Wait(300)
-
-    SendNUIMessage({
-        action = 'show',
-        shopData = Config.Horses,
-        compData = HorseComp,
-        location = StableName,
-        currencyType = Config.currencyType
-    })
-    TriggerServerEvent('bcc-stables:GetMyHorses')
 end)
 
 -- Return Player Horse at Stable
@@ -1116,14 +1053,6 @@ function ReturnOpen()
     PromptRegisterEnd(OpenReturn)
 end
 
--- Get Distance Between Points
-function GetDistance(param1, param2)
-    local coords1 = GetEntityCoords(param1)
-    local coords2 = GetEntityCoords(param2)
-    local dist = #(coords1 - coords2)
-    return dist
-end
-
 -- Blips
 function AddBlip(shop)
     local shopCfg = Config.shops[shop]
@@ -1151,25 +1080,9 @@ end
 function LoadModel(model)
     RequestModel(model)
     while not HasModelLoaded(model) do
-        RequestModel(model)
-        Wait(100)
+        Wait(10)
     end
 end
-
--- Check for Jobs
-function CheckJob(allowedJob, playerJob)
-    for _, jobAllowed in pairs(allowedJob) do
-        if jobAllowed == playerJob then
-            return true
-        end
-    end
-    return false
-end
-
-RegisterNetEvent('bcc-stables:SendPlayerJob', function(Job, grade)
-    PlayerJob = Job
-    JobGrade = grade
-end)
 
 AddEventHandler('onResourceStop', function(resourceName)
     if (GetCurrentResourceName() ~= resourceName) then
@@ -1195,6 +1108,7 @@ AddEventHandler('onResourceStop', function(resourceName)
     for _, shopCfg in pairs(Config.shops) do
         if shopCfg.Blip then
             RemoveBlip(shopCfg.Blip)
+            shopCfg.Blip = nil
         end
         if shopCfg.NPC then
             DeleteEntity(shopCfg.NPC)
