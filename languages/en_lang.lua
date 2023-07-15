@@ -9,6 +9,7 @@ Locales["en_lang"] = {
     shortGold = "You don't have enough gold",
     shortCash = "You don't have enough money",
     needJob = "You don't have the required job!",
+    needJobGrade = "You don't have the required job grade!",
     horseLimit = "You can have a maximum of ~o~",
     horses = "~q~ horses!",
     soldHorse = "You sold a horse for: $~t6~",
@@ -23,5 +24,6 @@ Locales["en_lang"] = {
     noSaddlebags = "You need ~o~saddlebags~q~ to store your items",
     noHorses = "You don't own any horses",
     purchaseSuccessful = "Purchase Successful!",
-    tooFar = "You're not close enough to your horse"
+    tooFar = "You're not close enough to your horse",
+    nameHorse = "Name your horse:"
 }
