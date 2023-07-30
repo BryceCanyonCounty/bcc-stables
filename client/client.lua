@@ -2,10 +2,8 @@ local VORPcore = {}
 local VORPutils = {}
 -- Prompts
 local OpenShops
-local CloseShops
 local OpenReturn
-local OpenGroup = GetRandomIntInRange(0, 0xffffff)
-local ClosedGroup = GetRandomIntInRange(0, 0xffffff)
+local PromptGroup = GetRandomIntInRange(0, 0xffffff)
 -- Horse Tack
 local SaddlesUsing = nil
 local SaddleclothsUsing = nil
@@ -43,10 +41,7 @@ end)
 
 -- Start Stables
 CreateThread(function()
-    ShopOpen()
-    ShopClosed()
-    ReturnOpen()
-
+    StartPrompts()
     while true do
         Wait(0)
         local player = PlayerPedId()
@@ -59,8 +54,10 @@ CreateThread(function()
                 if shopCfg.shopHours then
                     -- Using Stable Hours - Stable Closed
                     if hour >= shopCfg.shopClose or hour < shopCfg.shopOpen then
-                        if shopCfg.blipOn and Config.blipOnClosed and not Config.shops[shop].Blip then
-                            AddBlip(shop)
+                        if shopCfg.blipOn and Config.blipOnClosed then
+                            if not Config.shops[shop].Blip then
+                                AddBlip(shop)
+                            end
                             Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipClosed])) -- BlipAddModifier
                         else
                             if Config.shops[shop].Blip then
@@ -75,12 +72,10 @@ CreateThread(function()
                         local sDist = #(pCoords - shopCfg.npc)
                         if sDist <= shopCfg.sDistance then
                             sleep = false
-                            local shopClosed = CreateVarString(10, 'LITERAL_STRING', shopCfg.shopName .. _U('closed'))
-                            PromptSetActiveGroupThisFrame(ClosedGroup, shopClosed)
-
-                            if Citizen.InvokeNative(0xC92AC953F0A982AE, CloseShops) then -- UiPromptHasStandardModeCompleted
-                                VORPcore.NotifyRightTip(shopCfg.shopName .. _U('hours') .. shopCfg.shopOpen .. _U('to') .. shopCfg.shopClose .. _U('hundred'), 4000)
-                            end
+                            local shopClosed = CreateVarString(10, 'LITERAL_STRING', shopCfg.shopName .. _U('hours') .. shopCfg.shopOpen .. _U('to') .. shopCfg.shopClose .. _U('hundred'))
+                            PromptSetActiveGroupThisFrame(PromptGroup, shopClosed)
+                            PromptSetEnabled(OpenShops, 0)
+                            PromptSetEnabled(OpenReturn, 0)
                         end
                     elseif hour >= shopCfg.shopOpen then
                         -- Using Stable Hours - Stable Open
@@ -105,7 +100,9 @@ CreateThread(function()
                             if sDist <= shopCfg.sDistance then
                                 sleep = false
                                 local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
-                                PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
+                                PromptSetActiveGroupThisFrame(PromptGroup, shopOpen)
+                                PromptSetEnabled(OpenShops, 1)
+                                PromptSetEnabled(OpenReturn, 1)
 
                                 if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
                                     OpenStable(shop)
@@ -134,9 +131,10 @@ CreateThread(function()
                             if sDist <= shopCfg.sDistance then
                                 sleep = false
                                 local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
-                                PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
+                                PromptSetActiveGroupThisFrame(PromptGroup, shopOpen)
+                                PromptSetEnabled(OpenShops, 1)
+                                PromptSetEnabled(OpenReturn, 1)
 
-                                local args = shop
                                 if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
                                     VORPcore.RpcCall('CheckPlayerJob', function(result)
                                         if result then
@@ -144,7 +142,7 @@ CreateThread(function()
                                         else
                                             return
                                         end
-                                    end, args)
+                                    end, shop)
                                 elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                     VORPcore.RpcCall('CheckPlayerJob', function(result)
                                         if result then
@@ -152,7 +150,7 @@ CreateThread(function()
                                         else
                                             return
                                         end
-                                    end, args)
+                                    end, shop)
                                 end
                             end
                         end
@@ -180,7 +178,9 @@ CreateThread(function()
                         if sDist <= shopCfg.sDistance then
                             sleep = false
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
-                            PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
+                            PromptSetActiveGroupThisFrame(PromptGroup, shopOpen)
+                            PromptSetEnabled(OpenShops, 1)
+                            PromptSetEnabled(OpenReturn, 1)
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
                                 OpenStable(shop)
@@ -209,9 +209,10 @@ CreateThread(function()
                         if sDist <= shopCfg.sDistance then
                             sleep = false
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
-                            PromptSetActiveGroupThisFrame(OpenGroup, shopOpen)
+                            PromptSetActiveGroupThisFrame(PromptGroup, shopOpen)
+                            PromptSetEnabled(OpenShops, 1)
+                            PromptSetEnabled(OpenReturn, 1)
 
-                            local args = shop
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
                                 VORPcore.RpcCall('CheckPlayerJob', function(result)
                                     if result then
@@ -219,7 +220,7 @@ CreateThread(function()
                                     else
                                         return
                                     end
-                                end, args)
+                                end, shop)
                             elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                 VORPcore.RpcCall('CheckPlayerJob', function(result)
                                     if result then
@@ -227,7 +228,7 @@ CreateThread(function()
                                     else
                                         return
                                     end
-                                end, args)
+                                end, shop)
                             end
                         end
                     end
@@ -301,10 +302,16 @@ end)
 -- Buy and Name New Horse
 RegisterNUICallback('BuyHorse', function(data, cb)
     cb('ok')
-    TriggerServerEvent('bcc-stables:BuyHorse', data)
+    VORPcore.RpcCall('BuyHorse', function(canBuy)
+        if canBuy then
+            SetHorseName(data, false)
+        else
+            StableMenu()
+        end
+    end, data)
 end)
 
-RegisterNetEvent('bcc-stables:SetHorseName', function(data, rename)
+function SetHorseName(data, rename)
     SendNUIMessage({
         action = 'hide'
     })
@@ -321,15 +328,24 @@ RegisterNetEvent('bcc-stables:SetHorseName', function(data, rename)
         if GetOnscreenKeyboardResult() then
             local horseName = GetOnscreenKeyboardResult()
             if string.len(horseName) > 0 then
-                if not rename then
-                    TriggerServerEvent('bcc-stables:SaveNewHorse', data, horseName)
+                local horseInfo = {horseData = data, name =  horseName}
+                if rename then
+                    VORPcore.RpcCall('UpdateHorseName', function(horseSaved)
+                        if horseSaved then
+                            StableMenu()
+                        end
+                    end, horseInfo)
                     return
                 else
-                    TriggerServerEvent('bcc-stables:UpdateHorseName', data, horseName)
+                    VORPcore.RpcCall('SaveNewHorse', function(horseSaved)
+                        if horseSaved then
+                            StableMenu()
+                        end
+                    end, horseInfo)
                     return
                 end
             else
-                TriggerEvent('bcc-stables:SetHorseName', data, rename)
+                SetHorseName(data, rename)
                 return
             end
         end
@@ -343,12 +359,12 @@ RegisterNetEvent('bcc-stables:SetHorseName', function(data, rename)
         SetNuiFocus(true, true)
         TriggerServerEvent('bcc-stables:GetMyHorses')
     end)
-end)
+end
 
 -- Rename Owned Horse
 RegisterNUICallback('RenameHorse', function(data, cb)
     cb('ok')
-    TriggerEvent('bcc-stables:SetHorseName', data, true)
+    SetHorseName(data, true)
 end)
 
 -- View Player Owned Horses
@@ -402,14 +418,20 @@ end)
 -- Select Active Horse
 RegisterNUICallback('selectHorse', function(data, cb)
     cb('ok')
-    TriggerServerEvent('bcc-stables:SelectHorse', tonumber(data.horseId))
+    TriggerServerEvent('bcc-stables:SelectHorse', data)
 end)
 
-RegisterNetEvent('bcc-stables:SetHorseInfo', function(model, name, components, id, gender)
-    HorseComponents = components
-    MyHorseId = id
-    SpawnHorse(model, name, gender)
-end)
+function GetSelectedHorse()
+    VORPcore.RpcCall("GetHorseData", function(data)
+        if data then
+            HorseComponents = data.components
+            MyHorseId = data.id
+            SpawnHorse(data.model, data.name, data.gender)
+        else
+            print('No selected-horse data returned!')
+        end
+    end)
+end
 
 -- Close Stable Menu
 RegisterNUICallback('CloseStable', function(data, cb)
@@ -464,7 +486,7 @@ end)
 
 
 -- Reopen Menu After Sell or Failed Purchase
-RegisterNetEvent('bcc-stables:StableMenu', function()
+function StableMenu()
     if ShopEntity then
         DeleteEntity(ShopEntity)
         ShopEntity = nil
@@ -479,7 +501,7 @@ RegisterNetEvent('bcc-stables:StableMenu', function()
     })
     SetNuiFocus(true, true)
     TriggerServerEvent('bcc-stables:GetMyHorses')
-end)
+end
 
 RegisterNetEvent('bcc-stables:SetComponents', function(horseEntity, components)
     for _, value in pairs(components) do
@@ -626,7 +648,7 @@ function WhistleHorse(whistler, whistleType)
                         DeleteEntity(MyHorse)
                         Wait(1000)
                         MyHorse = nil
-                        TriggerServerEvent('bcc-stables:GetSelectedHorse')
+                        GetSelectedHorse()
                     else
                         Spawned = true
                         SendHorse()
@@ -640,7 +662,7 @@ function WhistleHorse(whistler, whistleType)
                 end
             end
         else
-            TriggerServerEvent('bcc-stables:GetSelectedHorse')
+            GetSelectedHorse()
         end
     end
 end
@@ -670,7 +692,7 @@ function OpenInventory()
             if hasSaddlebags then
                 TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
             else
-                VORPcore.NotifyRightTip(_U('noSaddlebags'), 5000)
+                VORPcore.NotifyRightTip(_U('noSaddlebags'), 4000)
                 return
             end
         else
@@ -722,15 +744,15 @@ RegisterNetEvent('bcc-stables:BrushHorse', function()
             Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Core_Fill_Up', 'Consumption_Sounds', true, 0) -- PlaySoundFrontend
 
             local bCooldown = math.floor(Config.timer.brush * 60000)
-            VORPcore.NotifyRightTip(_U('brushCooldown') .. Config.timer.brush .. _U('minutes'), 5000)
+            VORPcore.NotifyRightTip(_U('brushCooldown') .. Config.timer.brush .. _U('minutes'), 4000)
             BrushCooldown = true
             Wait(bCooldown)
             BrushCooldown = false
         else
-            VORPcore.NotifyRightTip(_U('notDirty'), 5000)
+            VORPcore.NotifyRightTip(_U('notDirty'), 4000)
         end
     else
-        VORPcore.NotifyRightTip(_U('tooFar'), 5000)
+        VORPcore.NotifyRightTip(_U('tooFar'), 4000)
     end
 end)
 
@@ -764,15 +786,15 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
             TriggerServerEvent('bcc-stables:RemoveItem', item)
 
             local fCooldown = math.ceil(Config.timer.feed * 60000)
-            VORPcore.NotifyRightTip(_U('feedCooldown') .. Config.timer.feed .. _U('minutes'), 5000)
+            VORPcore.NotifyRightTip(_U('feedCooldown') .. Config.timer.feed .. _U('minutes'), 4000)
             FeedCooldown = true
             Wait(fCooldown)
             FeedCooldown = false
         else
-            VORPcore.NotifyRightTip(_U('notHungry'), 5000)
+            VORPcore.NotifyRightTip(_U('notHungry'), 4000)
         end
     else
-        VORPcore.NotifyRightTip(_U('tooFar'), 5000)
+        VORPcore.NotifyRightTip(_U('tooFar'), 4000)
     end
 end)
 
@@ -945,17 +967,21 @@ RegisterNUICallback('sellHorse', function(data, cb)
     cb('ok')
     DeleteEntity(MyEntity)
     Cam = false
-    TriggerServerEvent('bcc-stables:SellHorse', tonumber(data.horseId))
+    VORPcore.RpcCall('SellMyHorse', function(horseSold)
+        if horseSold then
+            StableMenu()
+        end
+    end, data)
 end)
 
 -- Return Player Horse at Stable
 function ReturnHorse()
     if MyHorse == nil then
-        VORPcore.NotifyRightTip(_U('noHorse'), 5000)
+        VORPcore.NotifyRightTip(_U('noHorse'), 4000)
     elseif MyHorse then
         DeleteEntity(MyHorse)
         MyHorse = nil
-        VORPcore.NotifyRightTip(_U('horseReturned'), 5000)
+        VORPcore.NotifyRightTip(_U('horseReturned'), 4000)
     end
 end
 
@@ -1010,46 +1036,27 @@ end
 
 RegisterCommand('horseRespawn', function(source, args, rawCommand)
     Spawning = false
-    TriggerServerEvent('bcc-stables:GetSelectedHorse')
+    GetSelectedHorse()
 end)
 
 -- Menu Prompts
-function ShopOpen()
-    local str = _U('shopPrompt')
+function StartPrompts()
+    local shopStr = CreateVarString(10, 'LITERAL_STRING', _U('shopPrompt'))
     OpenShops = PromptRegisterBegin()
     PromptSetControlAction(OpenShops, Config.keys.shop)
-    str = CreateVarString(10, 'LITERAL_STRING', str)
-    PromptSetText(OpenShops, str)
-    PromptSetEnabled(OpenShops, 1)
+    PromptSetText(OpenShops, shopStr)
     PromptSetVisible(OpenShops, 1)
     PromptSetStandardMode(OpenShops, 1)
-    PromptSetGroup(OpenShops, OpenGroup)
+    PromptSetGroup(OpenShops, PromptGroup)
     PromptRegisterEnd(OpenShops)
-end
 
-function ShopClosed()
-    local str = _U('shopPrompt')
-    CloseShops = PromptRegisterBegin()
-    PromptSetControlAction(CloseShops, Config.keys.shop)
-    str = CreateVarString(10, 'LITERAL_STRING', str)
-    PromptSetText(CloseShops, str)
-    PromptSetEnabled(CloseShops, 1)
-    PromptSetVisible(CloseShops, 1)
-    PromptSetStandardMode(CloseShops, 1)
-    PromptSetGroup(CloseShops, ClosedGroup)
-    PromptRegisterEnd(CloseShops)
-end
-
-function ReturnOpen()
-    local str = _U('returnPrompt')
+    local returnStr = CreateVarString(10, 'LITERAL_STRING', _U('returnPrompt'))
     OpenReturn = PromptRegisterBegin()
     PromptSetControlAction(OpenReturn, Config.keys.ret)
-    str = CreateVarString(10, 'LITERAL_STRING', str)
-    PromptSetText(OpenReturn, str)
-    PromptSetEnabled(OpenReturn, 1)
+    PromptSetText(OpenReturn, returnStr)
     PromptSetVisible(OpenReturn, 1)
     PromptSetStandardMode(OpenReturn, 1)
-    PromptSetGroup(OpenReturn, OpenGroup)
+    PromptSetGroup(OpenReturn, PromptGroup)
     PromptRegisterEnd(OpenReturn)
 end
 
@@ -1095,9 +1102,6 @@ AddEventHandler('onResourceStop', function(resourceName)
         SetNuiFocus(false, false)
     end
     ClearPedTasksImmediately(PlayerPedId())
-    PromptDelete(OpenShops)
-    PromptDelete(CloseShops)
-    PromptDelete(OpenReturn)
     DestroyAllCams(true)
     DisplayRadar(true)
 
