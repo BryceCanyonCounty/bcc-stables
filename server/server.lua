@@ -5,38 +5,36 @@ TriggerEvent('getCore', function(core)
 end)
 VORPInv = exports.vorp_inventory:vorp_inventoryApi()
 
-RegisterNetEvent('bcc-stables:BuyHorse', function(data)
+VORPcore.addRpcCallback('BuyHorse', function(source, cb, data)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
     local maxHorses = Config.maxHorses
 
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
-    function(horses)
-        if #horses >= maxHorses then
-            VORPcore.NotifyRightTip(src, _U('horseLimit') .. maxHorses .. _U('horses'), 5000)
-            TriggerClientEvent('bcc-stables:StableMenu', src)
+    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid })
+    if #horses >= maxHorses then
+        VORPcore.NotifyRightTip(src, _U('horseLimit') .. maxHorses .. _U('horses'), 4000)
+        cb(false)
+        return
+    end
+    if data.IsCash then
+        if Character.money >= data.Cash then
+            cb(true)
+        else
+            VORPcore.NotifyRightTip(src, _U('shortCash'), 4000)
+            cb(false)
             return
         end
-        if data.IsCash then
-            if Character.money >= data.Cash then
-                TriggerClientEvent('bcc-stables:SetHorseName', src, data, false)
-            else
-                VORPcore.NotifyRightTip(src, _U('shortCash'), 5000)
-                TriggerClientEvent('bcc-stables:StableMenu', src)
-                return
-            end
+    else
+        if Character.gold >= data.Gold then
+            cb(true)
         else
-            if Character.gold >= data.Gold then
-                TriggerClientEvent('bcc-stables:SetHorseName', src, data, false)
-            else
-                VORPcore.NotifyRightTip(src, _U('shortGold'), 5000)
-                TriggerClientEvent('bcc-stables:StableMenu', src)
-                return
-            end
+            VORPcore.NotifyRightTip(src, _U('shortGold'), 4000)
+            cb(false)
+            return
         end
-    end)
+    end
 end)
 
 RegisterNetEvent('bcc-stables:BuyTack', function(data)
@@ -48,88 +46,80 @@ RegisterNetEvent('bcc-stables:BuyTack', function(data)
             if Character.money >= data.cashPrice then
                 Character.removeCurrency(0, data.cashPrice)
             else
-                VORPcore.NotifyRightTip(src, _U('shortCash'), 5000)
+                VORPcore.NotifyRightTip(src, _U('shortCash'), 4000)
                 return
             end
         else
             if Character.gold >= data.goldPrice then
                 Character.removeCurrency(1, data.goldPrice)
             else
-                VORPcore.NotifyRightTip(src, _U('shortGold'), 5000)
+                VORPcore.NotifyRightTip(src, _U('shortGold'), 4000)
                 return
             end
         end
-        VORPcore.NotifyRightTip(src, _U('purchaseSuccessful'), 5000)
+        VORPcore.NotifyRightTip(src, _U('purchaseSuccessful'), 4000)
     end
     TriggerClientEvent('bcc-stables:SaveComps', src)
 end)
 
-RegisterNetEvent('bcc-stables:SaveNewHorse', function(data, name)
+VORPcore.addRpcCallback('SaveNewHorse', function(source, cb, horseInfo)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.execute('INSERT INTO player_horses (identifier, charid, name, model, gender) VALUES (?, ?, ?, ?, ?)',
-    { identifier, charid, tostring(name), data.ModelH, data.gender },
-    function(done)
-        if data.IsCash then
-            Character.removeCurrency(0, data.Cash)
-        else
-            Character.removeCurrency(1, data.Gold)
+    MySQL.query.await('INSERT INTO player_horses (identifier, charid, name, model, gender) VALUES (?, ?, ?, ?, ?)',
+    { identifier, charid, tostring(horseInfo.name), horseInfo.horseData.ModelH, horseInfo.horseData.gender })
+    if horseInfo.horseData.IsCash then
+        Character.removeCurrency(0, horseInfo.horseData.Cash)
+    else
+        Character.removeCurrency(1, horseInfo.horseData.Gold)
+    end
+    cb(true)
+end)
+
+VORPcore.addRpcCallback('UpdateHorseName', function(source, cb, horseInfo)
+    MySQL.query.await('UPDATE player_horses SET name = ? WHERE id = ?', { horseInfo.name, horseInfo.horseData.horseId })
+    cb(true)
+end)
+
+RegisterNetEvent('bcc-stables:SelectHorse', function(data)
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
+    local identifier = Character.identifier
+    local charid = Character.charIdentifier
+    local id = tonumber(data.horseId)
+
+    local horse = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid })
+    for i = 1, #horse do
+        local horseId = horse[i].id
+        MySQL.query.await('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', { 0, identifier, charid, horseId })
+        if horse[i].id == id then
+            MySQL.query.await('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', { 1, identifier, charid, id })
         end
-        TriggerClientEvent('bcc-stables:StableMenu', src)
-    end)
+    end
 end)
 
-RegisterNetEvent('bcc-stables:UpdateHorseName', function(data, name)
-    local src = source
-    MySQL.Async.execute('UPDATE player_horses SET name = ? WHERE id = ?', { name, data.horseId },
-    function(done)
-        TriggerClientEvent('bcc-stables:StableMenu', src)
-    end)
-end)
-
-RegisterNetEvent('bcc-stables:SelectHorse', function(id)
+--RegisterNetEvent('bcc-stables:GetSelectedHorse', function()
+VORPcore.addRpcCallback("GetHorseData", function(source, cb)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
-    function(horse)
-        for i = 1, #horse do
-            local horseId = horse[i].id
-            MySQL.Async.execute('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', { 0, identifier, charid, horseId },
-            function(done)
-                if horse[i].id == id then
-                    MySQL.Async.execute('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', { 1, identifier, charid, id },
-                    function(done)
-                    end)
-                end
-            end)
-        end
-    end)
-end)
-
-RegisterNetEvent('bcc-stables:GetSelectedHorse', function()
-    local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
-    local identifier = Character.identifier
-    local charid = Character.charIdentifier
-
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
-    function(horses)
-        if #horses ~= 0 then
-            for i = 1, #horses do
-                if horses[i].selected == 1 then
-                    TriggerClientEvent('bcc-stables:SetHorseInfo', src, horses[i].model, horses[i].name, horses[i].components, horses[i].id, horses[i].gender)
-                end
+    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid })
+    if #horses ~= 0 then
+        for i = 1, #horses do
+            if horses[i].selected == 1 then
+                local data = {model = horses[i].model, name = horses[i].name, components = horses[i].components, id = horses[i].id, gender = horses[i].gender}
+                cb(data)
+                --TriggerClientEvent('bcc-stables:SetHorseInfo', src, horses[i].model, horses[i].name, horses[i].components, horses[i].id, horses[i].gender)
             end
-        else
-            VORPcore.NotifyRightTip(src, _U('noHorses'), 5000)
         end
-    end)
+    else
+        VORPcore.NotifyRightTip(src, _U('noHorses'), 4000)
+        cb(false)
+    end
 end)
 
 RegisterNetEvent('bcc-stables:GetMyHorses', function()
@@ -138,10 +128,8 @@ RegisterNetEvent('bcc-stables:GetMyHorses', function()
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
-    function(horses)
-        TriggerClientEvent('bcc-stables:ReceiveHorsesData', src, horses)
-    end)
+    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid })
+    TriggerClientEvent('bcc-stables:ReceiveHorsesData', src, horses)
 end)
 
 RegisterNetEvent('bcc-stables:UpdateComponents', function(components, horseId, MyHorse_entity)
@@ -151,41 +139,36 @@ RegisterNetEvent('bcc-stables:UpdateComponents', function(components, horseId, M
     local charid = Character.charIdentifier
     local encodedComponents = json.encode(components)
 
-    MySQL.Async.execute('UPDATE player_horses SET components = ? WHERE identifier = ? AND charid = ? AND id = ?',
-    { encodedComponents, identifier, charid, horseId },
-    function(done)
-        TriggerClientEvent('bcc-stables:SetComponents', src, MyHorse_entity, components)
-    end)
+    MySQL.query.await('UPDATE player_horses SET components = ? WHERE identifier = ? AND charid = ? AND id = ?',
+    { encodedComponents, identifier, charid, horseId })
+    TriggerClientEvent('bcc-stables:SetComponents', src, MyHorse_entity, components)
 end)
 
-RegisterNetEvent('bcc-stables:SellHorse', function(id)
+VORPcore.addRpcCallback('SellMyHorse', function(source, cb, data)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
     local modelHorse = nil
+    local id = tonumber(data.horseId)
 
-    MySQL.Async.fetchAll('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid },
-    function(horses)
-        for i = 1, #horses do
-            if tonumber(horses[i].id) == tonumber(id) then
-                modelHorse = horses[i].model
-                MySQL.Async.execute('DELETE FROM player_horses WHERE identifier = ? AND charid = ? AND id = ?', { identifier, charid, id },
-                function(done)
-                    for _, horseConfig in pairs(Config.Horses) do
-                        for models, values in pairs(horseConfig.colors) do
-                            if models == modelHorse then
-                                local sellPrice = (Config.sellPrice * values.cashPrice)
-                                Character.addCurrency(0, sellPrice)
-                                VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 5000)
-                            end
-                        end
-                    end
-                end)
+    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid })
+    for i = 1, #horses do
+        if tonumber(horses[i].id) == id then
+            modelHorse = horses[i].model
+            MySQL.query.await('DELETE FROM player_horses WHERE identifier = ? AND charid = ? AND id = ?', { identifier, charid, id })
+        end
+    end
+    for _, horseConfig in pairs(Config.Horses) do
+        for models, values in pairs(horseConfig.colors) do
+            if models == modelHorse then
+                local sellPrice = (Config.sellPrice * values.cashPrice)
+                Character.addCurrency(0, sellPrice)
+                VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 4000)
+                cb(true)
             end
         end
-        TriggerClientEvent('bcc-stables:StableMenu', src)
-    end)
+    end
 end)
 
 -- Inventory
@@ -235,19 +218,13 @@ VORPcore.addRpcCallback('CheckPlayerJob', function(source, cb, shop)
             if playerJob == job then
                 if tonumber(jobGrade) >= tonumber(Config.shops[shop].jobGrade) then
                     cb(true)
-                else
-                    VORPcore.NotifyRightTip(src, _U('needJobGrade'), 4000)
-                    cb(false)
+                    return
                 end
-            else
-                VORPcore.NotifyRightTip(src, _U('needJob'), 4000)
-                cb(false)
             end
         end
-    else
-        VORPcore.NotifyRightTip(src, _U('needJob'), 4000)
-        cb(false)
     end
+    VORPcore.NotifyRightTip(src, _U('needJob'), 4000)
+    cb(false)
 end)
 
 --- Check if properly downloaded
