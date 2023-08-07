@@ -58,7 +58,8 @@ CreateThread(function()
                             if not Config.shops[shop].Blip then
                                 AddBlip(shop)
                             end
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipClosed])) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip,
+                                joaat(Config.BlipColors[shopCfg.blipClosed])) -- BlipAddModifier
                         else
                             if Config.shops[shop].Blip then
                                 RemoveBlip(Config.shops[shop].Blip)
@@ -72,7 +73,9 @@ CreateThread(function()
                         local sDist = #(pCoords - shopCfg.npc)
                         if sDist <= shopCfg.sDistance then
                             sleep = false
-                            local shopClosed = CreateVarString(10, 'LITERAL_STRING', shopCfg.shopName .. _U('hours') .. shopCfg.shopOpen .. _U('to') .. shopCfg.shopClose .. _U('hundred'))
+                            local shopClosed = CreateVarString(10, 'LITERAL_STRING',
+                                shopCfg.shopName ..
+                                _U('hours') .. shopCfg.shopOpen .. _U('to') .. shopCfg.shopClose .. _U('hundred'))
                             PromptSetActiveGroupThisFrame(PromptGroup, shopClosed)
                             PromptSetEnabled(OpenShops, 0)
                             PromptSetEnabled(OpenReturn, 0)
@@ -81,7 +84,8 @@ CreateThread(function()
                         -- Using Stable Hours - Stable Open
                         if shopCfg.blipOn and not Config.shops[shop].Blip then
                             AddBlip(shop)
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip,
+                                joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
                         end
                         if not next(shopCfg.allowedJobs) then
                             local sDist = #(pCoords - shopCfg.npc)
@@ -104,7 +108,7 @@ CreateThread(function()
                                 PromptSetEnabled(OpenShops, 1)
                                 PromptSetEnabled(OpenReturn, 1)
 
-                                if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
+                                if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then      -- UiPromptHasStandardModeCompleted
                                     OpenStable(shop)
                                 elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                     ReturnHorse()
@@ -113,7 +117,8 @@ CreateThread(function()
                         else
                             -- Using Stable Hours - Stable Open - Job Locked
                             if Config.shops[shop].Blip then
-                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
+                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip,
+                                    joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
                             end
                             local sDist = #(pCoords - shopCfg.npc)
                             if shopCfg.npcOn then
@@ -159,7 +164,8 @@ CreateThread(function()
                     -- Not Using Stable Hours - Stable Always Open
                     if shopCfg.blipOn and not Config.shops[shop].Blip then
                         AddBlip(shop)
-                        Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
+                        Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip,
+                            joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
                     end
                     if not next(shopCfg.allowedJobs) then
                         local sDist = #(pCoords - shopCfg.npc)
@@ -182,7 +188,7 @@ CreateThread(function()
                             PromptSetEnabled(OpenShops, 1)
                             PromptSetEnabled(OpenReturn, 1)
 
-                            if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
+                            if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then      -- UiPromptHasStandardModeCompleted
                                 OpenStable(shop)
                             elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                 ReturnHorse()
@@ -191,7 +197,8 @@ CreateThread(function()
                     else
                         -- Not Using Stable Hours - Stable Always Open - Job Locked
                         if Config.shops[shop].Blip then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip,
+                                joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
                         end
                         local sDist = #(pCoords - shopCfg.npc)
                         if shopCfg.npcOn then
@@ -294,7 +301,7 @@ RegisterNUICallback('loadHorse', function(data, cb)
         CameraLighting()
     end
     SetBlockingOfNonTemporaryEvents(ShopEntity, true)
-    SetPedConfigFlag(ShopEntity, 113, true) -- DisableShockingEvents
+    SetPedConfigFlag(ShopEntity, 113, true)              -- DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, ShopEntity) -- ClearPedEnvDirt
 end)
@@ -328,7 +335,7 @@ function SetHorseName(data, rename)
         if GetOnscreenKeyboardResult() then
             local horseName = GetOnscreenKeyboardResult()
             if string.len(horseName) > 0 then
-                local horseInfo = {horseData = data, name =  horseName}
+                local horseInfo = { horseData = data, name = horseName }
                 if rename then
                     VORPcore.RpcCall('UpdateHorseName', function(horseSaved)
                         if horseSaved then
@@ -387,19 +394,19 @@ RegisterNUICallback('loadMyHorse', function(data, cb)
 
     local shopCfg = Config.shops[Shop]
     MyEntity = CreatePed(model, shopCfg.spawn.x, shopCfg.spawn.y, shopCfg.spawn.z - 1.0, shopCfg.spawn.w, false, false)
-    Citizen.InvokeNative(0x283978A15512B2FE, MyEntity, true) -- SetRandomOutfitVariation
-    Citizen.InvokeNative(0x58A850EAEE20FAA3, MyEntity) -- PlaceObjectOnGroundProperly
-    Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyEntity, true) -- FreezeEntityPosition
+    Citizen.InvokeNative(0x283978A15512B2FE, MyEntity, true)           -- SetRandomOutfitVariation
+    Citizen.InvokeNative(0x58A850EAEE20FAA3, MyEntity)                 -- PlaceObjectOnGroundProperly
+    Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyEntity, true)           -- FreezeEntityPosition
     if data.HorseGender == 'female' then
         Citizen.InvokeNative(0x5653AB26C82938CF, MyEntity, 41611, 1.0) -- SetCharExpression
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyEntity) -- UpdatePedVariation
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyEntity)             -- UpdatePedVariation
     end
     if not Cam then
         Cam = true
         CameraLighting()
     end
     SetBlockingOfNonTemporaryEvents(MyEntity, true)
-    SetPedConfigFlag(MyEntity, 113, true) -- PCF_DisableShockingEvents
+    SetPedConfigFlag(MyEntity, 113, true)              -- PCF_DisableShockingEvents
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, MyEntity) -- ClearPedEnvDirt
 
@@ -408,7 +415,7 @@ RegisterNUICallback('loadMyHorse', function(data, cb)
         for _, hash in pairs(componentsHorse) do
             local compModel = joaat(tonumber(hash))
             if not HasModelLoaded(compModel) then
-                Citizen.InvokeNative(0xFA28FE3A6246FC30, compModel) -- RequestModel
+                Citizen.InvokeNative(0xFA28FE3A6246FC30, compModel)                              -- RequestModel
             end
             Citizen.InvokeNative(0xD3A7B003ED343FD9, MyEntity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
         end
@@ -557,21 +564,26 @@ function SpawnHorse(horseModel, horseName, gender)
     end
     SetModelAsNoLongerNeeded(model)
 
-    Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0) -- PlaceEntityOnGroundProperly
-    Citizen.InvokeNative(0x283978A15512B2FE, MyHorse, true) -- SetRandomOutfitVariation
+    LocalPlayer.state.HorseData = {
+        HorseName = horseName,
+        MyHorse = NetworkGetNetworkIdFromEntity(MyHorse),
+    }
+
+    Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0)              -- PlaceEntityOnGroundProperly
+    Citizen.InvokeNative(0x283978A15512B2FE, MyHorse, true)           -- SetRandomOutfitVariation
     if gender == 'female' then
         Citizen.InvokeNative(0x5653AB26C82938CF, MyHorse, 41611, 1.0) -- SetCharExpression
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse) -- UpdatePedVariation
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse)             -- UpdatePedVariation
     end
-    Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse) -- SetPlayerOwnsMount
+    Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse)         -- SetPlayerOwnsMount
 
     -- SetPedConfigFlag
-    Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 113, true) -- DisableShockingEvents
-    Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 297, true) -- ForceInteractionLockonOnTargetPed / Allow to Lead Horse
-    Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 312, true) -- DisableHorseGunshotFleeResponse
+    Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 113, true)                     -- DisableShockingEvents
+    Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 297, true)                     -- ForceInteractionLockonOnTargetPed / Allow to Lead Horse
+    Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 312, true)                     -- DisableHorseGunshotFleeResponse
 
     local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
-    Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, horseName) -- SetBlipName
+    Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, horseName)                   -- SetBlipName
     SetPedPromptName(MyHorse, horseName)
 
     if HorseComponents ~= nil and HorseComponents ~= '0' then
@@ -584,8 +596,8 @@ function SpawnHorse(horseModel, horseName, gender)
 
     if Config.horseTag then
         local horseTag = Citizen.InvokeNative(0xE961BF23EAB76B12, MyHorse, horseName) -- CreateMpGamerTagOnEntity
-        Citizen.InvokeNative(0x5F57522BC1EB9D9D, horseTag, joaat('PLAYER_HORSE')) -- SetMpGamerTagTopIcon
-        Citizen.InvokeNative(0xA0D7CE5F83259663, horseTag) -- SetMpGamerTagBigText
+        Citizen.InvokeNative(0x5F57522BC1EB9D9D, horseTag, joaat('PLAYER_HORSE'))     -- SetMpGamerTagTopIcon
+        Citizen.InvokeNative(0xA0D7CE5F83259663, horseTag)                            -- SetMpGamerTagBigText
         TriggerEvent('bcc-stables:HorseTag', horseTag)
     end
 
@@ -603,10 +615,10 @@ AddEventHandler('bcc-stables:HorseTag', function(horseTag)
         Wait(1000)
         local dist = #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(MyHorse))
         if dist < 15 and Citizen.InvokeNative(0xAAB0FE202E9FC9F0, MyHorse, -1) then -- IsMountSeatFree
-            Citizen.InvokeNative(0x93171DDDAB274EB8, horseTag, 2) -- SetMpGamerTagVisibility
+            Citizen.InvokeNative(0x93171DDDAB274EB8, horseTag, 2)                   -- SetMpGamerTagVisibility
         else
-            if Citizen.InvokeNative(0x502E1591A504F843, horseTag, MyHorse) then -- IsMpGamerTagActiveOnEntity
-                Citizen.InvokeNative(0x93171DDDAB274EB8, horseTag, 0) -- SetMpGamerTagVisibility
+            if Citizen.InvokeNative(0x502E1591A504F843, horseTag, MyHorse) then     -- IsMpGamerTagActiveOnEntity
+                Citizen.InvokeNative(0x93171DDDAB274EB8, horseTag, 0)               -- SetMpGamerTagVisibility
             end
         end
     end
@@ -656,7 +668,8 @@ function WhistleHorse(whistler, whistleType)
                 end
             else
                 if Citizen.InvokeNative(0x77F1BEB8863288D5, MyHorse, 0x3EF867F4, 0) ~= 1 then -- GetScriptTaskStatus
-                    Citizen.InvokeNative(0x304AE42E357B8C7E, MyHorse, player, math.random(1.0, 4.0), math.random(5.0, 8.0), 0.0, 0.7, -1, 3.0, 1) -- TaskFollowToOffsetOfEntity
+                    Citizen.InvokeNative(0x304AE42E357B8C7E, MyHorse, player, math.random(1.0, 4.0),
+                        math.random(5.0, 8.0), 0.0, 0.7, -1, 3.0, 1)                          -- TaskFollowToOffsetOfEntity
                 else
                     ClearPedTasks(MyHorse)
                 end
@@ -716,7 +729,8 @@ RegisterNetEvent('bcc-stables:BrushHorse', function()
     local dist = #(GetEntityCoords(player) - GetEntityCoords(MyHorse))
     if dist <= 2.0 then
         if not BrushCooldown then
-            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, joaat('Interaction_Brush'), joaat('p_brushHorse02x'), 1) -- TaskAnimalInteraction
+            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, joaat('Interaction_Brush'),
+                joaat('p_brushHorse02x'), 1) -- TaskAnimalInteraction
 
             if Config.boost.brushHealth > 0 then
                 local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
@@ -738,9 +752,9 @@ RegisterNetEvent('bcc-stables:BrushHorse', function()
                 Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, newStamina) -- SetAttributeCoreValue
             end
 
-            Citizen.InvokeNative(0x6585D955A68452A5, MyHorse) -- ClearPedEnvDirt
-            Citizen.InvokeNative(0x523C79AEEFCC4A2A, MyHorse, 10, 'ALL') -- ClearPedDamageDecalByZone
-            Citizen.InvokeNative(0x8FE22675A5A45817, MyHorse) -- ClearPedBloodDamage
+            Citizen.InvokeNative(0x6585D955A68452A5, MyHorse)                                       -- ClearPedEnvDirt
+            Citizen.InvokeNative(0x523C79AEEFCC4A2A, MyHorse, 10, 'ALL')                            -- ClearPedDamageDecalByZone
+            Citizen.InvokeNative(0x8FE22675A5A45817, MyHorse)                                       -- ClearPedBloodDamage
             Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Core_Fill_Up', 'Consumption_Sounds', true, 0) -- PlaySoundFrontend
 
             local bCooldown = math.floor(Config.timer.brush * 60000)
@@ -761,7 +775,8 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     local dist = #(GetEntityCoords(player) - GetEntityCoords(MyHorse))
     if dist <= 2.0 then
         if not FeedCooldown then
-            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, joaat('Interaction_Food'), joaat('s_horsnack_haycube01x'), 1) -- TaskAnimalInteraction
+            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, MyHorse, joaat('Interaction_Food'),
+                joaat('s_horsnack_haycube01x'), 1) -- TaskAnimalInteraction
 
             if Config.boost.feedHealth > 0 then
                 local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
@@ -780,7 +795,7 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
                 if newStamina > 100 then
                     newStamina = 100
                 end
-                Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, newStamina) -- SetAttributeCoreValue
+                Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, newStamina)                    -- SetAttributeCoreValue
             end
             Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Core_Fill_Up', 'Consumption_Sounds', true, 0) -- PlaySoundFrontend
             TriggerServerEvent('bcc-stables:RemoveItem', item)
@@ -807,7 +822,7 @@ RegisterNetEvent('bcc-stables:UseLantern', function()
             UsingLantern = true
         else
             Citizen.InvokeNative(0x0D7FFA1B2F69ED82, MyHorse, 0x635E387C, 0, 0) -- RemoveShopItemFromPed
-            Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+            Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse, 0, 1, 1, 1, 0)    -- UpdatePedVariation
             UsingLantern = false
         end
     end
@@ -1004,7 +1019,8 @@ function CameraLighting()
         local shopCfg = Config.shops[Shop]
         while Cam do
             Wait(0)
-            Citizen.InvokeNative(0xD2D9E04C0DF927F4, shopCfg.spawn.x, shopCfg.spawn.y, shopCfg.spawn.z + 3, 130, 130, 85, 4.0, 15.0) -- DrawLightWithRange
+            Citizen.InvokeNative(0xD2D9E04C0DF927F4, shopCfg.spawn.x, shopCfg.spawn.y, shopCfg.spawn.z + 3, 130, 130, 85,
+                4.0, 15.0) -- DrawLightWithRange
         end
     end)
 end
@@ -1074,7 +1090,8 @@ function AddNPC(shop)
     local shopCfg = Config.shops[shop]
     local model = joaat(shopCfg.npcModel)
     LoadModel(model)
-    local npc = CreatePed(shopCfg.npcModel, shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z - 1.0, shopCfg.npcHeading, false, true, true, true)
+    local npc = CreatePed(shopCfg.npcModel, shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z - 1.0, shopCfg.npcHeading, false,
+        true, true, true)
     Citizen.InvokeNative(0x283978A15512B2FE, npc, true) -- SetRandomOutfitVariation
     SetEntityCanBeDamaged(npc, false)
     SetEntityInvincible(npc, true)
@@ -1090,6 +1107,24 @@ function LoadModel(model)
         Wait(10)
     end
 end
+
+RegisterNetEvent('bcc-stables:UpdateMyHorseEntity', function()
+    if MyHorse then
+        MyHorse = NetworkGetEntityFromNetworkId(LocalPlayer.state.HorseData.MyHorse)               -- Update Global Horse Entity after session change
+
+        Citizen.InvokeNative(0xE6D4E435B56D5BD0, PlayerPedId(), MyHorse)                           -- SetPlayerOwnsMount
+        local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse)           -- BlipAddForEntity
+        Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, LocalPlayer.state.HorseData.HorseName) -- SetBlipName
+        SetPedPromptName(MyHorse, LocalPlayer.state.HorseData.HorseName)
+
+        if Config.horseTag then
+            local horseTag = Citizen.InvokeNative(0xE961BF23EAB76B12, MyHorse, LocalPlayer.state.HorseData.HorseName) -- CreateMpGamerTagOnEntity
+            Citizen.InvokeNative(0x5F57522BC1EB9D9D, horseTag, joaat('PLAYER_HORSE'))                                 -- SetMpGamerTagTopIcon
+            Citizen.InvokeNative(0xA0D7CE5F83259663, horseTag)                                                        -- SetMpGamerTagBigText
+            TriggerEvent('bcc-stables:HorseTag', horseTag)
+        end
+    end
+end)
 
 AddEventHandler('onResourceStop', function(resourceName)
     if (GetCurrentResourceName() ~= resourceName) then
