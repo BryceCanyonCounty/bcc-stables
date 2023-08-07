@@ -12,7 +12,8 @@ VORPcore.addRpcCallback('BuyHorse', function(source, cb, data)
     local charid = Character.charIdentifier
     local maxHorses = Config.maxHorses
 
-    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid })
+    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?',
+        { identifier, charid })
     if #horses >= maxHorses then
         VORPcore.NotifyRightTip(src, _U('horseLimit') .. maxHorses .. _U('horses'), 4000)
         cb(false)
@@ -69,7 +70,7 @@ VORPcore.addRpcCallback('SaveNewHorse', function(source, cb, horseInfo)
     local charid = Character.charIdentifier
 
     MySQL.query.await('INSERT INTO player_horses (identifier, charid, name, model, gender) VALUES (?, ?, ?, ?, ?)',
-    { identifier, charid, tostring(horseInfo.name), horseInfo.horseData.ModelH, horseInfo.horseData.gender })
+        { identifier, charid, tostring(horseInfo.name), horseInfo.horseData.ModelH, horseInfo.horseData.gender })
     if horseInfo.horseData.IsCash then
         Character.removeCurrency(0, horseInfo.horseData.Cash)
     else
@@ -90,12 +91,15 @@ RegisterNetEvent('bcc-stables:SelectHorse', function(data)
     local charid = Character.charIdentifier
     local id = tonumber(data.horseId)
 
-    local horse = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid })
+    local horse = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?',
+        { identifier, charid })
     for i = 1, #horse do
         local horseId = horse[i].id
-        MySQL.query.await('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', { 0, identifier, charid, horseId })
+        MySQL.query.await('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?',
+            { 0, identifier, charid, horseId })
         if horse[i].id == id then
-            MySQL.query.await('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?', { 1, identifier, charid, id })
+            MySQL.query.await('UPDATE player_horses SET selected = ? WHERE identifier = ? AND charid = ? AND id = ?',
+                { 1, identifier, charid, id })
         end
     end
 end)
@@ -107,11 +111,18 @@ VORPcore.addRpcCallback("GetHorseData", function(source, cb)
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid })
+    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?',
+        { identifier, charid })
     if #horses ~= 0 then
         for i = 1, #horses do
             if horses[i].selected == 1 then
-                local data = {model = horses[i].model, name = horses[i].name, components = horses[i].components, id = horses[i].id, gender = horses[i].gender}
+                local data = {
+                    model = horses[i].model,
+                    name = horses[i].name,
+                    components = horses[i].components,
+                    id = horses[i].id,
+                    gender = horses[i].gender
+                }
                 cb(data)
                 --TriggerClientEvent('bcc-stables:SetHorseInfo', src, horses[i].model, horses[i].name, horses[i].components, horses[i].id, horses[i].gender)
             end
@@ -128,7 +139,8 @@ RegisterNetEvent('bcc-stables:GetMyHorses', function()
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid })
+    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?',
+        { identifier, charid })
     TriggerClientEvent('bcc-stables:ReceiveHorsesData', src, horses)
 end)
 
@@ -140,7 +152,7 @@ RegisterNetEvent('bcc-stables:UpdateComponents', function(components, horseId, M
     local encodedComponents = json.encode(components)
 
     MySQL.query.await('UPDATE player_horses SET components = ? WHERE identifier = ? AND charid = ? AND id = ?',
-    { encodedComponents, identifier, charid, horseId })
+        { encodedComponents, identifier, charid, horseId })
     TriggerClientEvent('bcc-stables:SetComponents', src, MyHorse_entity, components)
 end)
 
@@ -152,11 +164,13 @@ VORPcore.addRpcCallback('SellMyHorse', function(source, cb, data)
     local modelHorse = nil
     local id = tonumber(data.horseId)
 
-    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?', { identifier, charid })
+    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE identifier = ? AND charid = ?',
+        { identifier, charid })
     for i = 1, #horses do
         if tonumber(horses[i].id) == id then
             modelHorse = horses[i].model
-            MySQL.query.await('DELETE FROM player_horses WHERE identifier = ? AND charid = ? AND id = ?', { identifier, charid, id })
+            MySQL.query.await('DELETE FROM player_horses WHERE identifier = ? AND charid = ? AND id = ?',
+                { identifier, charid, id })
         end
     end
     for _, horseConfig in pairs(Config.Horses) do
@@ -227,6 +241,15 @@ VORPcore.addRpcCallback('CheckPlayerJob', function(source, cb, shop)
     cb(false)
 end)
 
+RegisterServerEvent("vorp_core:instanceplayers")
+AddEventHandler("vorp_core:instanceplayers", function(setRoom)
+    local src = source
+    if setRoom == 0 then
+        Wait(3000)
+        TriggerClientEvent('bcc-stables:UpdateMyHorseEntity', src)
+    end
+end)
+
 --- Check if properly downloaded
 function file_exists(name)
     local f = LoadResourceFile(GetCurrentResourceName(), name)
@@ -235,5 +258,6 @@ end
 
 if not file_exists('./ui/index.html') then
     print('^1 INCORRECT DOWNLOAD!  ^0')
-    print('^4 Please Download: ^2(bcc-stables.zip) ^4from ^3<https://github.com/BryceCanyonCounty/bcc-stables/releases/latest>^0')
+    print(
+        '^4 Please Download: ^2(bcc-stables.zip) ^4from ^3<https://github.com/BryceCanyonCounty/bcc-stables/releases/latest>^0')
 end
