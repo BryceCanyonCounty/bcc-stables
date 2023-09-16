@@ -51,6 +51,7 @@ Config.boost = {
 
 -- Places Horse Name Above Horse When Saddle is Empty
 Config.horseTag = true --Default: true / Set to false to disable
+Config.tagDistance = 15 -- Default: 15 / Distance from Horse the Tag is Visible
 -----------------------------------------------------
 
 -- Allow Blips on Map when Stable is Closed
