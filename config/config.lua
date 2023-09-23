@@ -60,7 +60,6 @@ Config.blipOnClosed = true -- true = Show Blips / false = Remove Blips
 
 -- Stable Locations and Options
 Config.shops = {
-	-- Original 7 Stable Locations
 	valentine = {
 		shopName = 'Valentine Stable',                 -- Name Shown on the Stable Menu
 		promptName = 'Valentine Stable',               -- Text Below the Prompt Button

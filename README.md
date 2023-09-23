@@ -1,7 +1,9 @@
 # bcc-stables
 
 #### Description
-Stables script for RedM servers using the [VORP framework](https://github.com/VORPCORE). Using the 7 original stable locations from the game. More stable locations may be added in the `config.lua` file.
+Are you ready to embark on a journey through the untamed wilderness of the Old West? Look no further than bcc-stables, where your trusty steed awaits!
+Personalize your horse with unique mane styles, tail variations, coat colors, and stylish accessories.
+Groom, feed, and clean your horse to keep them at peak performance.
 
 #### Features
 - Buy and sell horses through the stables
@@ -16,12 +18,12 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Stable access can be limited by job and jobgrade
 - Return horse at stable (when open) or using the flee button in the horse menu
 - Feed your horse (haycubes) to increase horse's health and stamina
-- Brushing your horse will clean him and give a slight increase in health
+- Brushing your horse will clean him and give a slight increase in health and stamina
 - Configurable cooldown time for feeding and brushing
 - Distance-based NPC spawns
 
 #### Tips
-- Whistleing -- A short whistle will call your horse. A long one will set your horse to follow you. A second long whistle or mounting your horse will cancel following.
+- Whistleing -- A short whistle will call your horse. A long one will set your horse to follow you. A second whistle or mounting your horse will cancel following.
 
 #### Commands
 `/horseRespawn` Respawn your horse while bypassing the distance check
@@ -29,7 +31,6 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 #### Dependencies
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
 - [vorp_inventory](https://github.com/VORPCORE/vorp_inventory-lua)
-- [vorp_utils](https://github.com/VORPCORE/vorp_utils)
 
 #### Installation
 - Download the latest release `bcc-stables.zip` at [/releases/latest](https://github.com/BryceCanyonCounty/bcc-stables/releases/latest)
@@ -37,13 +38,13 @@ Stables script for RedM servers using the [VORP framework](https://github.com/VO
 - Add `ensure bcc-stables` to your `resources.cfg`
 - Run the included database file `bcc-stables.sql`
 - Add oil_lantern image to: `...\vorp_inventory\html\img`
-- Update vorp_utils
 - Restart server
 
 #### Credits
 - lrp_stables
 - [ByteSizd](https://github.com/AndrewR3K) - Vue Boilerplate for RedM
 - [SavSin](https://github.com/DavFount) - UI conversion to VueJS
+- Stephenlikewhoa
 
 #### GitHub
 - https://github.com/BryceCanyonCounty/bcc-stables

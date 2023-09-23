@@ -7,7 +7,8 @@ author 'BCC @Apollyon'
 
 
 client_scripts {
-    'client/client.lua'
+    'client/client.lua',
+    'client/dataview.lua'
 }
 
 server_scripts {
@@ -34,8 +35,5 @@ files {
     "ui/img/*.*",
 }
 
-dependencies {
-    'vorp_utils'
-}
+version '1.1.5'
 
-version '1.1.4'
