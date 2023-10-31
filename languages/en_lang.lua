@@ -1,7 +1,8 @@
 ---------------------------------- ENGLISH -------------------------------------------
 Locales["en_lang"] = {
-    shopPrompt = "Menu",
-    returnPrompt = "Return",
+    shopPrompt = "Open Stable",
+    callPrompt = "Call Horse",
+    returnPrompt = "Return Horse",
     closed = " ~o~: ~e~CLOSED",
     to = ":00~q~ to ~o~",
     hundred = ":00",
@@ -23,7 +24,9 @@ Locales["en_lang"] = {
     horseInv = "Saddlebags",
     noSaddlebags = "You need ~o~saddlebags~q~ to store your items",
     noHorses = "You don't own any horses",
+    noSelectedHorse = "You need to select a horse!",
     purchaseSuccessful = "Purchase Successful!",
     tooFar = "You're not close enough to your horse",
-    nameHorse = "Name your horse:"
+    nameHorse = "Name your horse:",
+    stableSpawn = "You must go to a Stable to call your horse!"
 }
