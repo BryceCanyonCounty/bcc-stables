@@ -13,7 +13,8 @@ Config.currencyType = 2 -- Default: 2
 
 Config.keys = {
 	shop = 0x760A9C6F, --[G] Open Stable Menu
-	ret  = 0xD9D0E1C0 --[spacebar] Return Horse at Stable
+    call = 0x80F28E95, --[L] Call Horse at Stable
+	ret  = 0x27D1C284  --[R] Return Horse at Stable
 }
 -----------------------------------------------------
 
@@ -23,6 +24,19 @@ Config.sellPrice = 0.60 -- Default: 0.60
 
 -- Max Number of Horses per Player
 Config.maxHorses = 5 -- Default: 5
+-----------------------------------------------------
+
+-- Can Spawn Horse Anywhere with Whistle 
+Config.whistleSpawn = true -- Default:true / Set to false to only Use 'Call Horse' Button at Stable to Spawn Horse
+-----------------------------------------------------
+
+-- Can Use Flee Button in Horse Menu
+Config.fleeEnabled = true -- Default: true / Set to false to Return Horse at Stable Only
+-----------------------------------------------------
+
+-- Can Use when Stable is Closed
+Config.closedCall   = true -- Default: true / 'Call Horse' Button at Stable
+Config.closedReturn = true -- Default: true / 'Return Horse' Button at Stable
 -----------------------------------------------------
 
 -- Number of Items Allowed in Horse Inventory
@@ -36,7 +50,7 @@ Config.useSaddlebags = true -- Default: true / Set to false to Disable
 -- Cooldown for Brushing and Feeding Horse
 Config.timer = {
 	brush = 5, -- Default: 5 / Time in Minutes
-	feed  = 5 -- Default: 5 / Time in Minutes
+	feed  = 5  -- Default: 5 / Time in Minutes
 }
 -----------------------------------------------------
 
@@ -50,8 +64,8 @@ Config.boost = {
 -----------------------------------------------------
 
 -- Places Horse Name Above Horse When Saddle is Empty
-Config.horseTag = true --Default: true / Set to false to disable
-Config.tagDistance = 15 -- Default: 15 / Distance from Horse the Tag is Visible
+Config.horseTag    = true -- Default: true / Set to false to disable
+Config.tagDistance = 15   -- Default: 15 / Distance from Horse the Tag is Visible
 -----------------------------------------------------
 
 -- Allow Blips on Map when Stable is Closed
@@ -61,27 +75,27 @@ Config.blipOnClosed = true -- true = Show Blips / false = Remove Blips
 -- Stable Locations and Options
 Config.shops = {
 	valentine = {
-		shopName = 'Valentine Stable',                 -- Name Shown on the Stable Menu
-		promptName = 'Valentine Stable',               -- Text Below the Prompt Button
-		blipOn = true,                                 -- Turns Blip On / Off
-		blipName = 'Valentine Stable',                 -- Name of the Blip on the Map
-		blipSprite = 1938782895,                       -- blip_shop_horse
-		blipOpen = 'WHITE',                            -- Shop Open - Default: White - Blip Colors Shown Below
-		blipClosed = 'RED',                            -- Shop Closed - Default: Red - Blip Colors Shown Below
-		blipJob = 'YELLOW_ORANGE',                     -- Shop Job Locked - Default: Yellow - Blip Colors Shown Below
-		npcOn = true,                                  -- Turns NPCs On / Off
-		npcModel = 'u_m_m_bwmstablehand_01',           -- Sets Model for NPCs
-		nDistance = 100.0,                             -- Distance from Shop for NPC to Spawn
-		sDistance = 2.0,                               -- Distance from NPC to Get Menu Prompt
-		npc = vector3(-365.08, 791.21, 116.18),        -- Location for NPC and Stable
-		npcHeading = 179.76,                           -- NPC Heading
-		horseCam = vector3(-368.48, 789.89, 116.16),   -- Camera Location to View Horse When In-Menu
+		shopName = 'Valentine Stable',                   -- Name Shown on the Stable Menu
+		promptName = 'Valentine Stable',                 -- Text Below the Prompt Button
+		blipOn = true,                                   -- Turns Blip On / Off
+		blipName = 'Valentine Stable',                   -- Name of the Blip on the Map
+		blipSprite = 1938782895,                         -- blip_shop_horse
+		blipOpen = 'WHITE',                              -- Shop Open - Default: White - Blip Colors Shown Below
+		blipClosed = 'RED',                              -- Shop Closed - Default: Red - Blip Colors Shown Below
+		blipJob = 'YELLOW_ORANGE',                       -- Shop Job Locked - Default: Yellow - Blip Colors Shown Below
+		npcOn = true,                                    -- Turns NPCs On / Off
+		npcModel = 'u_m_m_bwmstablehand_01',             -- Sets Model for NPCs
+		nDistance = 100.0,                               -- Distance from Shop for NPC to Spawn
+		sDistance = 2.0,                                 -- Distance from NPC to Get Menu Prompt
+		npc = vector3(-365.08, 791.21, 116.18),          -- Location for NPC and Stable
+		npcHeading = 179.76,                             -- NPC Heading
+		horseCam = vector3(-368.48, 789.89, 116.16),     -- Camera Location to View Horse When In-Menu
 		spawn = vector4(-371.35, 786.71, 116.17, 269.3), -- Location for Horse Preview When In-Menu
-		allowedJobs = {},                              -- If Empty, Everyone Can Use / Insert Job to limit access - ex. 'police'
-		jobGrade = 0,                                  -- Enter Minimum Rank / Job Grade to Access Shop
-		shopHours = false,                             -- If You Want the Shops to Use Open and Closed Hours
-		shopOpen = 7,                                  -- Shop Open Time / 24 Hour Clock
-		shopClose = 21,                                -- Shop Close Time / 24 Hour Clock
+		allowedJobs = {},                                -- If Empty, Everyone Can Use / Insert Job to limit access - ex. 'police'
+		jobGrade = 0,                                    -- Enter Minimum Rank / Job Grade to Access Shop
+		shopHours = false,                               -- If You Want the Shops to Use Open and Closed Hours
+		shopOpen = 7,                                    -- Shop Open Time / 24 Hour Clock
+		shopClose = 21,                                  -- Shop Close Time / 24 Hour Clock
 	},
 	strawberry = {
 		shopName = 'Strawberry Stable',
