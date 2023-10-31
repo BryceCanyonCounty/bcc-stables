@@ -1,6 +1,11 @@
 local VORPcore = {}
+TriggerEvent('getCore', function(core)
+    VORPcore = core
+end)
+local ClientRPC = exports.vorp_core:ClientRpcCall()
 -- Prompts
 local OpenShops
+local OpenCall
 local OpenReturn
 local PromptGroup = GetRandomIntInRange(0, 0xffffff)
 -- Horse Tack
@@ -23,17 +28,15 @@ local ShopEntity
 local MyEntity
 local MyHorse = nil
 local MyHorseId
+local HorseName
 local Shop
+local HasJob = nil
 local MyEntityID
 local HorseComponents = {}
 local Spawning = false
 local Sending = false
 local Cam = false
 local UsingLantern = false
-
-TriggerEvent('getCore', function(core)
-    VORPcore = core
-end)
 
 -- Start Stables
 CreateThread(function()
@@ -54,8 +57,7 @@ CreateThread(function()
                             if not Config.shops[shop].Blip then
                                 AddBlip(shop)
                             end
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip,
-                                joaat(Config.BlipColors[shopCfg.blipClosed])) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipClosed])) -- BlipAddModifier
                         else
                             if Config.shops[shop].Blip then
                                 RemoveBlip(Config.shops[shop].Blip)
@@ -69,19 +71,45 @@ CreateThread(function()
                         local sDist = #(pCoords - shopCfg.npc)
                         if sDist <= shopCfg.sDistance then
                             sleep = false
-                            local shopClosed = CreateVarString(10, 'LITERAL_STRING',
-                                shopCfg.shopName ..
-                                _U('hours') .. shopCfg.shopOpen .. _U('to') .. shopCfg.shopClose .. _U('hundred'))
+                            local shopClosed = CreateVarString(10, 'LITERAL_STRING', shopCfg.shopName .. _U('hours') .. shopCfg.shopOpen .. _U('to') .. shopCfg.shopClose .. _U('hundred'))
                             PromptSetActiveGroupThisFrame(PromptGroup, shopClosed)
                             PromptSetEnabled(OpenShops, 0)
-                            PromptSetEnabled(OpenReturn, 0)
+                            if not next(shopCfg.allowedJobs) then
+                                if Config.closedCall then
+                                    PromptSetEnabled(OpenCall, 1)
+                                    if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then  -- UiPromptHasStandardModeCompleted
+                                        GetSelectedHorse()
+                                    end
+                                else
+                                    PromptSetEnabled(OpenCall, 0)
+                                end
+                                if Config.closedReturn then
+                                    PromptSetEnabled(OpenReturn, 1)
+                                    if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then  -- UiPromptHasStandardModeCompleted
+                                        ReturnHorse()
+                                    end
+                                else
+                                    PromptSetEnabled(OpenReturn, 0)
+                                end
+                            else
+                                if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then -- UiPromptHasStandardModeCompleted
+                                    CheckPlayerJob(shop)
+                                    if HasJob then
+                                        GetSelectedHorse()
+                                    end
+                                elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
+                                    CheckPlayerJob(shop)
+                                    if HasJob then
+                                        ReturnHorse()
+                                    end
+                                end
+                            end
                         end
                     elseif hour >= shopCfg.shopOpen then
                         -- Using Stable Hours - Stable Open
                         if shopCfg.blipOn and not Config.shops[shop].Blip then
                             AddBlip(shop)
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip,
-                                joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
                         end
                         if not next(shopCfg.allowedJobs) then
                             local sDist = #(pCoords - shopCfg.npc)
@@ -102,10 +130,13 @@ CreateThread(function()
                                 local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
                                 PromptSetActiveGroupThisFrame(PromptGroup, shopOpen)
                                 PromptSetEnabled(OpenShops, 1)
+                                PromptSetEnabled(OpenCall, 1)
                                 PromptSetEnabled(OpenReturn, 1)
 
                                 if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then  -- UiPromptHasStandardModeCompleted
                                     OpenStable(shop)
+                                elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then -- UiPromptHasStandardModeCompleted
+                                    GetSelectedHorse()
                                 elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                     ReturnHorse()
                                 end
@@ -113,8 +144,7 @@ CreateThread(function()
                         else
                             -- Using Stable Hours - Stable Open - Job Locked
                             if Config.shops[shop].Blip then
-                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip,
-                                    joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
+                                Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
                             end
                             local sDist = #(pCoords - shopCfg.npc)
                             if shopCfg.npcOn then
@@ -134,24 +164,24 @@ CreateThread(function()
                                 local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
                                 PromptSetActiveGroupThisFrame(PromptGroup, shopOpen)
                                 PromptSetEnabled(OpenShops, 1)
+                                PromptSetEnabled(OpenCall, 1)
                                 PromptSetEnabled(OpenReturn, 1)
 
                                 if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
-                                    VORPcore.RpcCall('CheckPlayerJob', function(result)
-                                        if result then
-                                            OpenStable(shop)
-                                        else
-                                            return
-                                        end
-                                    end, shop)
+                                    CheckPlayerJob(shop)
+                                    if HasJob then
+                                        OpenStable(shop)
+                                    end
+                                elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then -- UiPromptHasStandardModeCompleted
+                                    CheckPlayerJob(shop)
+                                    if HasJob then
+                                        GetSelectedHorse()
+                                    end
                                 elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
-                                    VORPcore.RpcCall('CheckPlayerJob', function(result)
-                                        if result then
-                                            ReturnHorse()
-                                        else
-                                            return
-                                        end
-                                    end, shop)
+                                    CheckPlayerJob(shop)
+                                    if HasJob then
+                                        ReturnHorse()
+                                    end
                                 end
                             end
                         end
@@ -160,8 +190,7 @@ CreateThread(function()
                     -- Not Using Stable Hours - Stable Always Open
                     if shopCfg.blipOn and not Config.shops[shop].Blip then
                         AddBlip(shop)
-                        Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip,
-                            joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
+                        Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipOpen])) -- BlipAddModifier
                     end
                     if not next(shopCfg.allowedJobs) then
                         local sDist = #(pCoords - shopCfg.npc)
@@ -182,10 +211,13 @@ CreateThread(function()
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
                             PromptSetActiveGroupThisFrame(PromptGroup, shopOpen)
                             PromptSetEnabled(OpenShops, 1)
+                            PromptSetEnabled(OpenCall, 1)
                             PromptSetEnabled(OpenReturn, 1)
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then      -- UiPromptHasStandardModeCompleted
                                 OpenStable(shop)
+                            elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then -- UiPromptHasStandardModeCompleted
+                                GetSelectedHorse()
                             elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
                                 ReturnHorse()
                             end
@@ -193,8 +225,7 @@ CreateThread(function()
                     else
                         -- Not Using Stable Hours - Stable Always Open - Job Locked
                         if Config.shops[shop].Blip then
-                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip,
-                                joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
+                            Citizen.InvokeNative(0x662D364ABF16DE2F, Config.shops[shop].Blip, joaat(Config.BlipColors[shopCfg.blipJob])) -- BlipAddModifier
                         end
                         local sDist = #(pCoords - shopCfg.npc)
                         if shopCfg.npcOn then
@@ -214,24 +245,24 @@ CreateThread(function()
                             local shopOpen = CreateVarString(10, 'LITERAL_STRING', shopCfg.promptName)
                             PromptSetActiveGroupThisFrame(PromptGroup, shopOpen)
                             PromptSetEnabled(OpenShops, 1)
+                            PromptSetEnabled(OpenCall, 1)
                             PromptSetEnabled(OpenReturn, 1)
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then -- UiPromptHasStandardModeCompleted
-                                VORPcore.RpcCall('CheckPlayerJob', function(result)
-                                    if result then
-                                        OpenStable(shop)
-                                    else
-                                        return
-                                    end
-                                end, shop)
+                                CheckPlayerJob(shop)
+                                if HasJob then
+                                    OpenStable(shop)
+                                end
+                            elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then -- UiPromptHasStandardModeCompleted
+                                CheckPlayerJob(shop)
+                                if HasJob then
+                                    GetSelectedHorse()
+                                end
                             elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
-                                VORPcore.RpcCall('CheckPlayerJob', function(result)
-                                    if result then
-                                        ReturnHorse()
-                                    else
-                                        return
-                                    end
-                                end, shop)
+                                CheckPlayerJob(shop)
+                                if HasJob then
+                                    ReturnHorse()
+                                end
                             end
                         end
                     end
@@ -244,7 +275,6 @@ CreateThread(function()
     end
 end)
 
--- Open Main Menu
 function OpenStable(shop)
     DisplayRadar(false)
     InMenu = true
@@ -302,16 +332,14 @@ RegisterNUICallback('loadHorse', function(data, cb)
     Citizen.InvokeNative(0x6585D955A68452A5, ShopEntity) -- ClearPedEnvDirt
 end)
 
--- Buy and Name New Horse
 RegisterNUICallback('BuyHorse', function(data, cb)
     cb('ok')
-    VORPcore.RpcCall('BuyHorse', function(canBuy)
-        if canBuy then
-            SetHorseName(data, false)
-        else
-            StableMenu()
-        end
-    end, data)
+    local canBuy = ClientRPC.Callback.TriggerAwait('bcc-stables:BuyHorse', data)
+    if canBuy then
+        SetHorseName(data, false)
+    else
+        StableMenu()
+    end
 end)
 
 function SetHorseName(data, rename)
@@ -333,18 +361,16 @@ function SetHorseName(data, rename)
             if string.len(horseName) > 0 then
                 local horseInfo = { horseData = data, name = horseName }
                 if rename then
-                    VORPcore.RpcCall('UpdateHorseName', function(horseSaved)
-                        if horseSaved then
-                            StableMenu()
-                        end
-                    end, horseInfo)
+                    local nameSaved = ClientRPC.Callback.TriggerAwait('bcc-stables:UpdateHorseName', horseInfo)
+                    if nameSaved then
+                        StableMenu()
+                    end
                     return
                 else
-                    VORPcore.RpcCall('SaveNewHorse', function(horseSaved)
-                        if horseSaved then
-                            StableMenu()
-                        end
-                    end, horseInfo)
+                    local horseSaved = ClientRPC.Callback.TriggerAwait('bcc-stables:SaveNewHorse', horseInfo)
+                    if horseSaved then
+                        StableMenu()
+                    end
                     return
                 end
             else
@@ -364,7 +390,6 @@ function SetHorseName(data, rename)
     end)
 end
 
--- Rename Owned Horse
 RegisterNUICallback('RenameHorse', function(data, cb)
     cb('ok')
     SetHorseName(data, true)
@@ -418,25 +443,22 @@ RegisterNUICallback('loadMyHorse', function(data, cb)
     end
 end)
 
--- Select Active Horse
 RegisterNUICallback('selectHorse', function(data, cb)
     cb('ok')
     TriggerServerEvent('bcc-stables:SelectHorse', data)
 end)
 
 function GetSelectedHorse()
-    VORPcore.RpcCall("GetHorseData", function(data)
-        if data then
-            HorseComponents = data.components
-            MyHorseId = data.id
-            SpawnHorse(data.model, data.name, data.gender)
-        else
-            print('No selected-horse data returned!')
-        end
-    end)
+    local data = ClientRPC.Callback.TriggerAwait('bcc-stables:GetHorseData')
+    if data then
+        HorseComponents = data.components
+        MyHorseId = data.id
+        SpawnHorse(data.model, data.name, data.gender)
+    else
+        print('No selected-horse data returned!')
+    end
 end
 
--- Close Stable Menu
 RegisterNUICallback('CloseStable', function(data, cb)
     cb('ok')
     SendNUIMessage({
@@ -516,7 +538,6 @@ function NativeSetPedComponentEnabled(ped, component)
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, component, true, true, true) -- ApplyShopItemToPed
 end
 
--- Spawn Player Horse
 function SpawnHorse(horseModel, horseName, gender)
     if Spawning then
         return
@@ -531,38 +552,34 @@ function SpawnHorse(horseModel, horseName, gender)
     local model = joaat(horseModel)
     LoadModel(model)
 
+    HorseName = horseName
+    local player = PlayerId()
     local playerPed = PlayerPedId()
     local x, y, z = table.unpack(GetOffsetFromEntityInWorldCoords(playerPed, 0.0, -40.0, 0.0))
-    local gChk, groundZ = nil, nil
-    for height = 1, 1000 do
-        gChk, groundZ = GetGroundZAndNormalFor_3dCoord(x, y, height + 0.0)
-        if gChk then
-            break
-        end
-    end
-
     local spawnPosition = nil
-    local index = 0
-    while index <= 25 do
-        local _bool, _nodePosition = GetNthClosestVehicleNode(x, y, z, index, 1, 3.0, 2.5)
-        if _bool then
-            spawnPosition = _nodePosition
-            index = index + 3
-        else
+    for height = 1, 1000 do
+        local groundCheck, ground = GetGroundZAndNormalFor_3dCoord(x, y, height + 0.0)
+        if groundCheck then
+            spawnPosition = vector3(x, y, ground)
             break
         end
     end
 
-    if spawnPosition then
-        MyHorse = CreatePed(model, spawnPosition, GetEntityHeading(playerPed), true, false)
-    else
-        MyHorse = CreatePed(model, x, y, groundZ + 2, GetEntityHeading(playerPed), true, false)
+    local index = 0
+    while index < 25 do
+        local nodeCheck, node = GetNthClosestVehicleNode(x, y, z, index)
+        if nodeCheck then
+            spawnPosition = node
+            break
+        else
+            index = index + 3
+        end
     end
+    MyHorse = CreatePed(model, spawnPosition, GetEntityHeading(playerPed), true, false)
     SetModelAsNoLongerNeeded(model)
 
     LocalPlayer.state.HorseData = {
-        HorseName = horseName,
-        MyHorse = NetworkGetNetworkIdFromEntity(MyHorse),
+        MyHorse = NetworkGetNetworkIdFromEntity(MyHorse)
     }
 
     Citizen.InvokeNative(0x9587913B9E772D29, MyHorse, 0) -- PlaceEntityOnGroundProperly
@@ -572,13 +589,16 @@ function SpawnHorse(horseModel, horseName, gender)
         Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse) -- UpdatePedVariation
     end
     Citizen.InvokeNative(0xD2CB0FB0FDCB473D, playerPed, MyHorse) -- SetPedAsSaddleHorseForPlayer
-    Citizen.InvokeNative(0xE6D4E435B56D5BD0, playerPed, MyHorse) -- SetPlayerOwnsMount
+    Citizen.InvokeNative(0x931B241409216C1F, playerPed, MyHorse, false) -- SetPedOwnsAnimal
     Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, joaat('PLAYER_HORSE')) -- SetPedPersonality
 
-    -- Set Player/Horse Relationship
-    local myGroup = Citizen.InvokeNative(0x7DBDD04862D95F04, playerPed) -- GetPedRelationshipGroupHash
-    Citizen.InvokeNative(0xC80A74AC829DDD92, MyHorse, myGroup) -- SetPedRelationshipGroupHash
-    Citizen.InvokeNative(0xBF25EB89375A37AD, 2, GetPedRelationshipGroupHash(MyHorse), myGroup) -- SetRelationshipBetweenGroups
+    -- ModifyPlayerUiPromptForPed / Horse Target Prompts / (Block = 0, Hide = 1, Grey Out = 2)
+    Citizen.InvokeNative(0xA3DB37EDF9A74635, player, MyHorse, 35, 1, true) -- TARGET_INFO
+    Citizen.InvokeNative(0xA3DB37EDF9A74635, player, MyHorse, 49, 1, true) -- HORSE_BRUSH
+    Citizen.InvokeNative(0xA3DB37EDF9A74635, player, MyHorse, 50, 1, true) -- HORSE_FEED
+    if not Config.fleeEnabled then
+        Citizen.InvokeNative(0xA3DB37EDF9A74635, player, MyHorse, 33, 1, true) -- HORSE_FLEE
+    end
 
     -- SetPedConfigFlag
     Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 113, true) -- DisableShockingEvents
@@ -586,8 +606,8 @@ function SpawnHorse(horseModel, horseName, gender)
     Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 312, true) -- DisableHorseGunshotFleeResponse
 
     local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
-    Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, horseName) -- SetBlipName
-    SetPedPromptName(MyHorse, horseName)
+    Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, HorseName) -- SetBlipName
+    SetPedPromptName(MyHorse, HorseName)
 
     if HorseComponents ~= nil and HorseComponents ~= '0' then
         for _, componentHash in pairs(json.decode(HorseComponents)) do
@@ -598,7 +618,7 @@ function SpawnHorse(horseModel, horseName, gender)
     TriggerServerEvent('bcc-stables:RegisterInventory', MyHorseId)
 
     if Config.horseTag then
-        TriggerEvent('bcc-stables:HorseTag', horseName)
+        TriggerEvent('bcc-stables:HorseTag')
     end
 
     TriggerEvent('bcc-stables:HorseActions')
@@ -610,8 +630,8 @@ function SpawnHorse(horseModel, horseName, gender)
 end
 
 -- Set Horse Name Above Horse
-AddEventHandler('bcc-stables:HorseTag', function(horseName)
-    local gamerTagId = Citizen.InvokeNative(0xE961BF23EAB76B12, MyHorse, horseName) -- CreateMpGamerTagOnEntity
+AddEventHandler('bcc-stables:HorseTag', function()
+    local gamerTagId = Citizen.InvokeNative(0xE961BF23EAB76B12, MyHorse, HorseName) -- CreateMpGamerTagOnEntity
     Citizen.InvokeNative(0x5F57522BC1EB9D9D, gamerTagId, joaat('PLAYER_HORSE')) -- SetMpGamerTagTopIcon
     while MyHorse do
         Wait(1000)
@@ -627,7 +647,6 @@ AddEventHandler('bcc-stables:HorseTag', function(horseName)
     Citizen.InvokeNative(0x839BFD7D7E49FE09, Citizen.PointerValueIntInitialized(gamerTagId)) -- RemoveMpGamerTag
 end)
 
--- Horse Actions
 AddEventHandler('bcc-stables:HorseActions', function()
     while MyHorse do
         Wait(0)
@@ -636,8 +655,10 @@ AddEventHandler('bcc-stables:HorseActions', function()
             OpenInventory()
         end
         -- Horse Flee (key: F in Horse Menu)
-        if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x4216AF06) then -- IsDisabledControlJustPressed
-            FleeHorse()
+        if Config.fleeEnabled then
+            if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x4216AF06) then -- IsDisabledControlJustPressed
+                FleeHorse()
+            end
         end
     end
 end)
@@ -687,7 +708,7 @@ function WhistleHorse()
             end
         end
     else
-        GetSelectedHorse()
+        WhistleSpawn()
     end
 end
 
@@ -705,7 +726,15 @@ function LongWhistleHorse()
             end
         end
     else
+        WhistleSpawn()
+    end
+end
+
+function WhistleSpawn()
+    if Config.whistleSpawn then
         GetSelectedHorse()
+    else
+        VORPcore.NotifyRightTip(_U('stableSpawn'), 4000)
     end
 end
 
@@ -725,7 +754,6 @@ function SendHorse()
     end)
 end
 
--- Open Horse Inventory
 function OpenInventory()
     local playerPed = PlayerPedId()
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
@@ -745,7 +773,6 @@ function OpenInventory()
     end
 end
 
--- Send Horse Away
 function FleeHorse()
     if MyHorse then
         Citizen.InvokeNative(0x22B0D0E37CCB840D, MyHorse, PlayerPedId(), 150.0, 10000, 6, 3.0) -- TaskSmartFleePed
@@ -845,7 +872,6 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     end
 end)
 
--- Equip Horse Lantern
 RegisterNetEvent('bcc-stables:UseLantern', function()
     local dist = #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(MyHorse))
     if dist <= 2.0 then
@@ -1014,11 +1040,10 @@ RegisterNUICallback('sellHorse', function(data, cb)
     cb('ok')
     DeleteEntity(MyEntity)
     Cam = false
-    VORPcore.RpcCall('SellMyHorse', function(horseSold)
-        if horseSold then
-            StableMenu()
-        end
-    end, data)
+    local horseSold = ClientRPC.Callback.TriggerAwait('bcc-stables:SellMyHorse', data)
+    if horseSold then
+        StableMenu()
+    end
 end)
 
 -- Return Player Horse at Stable
@@ -1084,10 +1109,9 @@ end
 
 RegisterCommand('horseRespawn', function()
     Spawning = false
-    GetSelectedHorse()
+    WhistleSpawn()
 end)
 
--- Menu Prompts
 function StartPrompts()
     local shopStr = CreateVarString(10, 'LITERAL_STRING', _U('shopPrompt'))
     OpenShops = PromptRegisterBegin()
@@ -1097,6 +1121,15 @@ function StartPrompts()
     PromptSetStandardMode(OpenShops, 1)
     PromptSetGroup(OpenShops, PromptGroup)
     PromptRegisterEnd(OpenShops)
+
+    local callStr = CreateVarString(10, 'LITERAL_STRING', _U('callPrompt'))
+    OpenCall = PromptRegisterBegin()
+    PromptSetControlAction(OpenCall, Config.keys.call)
+    PromptSetText(OpenCall, callStr)
+    PromptSetVisible(OpenCall, 1)
+    PromptSetStandardMode(OpenCall, 1)
+    PromptSetGroup(OpenCall, PromptGroup)
+    PromptRegisterEnd(OpenCall)
 
     local returnStr = CreateVarString(10, 'LITERAL_STRING', _U('returnPrompt'))
     OpenReturn = PromptRegisterBegin()
@@ -1108,7 +1141,16 @@ function StartPrompts()
     PromptRegisterEnd(OpenReturn)
 end
 
--- Blips
+function CheckPlayerJob(shop)
+    HasJob = nil
+    local result = ClientRPC.Callback.TriggerAwait('bcc-stables:CheckPlayerJob', shop)
+    if result then
+        HasJob = true
+    else
+        return
+    end
+end
+
 function AddBlip(shop)
     local shopCfg = Config.shops[shop]
     shopCfg.Blip = Citizen.InvokeNative(0x554d9d53f696d002, 1664425300, shopCfg.npc) -- BlipAddForCoords
@@ -1117,13 +1159,13 @@ function AddBlip(shop)
     Citizen.InvokeNative(0x9CB1A1623062F402, shopCfg.Blip, shopCfg.blipName) -- SetBlipName
 end
 
--- NPSs
 function AddNPC(shop)
     local shopCfg = Config.shops[shop]
     local model = joaat(shopCfg.npcModel)
     LoadModel(model)
     shopCfg.NPC = CreatePed(shopCfg.npcModel, shopCfg.npc.x, shopCfg.npc.y, shopCfg.npc.z - 1.0, shopCfg.npcHeading, false, true, true, true)
     Citizen.InvokeNative(0x283978A15512B2FE, shopCfg.NPC, true) -- SetRandomOutfitVariation
+    TaskStartScenarioInPlace(shopCfg.NPC, joaat('WORLD_HUMAN_WRITE_NOTEBOOK'), -1, true, false, false, false)
     SetEntityCanBeDamaged(shopCfg.NPC, false)
     SetEntityInvincible(shopCfg.NPC, true)
     Wait(500)
@@ -1141,22 +1183,17 @@ end
 RegisterNetEvent('bcc-stables:UpdateMyHorseEntity', function()
     if MyHorse then
         MyHorse = NetworkGetEntityFromNetworkId(LocalPlayer.state.HorseData.MyHorse) -- Update Global Horse Entity after session change
-        local horseName = LocalPlayer.state.HorseData.HorseName
         local playerPed = PlayerPedId()
         Citizen.InvokeNative(0xD2CB0FB0FDCB473D, playerPed, MyHorse) -- SetPedAsSaddleHorseForPlayer
-        Citizen.InvokeNative(0xE6D4E435B56D5BD0, playerPed, MyHorse) -- SetPlayerOwnsMount
+        Citizen.InvokeNative(0x931B241409216C1F, playerPed, MyHorse, false) -- SetPedOwnsAnimal
         Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, joaat('PLAYER_HORSE')) -- SetPedPersonality
 
-        local myGroup = Citizen.InvokeNative(0x7DBDD04862D95F04, playerPed) -- GetPedRelationshipGroupHash
-        Citizen.InvokeNative(0xC80A74AC829DDD92, MyHorse, myGroup) -- SetPedRelationshipGroupHash
-        Citizen.InvokeNative(0xBF25EB89375A37AD, 2, GetPedRelationshipGroupHash(MyHorse), myGroup) -- SetRelationshipBetweenGroups
-
         local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
-        Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, horseName) -- SetBlipName
-        SetPedPromptName(MyHorse, horseName)
+        Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, HorseName) -- SetBlipName
+        SetPedPromptName(MyHorse, HorseName)
 
         if Config.horseTag then
-            TriggerEvent('bcc-stables:HorseTag', horseName)
+            TriggerEvent('bcc-stables:HorseTag', HorseName)
         end
     end
 end)
