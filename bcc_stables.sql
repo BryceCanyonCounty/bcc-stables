@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS `player_horses` (
   `model` VARCHAR(100) NOT NULL,
   `gender` ENUM('male', 'female') DEFAULT 'male',
   `components`  varchar(5000) NOT NULL DEFAULT '{}',
+  `xp` int(6) DEFAULT 0,
+  `captured` int(11) DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
