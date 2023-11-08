@@ -76,8 +76,33 @@ ServerRPC.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, hor
     cb(true)
 end)
 
+
+ServerRPC.Callback.Register('bcc-stables:SaveCapturedHorse', function(source, cb, horseInfo)
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
+    local identifier = Character.identifier
+    local charid = Character.charIdentifier
+    local money = Character.money
+
+    if money >= Config.Tamecost then 
+        MySQL.query.await('INSERT INTO player_horses (identifier, charid, name, model, gender, captured) VALUES (?, ?, ?, ?, ?, ?)',
+            { identifier, charid, tostring(horseInfo.name), horseInfo.model, horseInfo.gender,1 })
+        
+        Character.removeCurrency(0, Config.Tamecost)
+        cb(true)
+    else
+        VORPcore.NotifyRightTip(src, _U('shortCash'), 4000)
+        cb(false)
+    end
+end)
+
 ServerRPC.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, horseInfo)
     MySQL.query.await('UPDATE player_horses SET name = ? WHERE id = ?', { horseInfo.name, horseInfo.horseData.horseId })
+    cb(true)
+end)
+
+ServerRPC.Callback.Register('bcc-stables:UpdateHorseXp', function(source, cb, horseInfo,Xp)
+    MySQL.query.await('UPDATE player_horses SET xp = ? WHERE id = ?', { Xp, horseInfo})
     cb(true)
 end)
 
@@ -112,7 +137,9 @@ ServerRPC.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
                     name = horses[i].name,
                     components = horses[i].components,
                     id = horses[i].id,
-                    gender = horses[i].gender
+                    gender = horses[i].gender,
+                    xp = horses[i].xp,
+                    captured = horses[i].captured
                 }
                 cb(data)
             end
@@ -152,7 +179,7 @@ ServerRPC.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data
     local charid = Character.charIdentifier
     local modelHorse = nil
     local id = tonumber(data.horseId)
-
+    local captured = data.captured
     local horses = MySQL.query.await('SELECT * FROM player_horses WHERE charid = ?', { charid })
     for i = 1, #horses do
         if tonumber(horses[i].id) == id then
@@ -163,8 +190,33 @@ ServerRPC.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data
     for _, horseConfig in pairs(Config.Horses) do
         for models, values in pairs(horseConfig.colors) do
             if models == modelHorse then
-                local sellPrice = (Config.sellPrice * values.cashPrice)
-                Character.addCurrency(0, sellPrice)
+                if captured then 
+                    local sellPrice = (Config.sellPrice * (values.cashPrice/2))
+                    Character.addCurrency(0, math.floor(sellPrice))
+                    VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 4000)
+                    cb(true)
+                else
+                    local sellPrice = (Config.sellPrice * values.cashPrice)
+                    Character.addCurrency(0, sellPrice)
+                    VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 4000)
+                    cb(true)
+                end
+            end
+        end
+    end
+end)
+
+
+ServerRPC.Callback.Register('bcc-stables:SellCapturedHorse', function(source, cb, horseModel)
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
+    local charid = Character.charIdentifier
+    local modelHorse = horseModel
+    for _, horseConfig in pairs(Config.Horses) do
+        for models, values in pairs(horseConfig.colors) do
+            if models == modelHorse then
+                local sellPrice = (Config.sellPrice * (values.cashPrice/2))
+                Character.addCurrency(0, math.floor(sellPrice))
                 VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 4000)
                 cb(true)
             end
@@ -240,6 +292,26 @@ ServerRPC.Callback.Register('bcc-stables:CheckPlayerJob', function(source, cb, s
         end
     end
     VORPcore.NotifyRightTip(src, _U('needJob'), 4000)
+    cb(false)
+end)
+
+ServerRPC.Callback.Register('bcc-stables:CheckTrainerJob', function(source, cb)
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
+    local playerJob = Character.job
+    local jobGrade = Character.jobGrade
+
+    if playerJob then
+        for _, job in pairs(Config.Trainerjob) do
+            if playerJob == job.name then
+                if tonumber(jobGrade) >= tonumber(job.grade) then
+                    cb(true)
+                    return
+                end
+            end
+        end
+    end
+    --VORPcore.NotifyRightTip(src, _U('needJob'), 4000)
     cb(false)
 end)
 

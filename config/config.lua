@@ -1,4 +1,4 @@
-Config = {}
+ Config = {}
 
 -- Language
 Config.defaultlang = 'en_lang'
@@ -535,6 +535,25 @@ Config.Horses = { -- Gold to Dollar Ratio Based on 1899 Gold Price / sellPrice i
 		}
 	}
 }
+
+
+Config.allowSale = true -- Let people sell horses they capture?
+
+Config.displayHorseName = true -- Tell players what breed the horse they mounted is
+
+Config.trainerOnly = true -- Can only horse trainers capture, sell and train horses?
+
+Config.sellPoints = {Valentine = vector3(-357.57, 771.3, 116.45)} -- Sell locations for horses.  
+
+Config.Tamecost = 50 -- Cost of registering a tamed horse
+ 
+Config.Tamedifficulty = 2 -- how hard do you want taming to be
+
+Config.Trainerjob = {
+	{name="Valstables", grade=1},
+}
+Config.TrainingDistance = 100
+Config.HorseXpPerCheck = 1
 -----------------------------------------------------
 
 Config.BlipColors = {
