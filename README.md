@@ -21,10 +21,12 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - Brushing your horse will clean him and give a slight increase in health and stamina
 - Configurable cooldown time for feeding and brushing
 - Distance-based NPC spawns
+- XP System for horse bonding
+- Tame wild horses
 
 #### Tips
 - Whistleing -- A short whistle will call your horse. A long one will set your horse to follow you. A second whistle or mounting your horse will cancel following.
-
+- XP System -- Ride, feed and brush your horse to gain XP. Gain bonding levels (0-4) for better horse stats
 #### Commands
 `/horseRespawn` Respawn your horse while bypassing the distance check
 
@@ -45,6 +47,7 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - [ByteSizd](https://github.com/AndrewR3K) - Vue Boilerplate for RedM
 - [SavSin](https://github.com/DavFount) - UI conversion to VueJS
 - Stephenlikewhoa
+- [Dokoboe](https://github.com/dokoboe)
 
 #### GitHub
 - https://github.com/BryceCanyonCounty/bcc-stables
