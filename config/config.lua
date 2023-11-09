@@ -68,6 +68,28 @@ Config.horseTag    = true -- Default: true / Set to false to disable
 Config.tagDistance = 15   -- Default: 15 / Distance from Horse the Tag is Visible
 -----------------------------------------------------
 
+-- Horse Training
+Config.trainerOnly = false -- Can only horse trainers capture, sell and train horses?
+Config.Trainerjob = {
+	{name = 'Valstables', grade = 1},
+}
+
+Config.trainingDistance = 100 -- Default:100 / Distance Traveled to Increase XP
+Config.horseXpPerCheck = 1 -- Deafault: 1 / XP Earned per 'trainingDistance' Achieved
+Config.horseXpPerBrush = 1 -- Deafault: 1 / Set to 0 to Disable / Amount of XP Earned when Brushing Horse
+Config.horseXpPerFeed = 1 -- Deafault: 1 / Set to 0 to Disable / Amount of XP Earned when Feeding Horse
+Config.showXpMessage = true -- Default: true / Show XP Increase Message on Screen
+
+Config.allowSale = true -- Let people sell horses they capture?
+Config.sellPoints = {Valentine = vector3(-357.57, 771.3, 116.45)} -- Sell locations for Horses
+
+Config.displayHorseName = true -- Tell players what breed the horse they mounted is
+Config.tameCost = 50 -- Cost of registering a tamed horse
+Config.tameDifficulty = 2 -- how hard do you want taming to be
+
+
+-----------------------------------------------------
+
 -- Allow Blips on Map when Stable is Closed
 Config.blipOnClosed = true -- true = Show Blips / false = Remove Blips
 -----------------------------------------------------
@@ -536,24 +558,6 @@ Config.Horses = { -- Gold to Dollar Ratio Based on 1899 Gold Price / sellPrice i
 	}
 }
 
-
-Config.allowSale = true -- Let people sell horses they capture?
-
-Config.displayHorseName = true -- Tell players what breed the horse they mounted is
-
-Config.trainerOnly = true -- Can only horse trainers capture, sell and train horses?
-
-Config.sellPoints = {Valentine = vector3(-357.57, 771.3, 116.45)} -- Sell locations for horses.  
-
-Config.Tamecost = 50 -- Cost of registering a tamed horse
- 
-Config.Tamedifficulty = 2 -- how hard do you want taming to be
-
-Config.Trainerjob = {
-	{name="Valstables", grade=1},
-}
-Config.TrainingDistance = 100
-Config.HorseXpPerCheck = 1
 -----------------------------------------------------
 
 Config.BlipColors = {
