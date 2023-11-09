@@ -84,11 +84,11 @@ ServerRPC.Callback.Register('bcc-stables:SaveCapturedHorse', function(source, cb
     local charid = Character.charIdentifier
     local money = Character.money
 
-    if money >= Config.Tamecost then 
+    if money >= Config.tameCost then
         MySQL.query.await('INSERT INTO player_horses (identifier, charid, name, model, gender, captured) VALUES (?, ?, ?, ?, ?, ?)',
-            { identifier, charid, tostring(horseInfo.name), horseInfo.model, horseInfo.gender,1 })
-        
-        Character.removeCurrency(0, Config.Tamecost)
+            { identifier, charid, tostring(horseInfo.name), horseInfo.model, horseInfo.gender, 1 })
+
+        Character.removeCurrency(0, Config.tameCost)
         cb(true)
     else
         VORPcore.NotifyRightTip(src, _U('shortCash'), 4000)
@@ -101,9 +101,8 @@ ServerRPC.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, 
     cb(true)
 end)
 
-ServerRPC.Callback.Register('bcc-stables:UpdateHorseXp', function(source, cb, horseInfo,Xp)
-    MySQL.query.await('UPDATE player_horses SET xp = ? WHERE id = ?', { Xp, horseInfo})
-    cb(true)
+RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
+    MySQL.query.await('UPDATE player_horses SET xp = ? WHERE id = ?', { Xp, horseId })
 end)
 
 RegisterServerEvent('bcc-stables:SelectHorse', function(data)
@@ -190,7 +189,7 @@ ServerRPC.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data
     for _, horseConfig in pairs(Config.Horses) do
         for models, values in pairs(horseConfig.colors) do
             if models == modelHorse then
-                if captured then 
+                if captured then
                     local sellPrice = (Config.sellPrice * (values.cashPrice/2))
                     Character.addCurrency(0, math.floor(sellPrice))
                     VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 4000)
@@ -206,11 +205,9 @@ ServerRPC.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data
     end
 end)
 
-
-ServerRPC.Callback.Register('bcc-stables:SellCapturedHorse', function(source, cb, horseModel)
+RegisterServerEvent('bcc-stables:SellCapturedHorse', function(horseModel)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
-    local charid = Character.charIdentifier
     local modelHorse = horseModel
     for _, horseConfig in pairs(Config.Horses) do
         for models, values in pairs(horseConfig.colors) do
@@ -218,7 +215,6 @@ ServerRPC.Callback.Register('bcc-stables:SellCapturedHorse', function(source, cb
                 local sellPrice = (Config.sellPrice * (values.cashPrice/2))
                 Character.addCurrency(0, math.floor(sellPrice))
                 VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 4000)
-                cb(true)
             end
         end
     end
@@ -311,7 +307,6 @@ ServerRPC.Callback.Register('bcc-stables:CheckTrainerJob', function(source, cb)
             end
         end
     end
-    --VORPcore.NotifyRightTip(src, _U('needJob'), 4000)
     cb(false)
 end)
 
