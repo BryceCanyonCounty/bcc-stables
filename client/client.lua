@@ -11,7 +11,7 @@ local ShopGroup = GetRandomIntInRange(0, 0xffffff)
 -- Tame Prompts
 local KeepTame
 local SellTame
-local PromptGroup2 = GetRandomIntInRange(0, 0xffffff)
+local TameGroup = GetRandomIntInRange(0, 0xffffff)
 -- Horse Tack
 local SaddlesUsing = nil
 local SaddleclothsUsing = nil
@@ -49,7 +49,6 @@ local MaxBonding = false
 local MiniGame = exports['bcc-minigames'].initiate()
 local TamingMount = nil
 local TameCount = 0
-local MaxTamecount = Config.tameDifficulty
 local HorseBreed = nil
 
 -- Start Stables
@@ -348,6 +347,12 @@ end)
 
 RegisterNUICallback('BuyHorse', function(data, cb)
     cb('ok')
+    CheckTrainerJob()
+    if IsTrainer then
+        data.isTrainer = true
+    else
+        data.isTrainer = false
+    end
     local canBuy = ClientRPC.Callback.TriggerAwait('bcc-stables:BuyHorse', data)
     if canBuy then
         SetHorseName(data, false)
@@ -467,7 +472,6 @@ function GetSelectedHorse()
     if data then
         HorseComponents = data.components
         MyHorseId = data.id
-        --print(data.captured)
         SpawnHorse(data.model, data.name, data.gender, data.xp)
     else
         print('No selected-horse data returned!')
@@ -553,7 +557,7 @@ function NativeSetPedComponentEnabled(ped, component)
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, component, true, true, true) -- ApplyShopItemToPed
 end
 
-function SpawnHorse(horseModel, horseName, gender,xp)
+function SpawnHorse(horseModel, horseName, gender, xp)
     if Spawning then
         return
     end
@@ -649,6 +653,9 @@ function SpawnHorse(horseModel, horseName, gender,xp)
     end
     if Config.trainerOnly then
         CheckTrainerJob()
+        if IsTrainer then
+            TriggerEvent('bcc-stables:HorseBonding')
+        end
     else
         TriggerEvent('bcc-stables:HorseBonding')
     end
@@ -895,152 +902,40 @@ RegisterCommand('horseStats', function()
     end
 end)
 
-Citizen.CreateThread(function() -- distance and seller
-    local markerloc = nil
-    local delayTime = 5000
+-- Wild Horse Taming
+CreateThread(function()
+    AddSellPointBlip()
+    local maxTamecount = Config.tameDifficulty
     while true do
-        local playerped = PlayerPedId()
-        if not Config.allowSale then break end
-        local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058, playerped) -- GetMount
-        if Config.trainerOnly and IsTrainer and mount ~= false and Entity(mount).state.canSell == true then
-            for k,v in pairs(Config.sellPoints) do
-                local pCoords = GetEntityCoords(playerped)
-                local distance = GetDistanceBetweenCoords(pCoords,v,1)
-                if distance < 30 then
-                    if markerloc == nil then
-                        markerloc = vector3(v[1], v[2], v[3] -2)
-                    end
-                    delayTime = 0
-                    Citizen.InvokeNative(0x2A32FAA57B937173, 0x6EB7D3BB,markerloc, 0.0, 0.0,0.0, 0.0, 0.0, 0.0, 5.0, 5.0, 2.0, 255, 255, 255, 175, false, false, 1, false)
-                    if distance < 5 and not InMenu then
-                        local capturePrompts = CreateVarString(10, 'LITERAL_STRING', "Manage capture")
-                        PromptSetActiveGroupThisFrame(PromptGroup2, capturePrompts)
-                        PromptSetEnabled(SellTame, 1)
-                        PromptSetEnabled(KeepTame, 1)
-                        
-                        if Citizen.InvokeNative(0xC92AC953F0A982AE, SellTame) then  -- UiPromptHasStandardModeCompleted
-                            TriggerServerEvent('bcc-stables:SellCapturedHorse', GetEntityModel(mount))
-                        end
-                        if Citizen.InvokeNative(0xC92AC953F0A982AE, KeepTame) then  -- UiPromptHasStandardModeCompleted                                
-                            local tempdata = {}
-                            tempdata.model = Entity(mount).state.model
-                            tempdata.gender = IsPedMale(mount)
-                            NameHorse(tempdata)
-                        end
-                    end
-                else
-                    delayTime = 5000
-                    markerloc = nil
-                end
-            end
-        elseif not Config.trainerOnly and mount ~= false and Entity(mount).state.canSell == true then
-            for k,v in pairs(Config.sellPoints) do
-                local pCoords = GetEntityCoords(playerped)
-                local distance = GetDistanceBetweenCoords(pCoords,v,1)
-                if distance < 30 then
-                    if markerloc == nil then
-                        markerloc = vector3(v[1], v[2], v[3] -2)
-                    end
-                    delayTime = 0
-                    Citizen.InvokeNative(0x2A32FAA57B937173, 0x6EB7D3BB,markerloc, 0.0, 0.0,0.0, 0.0, 0.0, 0.0, 5.0, 5.0, 2.0, 255, 255, 255, 175, false, false, 1, false)     
-                    if distance < 5 and not InMenu then
-                        local capturePrompts = CreateVarString(10, 'LITERAL_STRING', "Manage capture")
-                        PromptSetActiveGroupThisFrame(PromptGroup2, capturePrompts)
-                        PromptSetEnabled(SellTame, 1)
-                        PromptSetEnabled(KeepTame, 1)
-
-                        if Citizen.InvokeNative(0xC92AC953F0A982AE, SellTame) then  -- UiPromptHasStandardModeCompleted
-                            TriggerServerEvent('bcc-stables:SellCapturedHorse', GetEntityModel(mount))
-                        end
-                        if Citizen.InvokeNative(0xC92AC953F0A982AE, KeepTame) then  -- UiPromptHasStandardModeCompleted                                
-                            local tempdata = {}
-                            tempdata.model = Entity(mount).state.model
-                            tempdata.gender = IsPedMale(mount)
-                            tempdata.mount = mount
-                            NameHorse(tempdata)
-                        end
-                    end
-                else
-                    delayTime = 5000
-                    markerloc = nil
-                end
-            end
-        end
-        Wait(delayTime)
-    end
-end)
-
-function NameHorse(tempdata)
-    InMenu = true
-
-    CreateThread(function()
-        AddTextEntry('FMMC_MPM_NA', _U('nameHorse'))
-        DisplayOnscreenKeyboard(1, 'FMMC_MPM_NA', '', '', '', '', '', 30)
-        while UpdateOnscreenKeyboard() == 0 do
-            DisableAllControlActions(0)
-            Wait(0)
-        end
-        if GetOnscreenKeyboardResult() then
-            local horseName = GetOnscreenKeyboardResult()
-            if string.len(horseName) > 0 then
-                tempdata.name = tostring(horseName)
-                Citizen.InvokeNative(0x48E92D3DDE23C23A, PlayerPedId(), 0, 0, 0, 0, mount)       -- dismount      
-                while not Citizen.InvokeNative(0x01FEE67DB37F59B2,PlayerPedId()) do Wait(0) end --Wait to be on the floor     
-                local horseSaved = ClientRPC.Callback.TriggerAwait('bcc-stables:SaveCapturedHorse', tempdata)
-                if horseSaved then
-                    DeleteEntity(tempdata.mount)
-                end
-                return
-            else
-                return
-            end
-        end
-        SendNUIMessage({
-            action = 'hide'
-        })
-        SetNuiFocus(false, false)
-        InMenu = false
-    end)
-end
-
-Citizen.CreateThread(function()
-    while true do
-        local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058,PlayerPedId()) -- GetMount
-        if not mount then
-            Wait(1000)
-        else
-            Wait(100)
-        end
-        local isWild = nil
-        local breaking = false
-        local isTamable = false
-        if mount ~= false then
-            if HorseBreed == nil and Config.displayHorseName then
-                local horseMod = GetEntityModel(mount)
-                for k,v in pairs(Config.Horses) do
-                    for i,r in pairs(v.colors) do
-                        local horseHash = GetHashKey(i)
-                        if horseMod == horseHash then
-                            Entity(mount).state.model = i
-                            if v.breed == "Other" then
-                                VORPcore.NotifyBottomRight(r.color, 1000)
-                            else
-                                VORPcore.NotifyBottomRight(v.breed, 1000)
+        local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058, PlayerPedId()) -- GetMount
+        Wait(1000)
+        if mount and not MyHorse then
+            local horseModel = GetEntityModel(mount)
+            for _, v in pairs(Config.Horses) do
+                for i, r in pairs(v.colors) do
+                    local horseHash = GetHashKey(i)
+                    if horseHash == horseModel then
+                        Entity(mount).state.model = i
+                        if not HorseBreed then
+                            if Config.displayHorseName then
+                                if v.breed == "Other" then
+                                    VORPcore.NotifyBottomRight(r.color, 1000)
+                                else
+                                    VORPcore.NotifyBottomRight(v.breed, 1000)
+                                end
+                                HorseBreed = true
                             end
                         end
                     end
                 end
-                HorseBreed="blank"
             end
             local owner = Citizen.InvokeNative(0xF103823FFE72BB49, mount) -- GetActiveAnimalOwner
-            local coords = GetEntityCoords(PlayerPedId())
-            isWild = Citizen.InvokeNative(0x3B005FF0538ED2A9, mount) -- GetAnimalIsWild
-            isTamable = Citizen.InvokeNative(0x1C1993824A396603, mount, 97) -- GetAnimalTuningBoolParam
-
+            local isWild = Citizen.InvokeNative(0x3B005FF0538ED2A9, mount) -- GetAnimalIsWild
             if not isWild and owner ~= false and Entity(mount).state.taming ~= nil then
                 if Config.trainerOnly then
+                    CheckTrainerJob()
                     if IsTrainer then
-                        if TameCount < MaxTamecount then
+                        if TameCount < maxTamecount then
                             TameCount = TameCount + 1
                             if MiniGame ~= nil then
                                 HorseCaptureMinigame()
@@ -1051,13 +946,14 @@ Citizen.CreateThread(function()
                         else
                             Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, true) -- SetAnimalTuningBoolParam
                             Entity(mount).state.taming = nil
+                            Entity(mount).state.canSell = true
                         end
                     else
                         Citizen.InvokeNative(0xAEB97D84CDF3C00B, mount, true) -- SetAnimalIsWild
                         Citizen.InvokeNative(0xBCC76708E5677E1D, mount, true) -- ClearActiveAnimalOwner
                     end
                 else
-                    if TameCount < MaxTamecount then
+                    if TameCount < maxTamecount then
                         TameCount = TameCount + 1
                         if MiniGame ~= nil then
                             HorseCaptureMinigame()
@@ -1073,7 +969,7 @@ Citizen.CreateThread(function()
                 end
             elseif isWild and owner == false and Entity(mount).state.taming == nil then
                 if Config.trainerOnly then
-                    IsTrainer = ClientRPC.Callback.TriggerAwait('bcc-stables:CheckTrainerJob')
+                    CheckTrainerJob()
                     TamingMount = mount
                     if IsTrainer then
                         Entity(mount).state.taming = true
@@ -1092,12 +988,9 @@ Citizen.CreateThread(function()
                 end
             end
         else
-            if TamingMount ~= nil then
+            if TamingMount then
                 Entity(TamingMount).state.taming = nil
                 TamingMount = nil
-            end
-            if name ~= nil then
-                name = nil
             end
             TameCount = 0
         end
@@ -1111,8 +1004,8 @@ function HorseCaptureMinigame()
         maxattempts = 3, -- How many fail attempts are allowed before game over
         type = 'bar', -- What should the bar look like. (bar, trailing)
         userandomkey = false, -- Should the minigame generate a random key to press?
-        keytopress = 'SPACEBAR', -- userandomkey must be false for this to work. Static key to press
-        keycode = 32, -- The JS keycode for the keytopress
+        keytopress = 'B', -- userandomkey must be false for this to work. Static key to press
+        keycode = 66, -- The JS keycode for the keytopress
         speed = 5, -- How fast the orbiter grows
         strict = true -- if true, letting the timer run out counts as a failed attempt
     }
@@ -1123,11 +1016,178 @@ function HorseCaptureMinigame()
     end)
 end
 
+-- Manage Tamed Horse
+CreateThread(function() -- distance and seller
+    local markerLoc = nil
+    while true do
+        Wait(0)
+        local playerPed = PlayerPedId()
+        local sleep = true
+        local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058, playerPed) -- GetMount
+        if Config.trainerOnly then
+            if IsTrainer and mount and Entity(mount).state.canSell then
+                for _, v in pairs(Config.sellPoints) do
+                    local distance = #(GetEntityCoords(playerPed) - v.coords)
+                    if distance < 30 then
+                        sleep = false
+                        if not markerLoc then
+                            markerLoc = vector3(v.coords[1], v.coords[2], v.coords[3] -2)
+                        end
+                        Citizen.InvokeNative(0x2A32FAA57B937173, 0x6EB7D3BB, markerLoc, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 5.0, 2.0, 255, 255, 255, 175, false, false, 1, false) -- DrawMarker
+                        if distance < 5 and not InMenu then
+                            local capturePrompts = CreateVarString(10, 'LITERAL_STRING', _U('manageHorse'))
+                            PromptSetActiveGroupThisFrame(TameGroup, capturePrompts)
+                            if Config.allowSale then
+                                PromptSetEnabled(SellTame, 1)
+                            else
+                                PromptSetEnabled(SellTame, 0)
+                            end
+                            if Config.allowKeep then
+                                PromptSetEnabled(KeepTame, 1)
+                            else
+                                PromptSetEnabled(KeepTame, 0)
+                            end
+
+                            if Citizen.InvokeNative(0xC92AC953F0A982AE, SellTame) then  -- UiPromptHasStandardModeCompleted
+                                TriggerServerEvent('bcc-stables:SellTamedHorse', GetEntityModel(mount))
+                                if mount then
+                                    DeleteEntity(mount)
+                                    mount = nil
+                                    Wait(200)
+                                    HorseBreed = nil
+                                end
+                            end
+                            if Citizen.InvokeNative(0xC92AC953F0A982AE, KeepTame) then  -- UiPromptHasStandardModeCompleted                                
+                                local tempData = {}
+                                tempData.model = Entity(mount).state.model
+                                if IsPedMale(mount) then
+                                    tempData.gender = 'male'
+                                else
+                                    tempData.gender = 'female'
+                                end
+                                tempData.mount = mount
+                                KeepTamedHorse(tempData)
+                            end
+                        end
+                    else
+                        markerLoc = nil
+                    end
+                end
+            end
+        else
+            if mount and Entity(mount).state.canSell then
+                for _, v in pairs(Config.sellPoints) do
+                    local distance = #(GetEntityCoords(playerPed) - v.coords)
+                    if distance < 30 then
+                        sleep = false
+                        if not markerLoc then
+                            markerLoc = vector3(v.coords[1], v.coords[2], v.coords[3] -2)
+                        end
+                        Citizen.InvokeNative(0x2A32FAA57B937173, 0x6EB7D3BB, markerLoc, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 5.0, 2.0, 255, 255, 255, 175, false, false, 1, false) -- DrawMarker
+                        if distance < 5 and not InMenu then
+                            local capturePrompts = CreateVarString(10, 'LITERAL_STRING', _U('manageHorse'))
+                            PromptSetActiveGroupThisFrame(TameGroup, capturePrompts)
+                            if Config.allowSale then
+                                PromptSetEnabled(SellTame, 1)
+                            else
+                                PromptSetEnabled(SellTame, 0)
+                            end
+                            if Config.allowKeep then
+                                PromptSetEnabled(KeepTame, 1)
+                            else
+                                PromptSetEnabled(KeepTame, 0)
+                            end
+
+                            if Citizen.InvokeNative(0xC92AC953F0A982AE, SellTame) then  -- UiPromptHasStandardModeCompleted
+                                TriggerServerEvent('bcc-stables:SellTamedHorse', GetEntityModel(mount))
+                                if mount then
+                                    DeleteEntity(mount)
+                                    mount = nil
+                                    Wait(200)
+                                    HorseBreed = nil
+                                end
+                            end
+                            if Citizen.InvokeNative(0xC92AC953F0A982AE, KeepTame) then  -- UiPromptHasStandardModeCompleted                                
+                                local tempData = {}
+                                tempData.model = Entity(mount).state.model
+                                if IsPedMale(mount) then
+                                    tempData.gender = 'male'
+                                else
+                                    tempData.gender = 'female'
+                                end
+                                tempData.mount = mount
+                                KeepTamedHorse(tempData)
+                            end
+                        end
+                    else
+                        markerLoc = nil
+                    end
+                end
+            end
+        end
+        if sleep then
+            Wait(1000)
+        end
+    end
+end)
+
+function KeepTamedHorse(tempData)
+    CheckTrainerJob()
+    local data = {}
+    if IsTrainer then
+        data.isTrainer = true
+    else
+        data.isTrainer = false
+    end
+    local canKeep = ClientRPC.Callback.TriggerAwait('bcc-stables:KeepTamedHorse', data)
+    if canKeep then
+        NameHorse(tempData)
+    else
+        HorseBreed = nil
+    end
+end
+
+function NameHorse(tempData)
+    InMenu = true
+    local playerPed = PlayerPedId()
+    CreateThread(function()
+        AddTextEntry('FMMC_MPM_NA', _U('nameHorse'))
+        DisplayOnscreenKeyboard(1, 'FMMC_MPM_NA', '', '', '', '', '', 30)
+        while UpdateOnscreenKeyboard() == 0 do
+            DisableAllControlActions(0)
+            Wait(0)
+        end
+        if GetOnscreenKeyboardResult() then
+            local horseName = GetOnscreenKeyboardResult()
+            if string.len(horseName) > 0 then
+                tempData.name = tostring(horseName)
+                Citizen.InvokeNative(0x48E92D3DDE23C23A, playerPed, 0, 0, 0, 0, tempData.mount) -- TaskDismountAnimal
+                while not Citizen.InvokeNative(0x01FEE67DB37F59B2, playerPed) do -- IsPedOnFoot
+                    Wait(10)
+                end
+                local horseSaved = ClientRPC.Callback.TriggerAwait('bcc-stables:SaveTamedHorse', tempData)
+                if horseSaved then
+                    DeleteEntity(tempData.mount)
+                    HorseBreed = nil
+                end
+            else
+                NameHorse(tempData)
+            end
+        end
+    end)
+    InMenu = false
+end
+
+-- Set Horse Wild
 RegisterCommand('releaseHorse',function()
-    local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058, PlayerPedId())
-    Citizen.InvokeNative(0xAEB97D84CDF3C00B, mount, true) -- SetAnimalIsWild
-    Citizen.InvokeNative(0xBCC76708E5677E1D, mount, true) -- ClearActiveAnimalOwner
-    Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, false) -- SetAnimalTuningBoolParam
+    if Config.devMode then
+        local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058, PlayerPedId()) -- GetMount
+        Citizen.InvokeNative(0xAEB97D84CDF3C00B, mount, true) -- SetAnimalIsWild
+        Citizen.InvokeNative(0xBCC76708E5677E1D, mount, true) -- ClearActiveAnimalOwner
+        Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, false) -- SetAnimalTuningBoolParam
+    else
+        print('Command used in Developer Mode Only!')
+    end
 end)
 
 RegisterNetEvent('bcc-stables:BrushHorse', function()
@@ -1413,13 +1473,20 @@ end)
 
 -- Return Player Horse at Stable
 function ReturnHorse()
-    if MyHorse == nil then
-        VORPcore.NotifyRightTip(_U('noHorse'), 4000)
-    elseif MyHorse then
+    local playerPed = PlayerPedId()
+    if MyHorse then
+        if Citizen.InvokeNative(0x460BC76A0E10655E, playerPed) then -- IsPedOnMount
+            Citizen.InvokeNative(0x48E92D3DDE23C23A, playerPed, 0, 0, 0, 0, MyHorse) -- TaskDismountAnimal
+            while not Citizen.InvokeNative(0x01FEE67DB37F59B2, playerPed) do -- IsPedOnFoot
+                Wait(10)
+            end
+        end
         TriggerServerEvent('bcc-stables:DeregisterInventory', MyHorseId)
         DeleteEntity(MyHorse)
         MyHorse = nil
         VORPcore.NotifyRightTip(_U('horseReturned'), 4000)
+    else
+        VORPcore.NotifyRightTip(_U('noHorse'), 4000)
     end
 end
 
@@ -1505,22 +1572,22 @@ function StartPrompts()
     PromptSetGroup(OpenReturn, ShopGroup)
     PromptRegisterEnd(OpenReturn)
 
-    local sellStr = CreateVarString(10, 'LITERAL_STRING', "Sell")
+    local sellStr = CreateVarString(10, 'LITERAL_STRING', _U('sellPrompt'))
     SellTame = PromptRegisterBegin()
-    PromptSetControlAction(SellTame, Config.keys.call)
+    PromptSetControlAction(SellTame, Config.keys.sell)
     PromptSetText(SellTame, sellStr)
     PromptSetVisible(SellTame, 1)
     PromptSetStandardMode(SellTame, 1)
-    PromptSetGroup(SellTame, PromptGroup2)
+    PromptSetGroup(SellTame, TameGroup)
     PromptRegisterEnd(SellTame)
 
-    local keepStr = CreateVarString(10, 'LITERAL_STRING', "Keep: $"..tostring(Config.tameCost))
+    local keepStr = CreateVarString(10, 'LITERAL_STRING', _U('keepPrompt') .. tostring(Config.tameCost))
     KeepTame = PromptRegisterBegin()
-    PromptSetControlAction(KeepTame, Config.keys.ret)
+    PromptSetControlAction(KeepTame, Config.keys.keep)
     PromptSetText(KeepTame, keepStr)
     PromptSetVisible(KeepTame, 1)
     PromptSetStandardMode(KeepTame, 1)
-    PromptSetGroup(KeepTame, PromptGroup2)
+    PromptSetGroup(KeepTame, TameGroup)
     PromptRegisterEnd(KeepTame)
 end
 
@@ -1529,7 +1596,6 @@ function CheckTrainerJob()
     local result = ClientRPC.Callback.TriggerAwait('bcc-stables:CheckTrainerJob')
     if result then
         IsTrainer = true
-        TriggerEvent('bcc-stables:HorseBonding')
     else
         return
     end
@@ -1545,10 +1611,18 @@ function CheckPlayerJob(shop)
     end
 end
 
+function AddSellPointBlip()
+    for _, v in pairs(Config.sellPoints) do
+        local blip = Citizen.InvokeNative(0x554d9d53f696d002, 1664425300, v.coords) -- BlipAddForCoords
+        SetBlipSprite(blip, -1103135225, true)
+        Citizen.InvokeNative(0x9CB1A1623062F402, blip, 'Trainer') -- SetBlipName
+    end
+end
+
 function AddBlip(shop)
     local shopCfg = Config.shops[shop]
     shopCfg.Blip = Citizen.InvokeNative(0x554d9d53f696d002, 1664425300, shopCfg.npc) -- BlipAddForCoords
-    SetBlipSprite(shopCfg.Blip, shopCfg.blipSprite, 1)
+    SetBlipSprite(shopCfg.Blip, shopCfg.blipSprite, true)
     SetBlipScale(shopCfg.Blip, 0.2)
     Citizen.InvokeNative(0x9CB1A1623062F402, shopCfg.Blip, shopCfg.blipName) -- SetBlipName
 end
