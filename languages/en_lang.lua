@@ -3,6 +3,8 @@ Locales["en_lang"] = {
     shopPrompt = "Open Stable",
     callPrompt = "Call Horse",
     returnPrompt = "Return Horse",
+    sellPrompt = "Sell",
+    keepPrompt = "Keep: $",
     closed = " ~o~: ~e~CLOSED",
     to = ":00~q~ to ~o~",
     hundred = ":00",
@@ -28,5 +30,6 @@ Locales["en_lang"] = {
     purchaseSuccessful = "Purchase Successful!",
     tooFar = "You're not close enough to your horse",
     nameHorse = "Name your horse:",
-    stableSpawn = "You must go to a Stable to call your horse!"
+    stableSpawn = "You must go to a Stable to call your horse!",
+    manageHorse = "Manage Horse"
 }
