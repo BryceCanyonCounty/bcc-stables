@@ -8,13 +8,22 @@ ServerRPC.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local charid = Character.charIdentifier
-    local maxHorses = Config.maxHorses
+    local maxHorses = tonumber(Config.maxHorses)
+    local maxTrainerHorses = tonumber(Config.maxTrainerHorses)
 
     local horses = MySQL.query.await('SELECT * FROM player_horses WHERE charid = ?', { charid })
-    if #horses >= maxHorses then
-        VORPcore.NotifyRightTip(src, _U('horseLimit') .. maxHorses .. _U('horses'), 4000)
-        cb(false)
-        return
+    if data.isTrainer then
+        if #horses >= maxTrainerHorses then
+            VORPcore.NotifyRightTip(src, _U('horseLimit') .. maxTrainerHorses .. _U('horses'), 4000)
+            cb(false)
+            return
+        end
+    else
+        if #horses >= maxHorses then
+            VORPcore.NotifyRightTip(src, _U('horseLimit') .. maxHorses .. _U('horses'), 4000)
+            cb(false)
+            return
+        end
     end
     if data.IsCash then
         if Character.money >= data.Cash then
@@ -76,24 +85,47 @@ ServerRPC.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, hor
     cb(true)
 end)
 
-
-ServerRPC.Callback.Register('bcc-stables:SaveCapturedHorse', function(source, cb, horseInfo)
+ServerRPC.Callback.Register('bcc-stables:KeepTamedHorse', function(source, cb, data)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
-    local identifier = Character.identifier
     local charid = Character.charIdentifier
-    local money = Character.money
+    local maxHorses = Config.maxHorses
+    local maxTrainerHorses = Config.maxTrainerHorses
 
-    if money >= Config.tameCost then
-        MySQL.query.await('INSERT INTO player_horses (identifier, charid, name, model, gender, captured) VALUES (?, ?, ?, ?, ?, ?)',
-            { identifier, charid, tostring(horseInfo.name), horseInfo.model, horseInfo.gender, 1 })
-
-        Character.removeCurrency(0, Config.tameCost)
+    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE charid = ?', { charid })
+    if data.isTrainer then
+        if #horses >= maxTrainerHorses then
+            VORPcore.NotifyRightTip(src, _U('horseLimit') .. maxTrainerHorses .. _U('horses'), 4000)
+            cb(false)
+            return
+        end
+    else
+        if #horses >= maxHorses then
+            VORPcore.NotifyRightTip(src, _U('horseLimit') .. maxHorses .. _U('horses'), 4000)
+            cb(false)
+            return
+        end
+    end
+    if Character.money >= Config.tameCost then
         cb(true)
     else
         VORPcore.NotifyRightTip(src, _U('shortCash'), 4000)
         cb(false)
+        return
     end
+end)
+
+ServerRPC.Callback.Register('bcc-stables:SaveTamedHorse', function(source, cb, horseInfo)
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
+    local identifier = Character.identifier
+    local charid = Character.charIdentifier
+
+    MySQL.query.await('INSERT INTO player_horses (identifier, charid, name, model, gender, captured) VALUES (?, ?, ?, ?, ?, ?)',
+        { identifier, charid, tostring(horseInfo.name), horseInfo.model, horseInfo.gender, 1 })
+
+    Character.removeCurrency(0, Config.tameCost)
+    cb(true)
 end)
 
 ServerRPC.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, horseInfo)
@@ -205,14 +237,14 @@ ServerRPC.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data
     end
 end)
 
-RegisterServerEvent('bcc-stables:SellCapturedHorse', function(horseModel)
+RegisterServerEvent('bcc-stables:SellTamedHorse', function(horseModel)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
-    local modelHorse = horseModel
-    for _, horseConfig in pairs(Config.Horses) do
-        for models, values in pairs(horseConfig.colors) do
-            if models == modelHorse then
-                local sellPrice = (Config.sellPrice * (values.cashPrice/2))
+    for _, v in pairs(Config.Horses) do
+        for i, r in pairs(v.colors) do
+            local horseHash = joaat(i)
+            if horseHash == horseModel then
+                local sellPrice = (Config.sellPrice * (r.cashPrice / 2))
                 Character.addCurrency(0, math.floor(sellPrice))
                 VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 4000)
             end
