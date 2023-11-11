@@ -4,6 +4,9 @@
 Config.defaultlang = 'en_lang'
 -----------------------------------------------------
 
+Config.devMode = false -- Default: false / Do Not Run on a Live Server
+-----------------------------------------------------
+
 -- Set the currency type
 -- 0 = Cash Only
 -- 1 = Gold Only
@@ -12,9 +15,11 @@ Config.currencyType = 2 -- Default: 2
 -----------------------------------------------------
 
 Config.keys = {
-	shop = 0x760A9C6F, --[G] Open Stable Menu
-    call = 0x80F28E95, --[L] Call Horse at Stable
-	ret  = 0x27D1C284  --[R] Return Horse at Stable
+	shop  = 0x760A9C6F, --[G] Open Stable Menu
+    call  = 0x80F28E95, --[L] Call Horse at Stable
+	ret   = 0x27D1C284, --[R] Return Horse at Stable
+    sell  = 0x80F28E95, --[L] Sell Tamed Horse at Sell Point
+    keep  = 0x27D1C284, --[R] Keep Tamed Horse at Sell Point
 }
 -----------------------------------------------------
 
@@ -23,7 +28,8 @@ Config.sellPrice = 0.60 -- Default: 0.60
 -----------------------------------------------------
 
 -- Max Number of Horses per Player
-Config.maxHorses = 5 -- Default: 5
+Config.maxHorses        = 5  -- Default: 5
+Config.maxTrainerHorses = 10 -- Default: 10
 -----------------------------------------------------
 
 -- Can Spawn Horse Anywhere with Whistle 
@@ -71,23 +77,24 @@ Config.tagDistance = 15   -- Default: 15 / Distance from Horse the Tag is Visibl
 -- Horse Training
 Config.trainerOnly = false -- Can only horse trainers capture, sell and train horses?
 Config.Trainerjob = {
-	{name = 'Valstables', grade = 1},
+	{ name = 'Valstables', grade = 1 },
 }
-
-Config.trainingDistance = 100 -- Default:100 / Distance Traveled to Increase XP
-Config.horseXpPerCheck = 1 -- Deafault: 1 / XP Earned per 'trainingDistance' Achieved
-Config.horseXpPerBrush = 1 -- Deafault: 1 / Set to 0 to Disable / Amount of XP Earned when Brushing Horse
-Config.horseXpPerFeed = 1 -- Deafault: 1 / Set to 0 to Disable / Amount of XP Earned when Feeding Horse
-Config.showXpMessage = true -- Default: true / Show XP Increase Message on Screen
-
-Config.allowSale = true -- Let people sell horses they capture?
-Config.sellPoints = {Valentine = vector3(-357.57, 771.3, 116.45)} -- Sell locations for Horses
+Config.trainingDistance = 100  -- Default:100 / Distance Traveled to Increase XP
+Config.horseXpPerCheck  = 1    -- Deafault: 1 / XP Earned per 'trainingDistance' Achieved
+Config.horseXpPerBrush  = 1    -- Deafault: 1 / Set to 0 to Disable / Amount of XP Earned when Brushing Horse
+Config.horseXpPerFeed   = 1    -- Deafault: 1 / Set to 0 to Disable / Amount of XP Earned when Feeding Horse
+Config.showXpMessage    = true -- Default: true / Show XP Increase Message on Screen
 
 Config.displayHorseName = true -- Tell players what breed the horse they mounted is
-Config.tameCost = 50 -- Cost of registering a tamed horse
-Config.tameDifficulty = 2 -- how hard do you want taming to be
 
+Config.tameCost       = 50 -- Cost of registering a tamed horse
+Config.tameDifficulty = 2  -- how hard do you want taming to be
 
+Config.allowSale  = true -- Let people sell horses they capture?
+Config.allowKeep  = true -- Let people keep horses they capture?
+Config.sellPoints = {    -- Sell locations for Horses
+    Valentine = { coords = vector3(-357.57, 771.3, 116.45) }
+ }
 -----------------------------------------------------
 
 -- Allow Blips on Map when Stable is Closed
