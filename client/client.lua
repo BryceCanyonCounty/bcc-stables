@@ -50,6 +50,7 @@ local MiniGame = exports['bcc-minigames'].initiate()
 local TamingMount = nil
 local TameCount = 0
 local HorseBreed = nil
+local TamedCooldown = false
 
 -- Start Stables
 CreateThread(function()
@@ -636,7 +637,7 @@ function SpawnHorse(horseModel, horseName, gender, xp)
         end
     end
 
-    TriggerServerEvent('bcc-stables:RegisterInventory', MyHorseId)
+    TriggerServerEvent('bcc-stables:RegisterInventory', MyHorseId, horseModel)
 
     if Config.horseTag then
         TriggerEvent('bcc-stables:HorseTag')
@@ -796,20 +797,22 @@ end
 
 function OpenInventory()
     local playerPed = PlayerPedId()
+    local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459) -- IsMetaPedUsingComponent
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
     if dist <= 1.5 then
         if Config.useSaddlebags then
-            local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459) -- IsMetaPedUsingComponent
-            if hasSaddlebags then
-                Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_LootSaddleBags'), 0, 1) -- TaskAnimalInteraction
-                TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
-            else
-                VORPcore.NotifyRightTip(_U('noSaddlebags'), 4000)
-                return
+            if not hasSaddlebags then
+                return VORPcore.NotifyRightTip(_U('noSaddlebags'), 4000)
             end
-        else
-            TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
         end
+        if Config.searchSaddlebags and hasSaddlebags then
+            if not IsPedOnFoot(playerPed) then
+                return VORPcore.NotifyRightTip(_U('standingInv'), 4000)
+            else
+                Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_LootSaddleBags'), 0, 1) -- TaskAnimalInteraction
+            end
+        end
+        TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
     end
 end
 
@@ -873,7 +876,7 @@ function SaveXp(xpSource)
     if newXp >= maxXp then
         MaxBonding = true
     end
-    if newXp < maxXp + 1 then
+    if newXp < maxXp then
         TriggerServerEvent('bcc-stables:UpdateHorseXp', newXp, MyHorseId)
     end
 end
@@ -1019,6 +1022,7 @@ end
 -- Manage Tamed Horse
 CreateThread(function() -- distance and seller
     local markerLoc = nil
+    local allowSale = Config.allowSale
     while true do
         Wait(0)
         local playerPed = PlayerPedId()
@@ -1037,20 +1041,31 @@ CreateThread(function() -- distance and seller
                         if distance < 5 and not InMenu then
                             local capturePrompts = CreateVarString(10, 'LITERAL_STRING', _U('manageHorse'))
                             PromptSetActiveGroupThisFrame(TameGroup, capturePrompts)
-                            if Config.allowSale then
-                                PromptSetEnabled(SellTame, 1)
+                            if allowSale then
+                                if not TamedCooldown then
+                                    PromptSetEnabled(SellTame, true)
+                                    PromptSetVisible(SellTame, true)
+                                else
+                                    PromptSetEnabled(SellTame, false)
+                                end
                             else
-                                PromptSetEnabled(SellTame, 0)
+                                PromptSetVisible(SellTame, false)
                             end
                             if Config.allowKeep then
-                                PromptSetEnabled(KeepTame, 1)
+                                PromptSetEnabled(KeepTame, true)
+                                PromptSetVisible(KeepTame, true)
                             else
-                                PromptSetEnabled(KeepTame, 0)
+                                PromptSetVisible(KeepTame, false)
                             end
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, SellTame) then  -- UiPromptHasStandardModeCompleted
                                 TriggerServerEvent('bcc-stables:SellTamedHorse', GetEntityModel(mount))
+                                TriggerEvent('bcc-stables:SellTamedCooldown')
                                 if mount then
+                                    Citizen.InvokeNative(0x48E92D3DDE23C23A, playerPed, 0, 0, 0, 0, mount) -- TaskDismountAnimal
+                                    while not Citizen.InvokeNative(0x01FEE67DB37F59B2, playerPed) do -- IsPedOnFoot
+                                        Wait(10)
+                                    end
                                     DeleteEntity(mount)
                                     mount = nil
                                     Wait(200)
@@ -1087,20 +1102,31 @@ CreateThread(function() -- distance and seller
                         if distance < 5 and not InMenu then
                             local capturePrompts = CreateVarString(10, 'LITERAL_STRING', _U('manageHorse'))
                             PromptSetActiveGroupThisFrame(TameGroup, capturePrompts)
-                            if Config.allowSale then
-                                PromptSetEnabled(SellTame, 1)
+                            if allowSale then
+                                if not TamedCooldown then
+                                    PromptSetEnabled(SellTame, true)
+                                    PromptSetVisible(SellTame, true)
+                                else
+                                    PromptSetEnabled(SellTame, false)
+                                end
                             else
-                                PromptSetEnabled(SellTame, 0)
+                                PromptSetVisible(SellTame, false)
                             end
                             if Config.allowKeep then
-                                PromptSetEnabled(KeepTame, 1)
+                                PromptSetEnabled(KeepTame, true)
+                                PromptSetVisible(KeepTame, true)
                             else
-                                PromptSetEnabled(KeepTame, 0)
+                                PromptSetVisible(KeepTame, false)
                             end
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, SellTame) then  -- UiPromptHasStandardModeCompleted
                                 TriggerServerEvent('bcc-stables:SellTamedHorse', GetEntityModel(mount))
+                                TriggerEvent('bcc-stables:SellTamedCooldown')
                                 if mount then
+                                    Citizen.InvokeNative(0x48E92D3DDE23C23A, playerPed, 0, 0, 0, 0, mount) -- TaskDismountAnimal
+                                    while not Citizen.InvokeNative(0x01FEE67DB37F59B2, playerPed) do -- IsPedOnFoot
+                                        Wait(10)
+                                    end
                                     DeleteEntity(mount)
                                     mount = nil
                                     Wait(200)
@@ -1129,6 +1155,14 @@ CreateThread(function() -- distance and seller
             Wait(1000)
         end
     end
+end)
+
+AddEventHandler('bcc-stables:SellTamedCooldown', function()
+    local cooldown = math.floor(Config.sellCooldown * 60000)
+    VORPcore.NotifyRightTip(_U('tamedCooldown') .. Config.sellCooldown .. _U('minutes'), 4000)
+    TamedCooldown = true
+    Wait(cooldown)
+    TamedCooldown = false
 end)
 
 function KeepTamedHorse(tempData)
@@ -1195,8 +1229,7 @@ RegisterNetEvent('bcc-stables:BrushHorse', function()
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
     if dist <= 2.0 then
         if not BrushCooldown then
-            Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Brush'),
-                joaat('p_brushHorse02x'), 1) -- TaskAnimalInteraction
+            Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Brush'), joaat('p_brushHorse02x'), 1) -- TaskAnimalInteraction
 
             if Config.boost.brushHealth > 0 then
                 local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
@@ -1576,7 +1609,6 @@ function StartPrompts()
     SellTame = PromptRegisterBegin()
     PromptSetControlAction(SellTame, Config.keys.sell)
     PromptSetText(SellTame, sellStr)
-    PromptSetVisible(SellTame, 1)
     PromptSetStandardMode(SellTame, 1)
     PromptSetGroup(SellTame, TameGroup)
     PromptRegisterEnd(SellTame)
@@ -1585,7 +1617,6 @@ function StartPrompts()
     KeepTame = PromptRegisterBegin()
     PromptSetControlAction(KeepTame, Config.keys.keep)
     PromptSetText(KeepTame, keepStr)
-    PromptSetVisible(KeepTame, 1)
     PromptSetStandardMode(KeepTame, 1)
     PromptSetGroup(KeepTame, TameGroup)
     PromptRegisterEnd(KeepTame)

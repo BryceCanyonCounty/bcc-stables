@@ -18,6 +18,7 @@ Locales["en_lang"] = {
     soldHorse = "You sold a horse for: $~t6~",
     horseReturned = "Your horse has been ~o~returned",
     noHorse = "You don't have a horse to return",
+    tamedCooldown = "You can sell another horse in ~o~",
     brushCooldown = "Your horse can be ~o~brushed~q~ again in ~o~",
     feedCooldown = "Your horse can be ~o~fed~q~ again in ~o~",
     minutes = "~q~ minutes",
@@ -31,5 +32,6 @@ Locales["en_lang"] = {
     tooFar = "You're not close enough to your horse",
     nameHorse = "Name your horse:",
     stableSpawn = "You must go to a Stable to call your horse!",
-    manageHorse = "Manage Horse"
+    manageHorse = "Manage Horse",
+    standingInv = "Dismount horse to open saddlebags"
 }

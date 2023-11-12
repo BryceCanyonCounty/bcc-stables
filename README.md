@@ -9,7 +9,7 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - Buy and sell horses through the stables
 - Cash and/or gold may be used for payments in the menu
 - Max player horses is set in the config (default: 5)
-- Individual inventory for each horse
+- Individual inventory size for each horse model
 - Choose horse gender at purchase
 - Use oil lantern from inventory to equip a lantern to your horse
 - Shop hours may be set individually for each stable or disabled to allow the stable to remain open
@@ -19,16 +19,23 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - Return horse at stable (when open) or using the flee button in the horse menu
 - Feed your horse (haycubes) to increase horse's health and stamina
 - Brushing your horse will clean him and give a slight increase in health and stamina
-- Configurable cooldown time for feeding and brushing
+- Configurable cooldown time for feeding, brushing and selling tamed horses
 - Distance-based NPC spawns
-- XP System for horse bonding
-- Tame wild horses
+- Horse Training
+
+#### Horse Training
+- XP System
+  - Ride, feed and brush your horse to gain XP. As xp is gained, bonding levels will increase (0-4) for better horse stats and tricks
+- Tame wild horses and return to a trainer area to sell or register your tamed horse
+  - If you want to keep the tame, if you have room in your stable, you'll pay a registration fee and it will be added
+- Job check if Trainer job is required
 
 #### Tips
 - Whistleing -- A short whistle will call your horse. A long one will set your horse to follow you. A second whistle or mounting your horse will cancel following.
-- XP System -- Ride, feed and brush your horse to gain XP. Gain bonding levels (0-4) for better horse stats
+
 #### Commands
-`/horseRespawn` Respawn your horse while bypassing the distance check
+- `/horseRespawn` Respawn your horse while bypassing the distance check
+- `/horseStats` Check horse xp staus. Displays in F8 console (temporary)
 
 #### Dependencies
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
