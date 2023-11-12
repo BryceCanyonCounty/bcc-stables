@@ -253,20 +253,26 @@ RegisterServerEvent('bcc-stables:SellTamedHorse', function(horseModel)
 end)
 
 -- Inventory
-RegisterServerEvent('bcc-stables:RegisterInventory', function(id)
-    local data = {
-        id = 'horse_' .. tostring(id),
-        name = _U('horseInv'),
-        limit = tonumber(Config.invLimit),
-        acceptWeapons = true,
-        shared = false,
-        ignoreItemStackLimit = true,
-        whitelistItems = false,
-        UsePermissions = false,
-        UseBlackList = false,
-        whitelistWeapons = false
-    }
-    exports.vorp_inventory:registerInventory(data)
+RegisterServerEvent('bcc-stables:RegisterInventory', function(id, horseModel)
+    for _, horseConfig in pairs(Config.Horses) do
+        for model, value in pairs(horseConfig.colors) do
+            if model == horseModel then
+                local data = {
+                    id = 'horse_' .. tostring(id),
+                    name = _U('horseInv'),
+                    limit = tonumber(value.invLimit),
+                    acceptWeapons = Config.allowWeapons,
+                    shared = Config.shareInventory,
+                    ignoreItemStackLimit = true,
+                    whitelistItems = false,
+                    UsePermissions = false,
+                    UseBlackList = false,
+                    whitelistWeapons = false
+                }
+                exports.vorp_inventory:registerInventory(data)
+            end
+        end
+    end
 end)
 
 RegisterServerEvent('bcc-stables:OpenInventory', function(id)
