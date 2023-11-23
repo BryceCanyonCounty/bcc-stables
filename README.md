@@ -8,7 +8,7 @@ Groom, feed, and clean your horse to keep them at peak performance.
 #### Features
 - Buy and sell horses through the stables
 - Cash and/or gold may be used for payments in the menu
-- Max player horses is set in the config (default: 5)
+- Max owned horses set separately for players and trainers in the config
 - Individual inventory size for each horse model
 - Choose horse gender at purchase
 - Use oil lantern from inventory to equip a lantern to your horse
@@ -17,18 +17,22 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - Blips can change color reflecting if stable is open, closed or job locked
 - Stable access can be limited by job and jobgrade
 - Return horse at stable (when open) or using the flee button in the horse menu
-- Feed your horse (haycubes) to increase horse's health and stamina
+- Feed and water your horse to increase horse's health and stamina
 - Brushing your horse will clean him and give a slight increase in health and stamina
-- Configurable cooldown time for feeding, brushing and selling tamed horses
+- Configurable cooldown time for feeding, drinking, brushing and selling tamed horses
 - Distance-based NPC spawns
-- Horse Training
+- Horse Training System
+- Horse Trading between players
 
 #### Horse Training
 - XP System
-  - Ride, feed and brush your horse to gain XP. As xp is gained, bonding levels will increase (0-4) for better horse stats and tricks
+  - Ride, feed, water and brush your horse to gain XP. As xp is gained, bonding levels will increase (0-4) for better horse stats and tricks
 - Tame wild horses and return to a trainer area to sell or register your tamed horse
   - If you want to keep the tame, if you have room in your stable, you'll pay a registration fee and it will be added
 - Job check if Trainer job is required
+
+#### Horse Trading
+- While leading your horse, approach another player and a trade prompt will appear
 
 #### Tips
 - Whistleing -- A short whistle will call your horse. A long one will set your horse to follow you. A second whistle or mounting your horse will cancel following.
@@ -36,10 +40,12 @@ Groom, feed, and clean your horse to keep them at peak performance.
 #### Commands
 - `/horseRespawn` Respawn your horse while bypassing the distance check
 - `/horseStats` Check horse xp staus. Displays in F8 console (temporary)
+- `/horseSetWild` In dev mode, set a tamed horse wild to test taming
 
 #### Dependencies
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
 - [vorp_inventory](https://github.com/VORPCORE/vorp_inventory-lua)
+- [bcc-minigames](https://github.com/BryceCanyonCounty/bcc-minigames)
 
 #### Installation
 - Download the latest release `bcc-stables.zip` at [/releases/latest](https://github.com/BryceCanyonCounty/bcc-stables/releases/latest)
@@ -47,6 +53,7 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - Add `ensure bcc-stables` to your `resources.cfg`
 - Run the included database file `bcc-stables.sql`
 - Add oil_lantern image to: `...\vorp_inventory\html\img`
+- Make sure dependencies are ensured above `bcc-stables`
 - Restart server
 
 #### Credits
