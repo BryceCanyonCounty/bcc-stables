@@ -15,11 +15,24 @@ Config.currencyType = 2 -- Default: 2
 -----------------------------------------------------
 
 Config.keys = {
-	shop  = 0x760A9C6F, --[G] Open Stable Menu
-    call  = 0x80F28E95, --[L] Call Horse at Stable
-	ret   = 0x27D1C284, --[R] Return Horse at Stable
-    sell  = 0x80F28E95, --[L] Sell Tamed Horse at Sell Point
-    keep  = 0x27D1C284, --[R] Keep Tamed Horse at Sell Point
+	shop   = 0x760A9C6F, --[G] Open Stable Menu
+    call   = 0x80F28E95, --[L] Call Horse at Stable
+	ret    = 0x27D1C284, --[R] Return Horse at Stable
+    sell   = 0x80F28E95, --[L] Sell Tamed Horse at Sell Point
+    keep   = 0x27D1C284, --[R] Keep Tamed Horse at Sell Point
+    trade  = 0x27D1C284, --[R] Trade Horse to Player
+    drink  = 0xD8F73058, --[U] Trade Horse to Player
+    rest   = 0x620A6C5E, --[V] Trade Horse to Player
+    sleep  = 0x43CDA5B0, --[Z] Trade Horse to Player
+    wallow = 0x9959A6F0, --[C] Trade Horse to Player
+}
+-----------------------------------------------------
+
+-- Change / Translate Stables Commands
+Config.commands = {
+    horseStats   = 'horseStats',   -- Check Horse Bonding Stats in Console
+    horseSetWild = 'horseSetWild', -- Dev Mode: Make a Horse Wild
+    horseRespawn = 'horseRespawn', -- Respawn Horse if Stuck or Unable to Reach
 }
 -----------------------------------------------------
 
@@ -52,10 +65,11 @@ Config.shareInventory   = false -- Default: false / Share with All Players
 Config.allowWeapons     = true  -- Default: true / Allow Weapons
 -----------------------------------------------------
 
--- Cooldown for Brushing and Feeding Horse
+-- Cooldown for Brushing, Feeding and Drinking
 Config.timer = {
 	brush = 5, -- Default: 5 / Time in Minutes
-	feed  = 5  -- Default: 5 / Time in Minutes
+	feed  = 5, -- Default: 5 / Time in Minutes
+    drink = 5, -- Default: 5 / Time in Minutes
 }
 -----------------------------------------------------
 
@@ -64,7 +78,9 @@ Config.boost = {
 	brushHealth  = 10, -- Increase for Brushing Horse
 	brushStamina = 10,
 	feedHealth   = 20, -- Increase for Feeding Horse
-	feedStamina  = 20
+	feedStamina  = 20,
+    drinkHealth  = 20, -- Increase for Horse Drinking
+	drinkStamina = 20,
 }
 -----------------------------------------------------
 
@@ -76,15 +92,16 @@ Config.tagDistance = 15   -- Default: 15 / Distance from Horse the Tag is Visibl
 -- Horse Training
 Config.trainerOnly = false -- Can only horse trainers capture, sell and train horses?
 Config.Trainerjob = {
-	{ name = 'Valstables', grade = 1 },
+	{ name = 'trainer', grade = 0 },
 }
 Config.trainingDistance = 100  -- Default:100 / Distance Traveled to Increase XP
 Config.horseXpPerCheck  = 1    -- Default: 1 / XP Earned per 'trainingDistance' Achieved
 Config.horseXpPerBrush  = 1    -- Default: 1 / Set to 0 to Disable / Amount of XP Earned when Brushing Horse
 Config.horseXpPerFeed   = 1    -- Default: 1 / Set to 0 to Disable / Amount of XP Earned when Feeding Horse
+Config.horseXpPerDrink  = 1    -- Default: 1 / Set to 0 to Disable / Amount of XP Earned When Horse Drinks
 Config.showXpMessage    = true -- Default: true / Show XP Increase Message on Screen
 
-Config.displayHorseName = true -- Default: true / Display Breed of Horse Player Mounted
+Config.displayHorseBreed = true -- Default: true / Display Breed of Horse Player Mounted
 
 Config.tameCost       = 50 -- Default: 50 / Cost of Registering a Tamed Horse
 Config.tameDifficulty = 2  -- Default: 2 / How Hard do you Want Taming to Be

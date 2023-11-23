@@ -252,6 +252,22 @@ RegisterServerEvent('bcc-stables:SellTamedHorse', function(horseModel)
     end
 end)
 
+RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
+    -- Current Owner
+    local src = source
+    local curOwner = VORPcore.getUser(src).getUsedCharacter
+    local curOwnerName = curOwner.firstname .. " " .. curOwner.lastname
+    -- New Owner
+    local newOwner = VORPcore.getUser(serverId).getUsedCharacter
+    local newOwnerId = newOwner.identifier
+    local newOwnerCharId = newOwner.charIdentifier
+    local newOwnerName = newOwner.firstname .. " " .. newOwner.lastname
+    MySQL.query.await('UPDATE player_horses SET identifier = ?, charid = ?, selected = ? WHERE id = ?', { newOwnerId, newOwnerCharId, 0, horseId })
+
+    VORPcore.NotifyRightTip(src, _U('youGave') .. newOwnerName .. _U('aHorse'), 4000)
+    VORPcore.NotifyRightTip(serverId, curOwnerName .._U('gaveHorse'), 4000)
+end)
+
 -- Inventory
 RegisterServerEvent('bcc-stables:RegisterInventory', function(id, horseModel)
     for _, horseConfig in pairs(Config.Horses) do
@@ -278,10 +294,6 @@ end)
 RegisterServerEvent('bcc-stables:OpenInventory', function(id)
     local src = source
     exports.vorp_inventory:openInventory(src, 'horse_' .. tostring(id))
-end)
-
-RegisterServerEvent('bcc-stables:DeregisterInventory', function(id)
-    exports.vorp_inventory:removeInventory('horse_' .. tostring(id))
 end)
 
 -- Horse Care
