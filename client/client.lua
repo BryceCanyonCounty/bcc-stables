@@ -12,6 +12,9 @@ local ShopGroup = GetRandomIntInRange(0, 0xffffff)
 local KeepTame
 local SellTame
 local TameGroup = GetRandomIntInRange(0, 0xffffff)
+-- Trade Prompts
+local TradeHorse
+local TradeGroup = GetRandomIntInRange(0, 0xffffff)
 -- Horse Tack
 local SaddlesUsing = nil
 local SaddleclothsUsing = nil
@@ -28,6 +31,7 @@ local InMenu = false
 local StableName
 local BrushCooldown = false
 local FeedCooldown = false
+local DrinkCooldown = false
 local ShopEntity
 local MyEntity
 local MyHorse = nil
@@ -42,6 +46,7 @@ local Spawning = false
 local Sending = false
 local Cam = false
 local UsingLantern = false
+local PromptsStarted = false
 -- Training data 
 local IsTrainer = false
 local LastLoc = nil
@@ -598,7 +603,6 @@ function SpawnHorse(horseModel, horseName, gender, xp)
     end
     MyHorse = CreatePed(model, spawnPosition, GetEntityHeading(playerPed), true, false)
     SetModelAsNoLongerNeeded(model)
-    --Citizen.InvokeNative(0xAEB97D84CDF3C00B,MyHorse,0) -- Set horse as wild = false
 
     LocalPlayer.state.HorseData = {
         MyHorse = NetworkGetNetworkIdFromEntity(MyHorse)
@@ -661,6 +665,12 @@ function SpawnHorse(horseModel, horseName, gender, xp)
         TriggerEvent('bcc-stables:HorseBonding')
     end
 
+    TriggerEvent('bcc-stables:TradeHorse')
+
+    PromptsStarted = false
+    TriggerEvent('bcc-stables:HorseMenu')
+
+
     LastLoc = nil
     UsingLantern = false
     Spawning = false
@@ -690,17 +700,136 @@ AddEventHandler('bcc-stables:HorseActions', function()
     while MyHorse do
         Wait(0)
         -- Open Saddlebags (key: U)
-        if Citizen.InvokeNative(0x580417101DDB492F, 2, 0xD8F73058) then -- IsControlJustPressed
+        if Citizen.InvokeNative(0x580417101DDB492F, 0, 0xD8F73058) then -- IsControlJustPressed
             OpenInventory()
         end
         -- Horse Flee (key: F in Horse Menu)
         if Config.fleeEnabled then
-            if Citizen.InvokeNative(0x91AEF906BCA88877, 0, 0x4216AF06) then -- IsDisabledControlJustPressed
+            if Citizen.InvokeNative(0x580417101DDB492F, 0, `INPUT_HORSE_COMMAND_FLEE`) then -- IsControlJustPressed
                 FleeHorse()
             end
         end
     end
 end)
+
+AddEventHandler('bcc-stables:HorseMenu', function()
+    local playerPed = PlayerPedId()
+    local player = PlayerId()
+    while MyHorse do
+        local sleep = 1000
+        local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
+        if dist <= 20 then
+            Citizen.InvokeNative(0x63F58F7C80513AAD, MyHorse, true) -- SetPedCanBeTargetted
+            if Citizen.InvokeNative(0x4605C66E0F935F83, player) then -- IsPlayerTargettingAnything
+                local _, targetEntity = GetPlayerTargetEntity(player)
+                if Citizen.InvokeNative(0x27F89FDC16688A7A, player, MyHorse, 0) then -- IsPlayerTargettingEntity
+                    sleep = 0
+                    local menuGroup = Citizen.InvokeNative(0xB796970BD125FCE8, targetEntity) -- PromptGetGroupIdForTargetEntity
+                    TriggerEvent('bcc-stables:HorsePrompts', menuGroup)
+                    if Citizen.InvokeNative(0x580417101DDB492F, 0, Config.keys.drink) then -- [U] IsControlJustPressed
+                        if Citizen.InvokeNative(0x57AB4A3080F85143, MyHorse) then -- IsPedUsingAnyScenario
+                            ClearPedTasks(MyHorse)
+                        end
+                        HorseDrink()
+                    end
+                    if Citizen.InvokeNative(0x580417101DDB492F, 0, Config.keys.rest) then -- [V] IsControlJustPressed
+                        if Citizen.InvokeNative(0x57AB4A3080F85143, MyHorse) then -- IsPedUsingAnyScenario
+                            ClearPedTasks(MyHorse)
+                        end
+                        HorseRest()
+                    end
+                    if Citizen.InvokeNative(0x580417101DDB492F, 0, Config.keys.sleep) then -- [Z] IsControlJustPressed
+                        if Citizen.InvokeNative(0x57AB4A3080F85143, MyHorse) then -- IsPedUsingAnyScenario
+                            ClearPedTasks(MyHorse)
+                        end
+                        HorseSleep()
+                    end
+                    if Citizen.InvokeNative(0x580417101DDB492F, 0, Config.keys.wallow) then -- [C] IsControlJustPressed
+                        if Citizen.InvokeNative(0x57AB4A3080F85143, MyHorse) then -- IsPedUsingAnyScenario
+                            ClearPedTasks(MyHorse)
+                        end
+                        HorseWallow()
+                    end
+                end
+            end
+        else
+            Citizen.InvokeNative(0x63F58F7C80513AAD, MyHorse, false) -- SetPedCanBeTargetted
+        end
+        Wait(sleep)
+    end
+end)
+
+function HorseDrink()
+    if not DrinkCooldown then
+        if IsEntityInWater(MyHorse) then
+            Citizen.InvokeNative(0x524B54361229154F, MyHorse, joaat('WORLD_ANIMAL_HORSE_DRINK_GROUND_DOMESTIC'), 20000, true, 0, GetEntityHeading(MyHorse), false) -- TaskStartScenarioInPlaceHash
+
+            if Config.boost.drinkHealth > 0 then
+                local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
+                Wait(2000)
+                local newHealth = health + Config.boost.drinkHealth
+                if newHealth > 100 then
+                    newHealth = 100
+                end
+                Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, newHealth) -- SetAttributeCoreValue
+            end
+
+            if Config.boost.drinkStamina > 0 then
+                local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
+                Wait(2000)
+                local newStamina = stamina + Config.boost.drinkStamina
+                if newStamina > 100 then
+                    newStamina = 100
+                end
+                Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, newStamina) -- SetAttributeCoreValue
+            end
+
+            if Config.horseXpPerDrink > 0 and not MaxBonding then
+                if Config.trainerOnly then
+                    if IsTrainer then
+                        SaveXp('drink')
+                    end
+                else
+                    SaveXp('drink')
+                end
+            end
+            Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Core_Fill_Up', 'Consumption_Sounds', true, 0) -- PlaySoundFrontend
+
+            local dCooldown = math.floor(Config.timer.drink * 60000)
+            VORPcore.NotifyRightTip(HorseName .. _U('drinkCooldown') .. Config.timer.drink .. _U('minutes'), 4000)
+            DrinkCooldown = true
+            Wait(dCooldown)
+            DrinkCooldown = false
+        else
+            VORPcore.NotifyRightTip(HorseName .. _U('needWater'), 4000)
+        end
+    else
+        VORPcore.NotifyRightTip(HorseName .. _U('notThirsty'), 4000)
+    end
+end
+
+function HorseRest()
+    if not Citizen.InvokeNative(0xAAB0FE202E9FC9F0, MyHorse, -1) then -- IsMountSeatFree
+        return
+    end
+    Citizen.InvokeNative(0x524B54361229154F, MyHorse, joaat('WORLD_ANIMAL_HORSE_RESTING_DOMESTIC'), -1, true, 0, GetEntityHeading(MyHorse), false) -- TaskStartScenarioInPlaceHash
+
+end
+
+function HorseSleep()
+    if not Citizen.InvokeNative(0xAAB0FE202E9FC9F0, MyHorse, -1) then -- IsMountSeatFree
+        return
+    end
+    Citizen.InvokeNative(0x524B54361229154F, MyHorse, joaat('WORLD_ANIMAL_HORSE_SLEEPING_DOMESTIC'), -1, true, 0, GetEntityHeading(MyHorse), false) -- TaskStartScenarioInPlaceHash
+
+end
+
+function HorseWallow()
+    if not Citizen.InvokeNative(0xAAB0FE202E9FC9F0, MyHorse, -1) then -- IsMountSeatFree
+        return
+    end
+    Citizen.InvokeNative(0x524B54361229154F, MyHorse, joaat('WORLD_ANIMAL_HORSE_WALLOW'), -1, true, 0, GetEntityHeading(MyHorse), false) -- TaskStartScenarioInPlaceHash
+end
 
 -- Whistle Horse
 CreateThread(function()
@@ -731,8 +860,6 @@ CreateThread(function()
         end
     end
 end)
-
-
 
 function WhistleHorse()
     if MyHorse then
@@ -796,6 +923,9 @@ function SendHorse()
 end
 
 function OpenInventory()
+    if Citizen.InvokeNative(0x4605C66E0F935F83, PlayerId()) then -- IsPlayerTargettingAnything
+        return
+    end
     local playerPed = PlayerPedId()
     local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459) -- IsMetaPedUsingComponent
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
@@ -820,13 +950,12 @@ function FleeHorse()
     if MyHorse then
         Citizen.InvokeNative(0x22B0D0E37CCB840D, MyHorse, PlayerPedId(), 150.0, 10000, 6, 3.0) -- TaskSmartFleePed
         Wait(10000)
-        TriggerServerEvent('bcc-stables:DeregisterInventory', MyHorseId)
         DeleteEntity(MyHorse)
         MyHorse = nil
     end
 end
 
--- MRP CHANGE: HORSE TRAINER
+-- Horse Bonding
 AddEventHandler('bcc-stables:HorseBonding', function()
     while not MaxBonding do
         Wait(5000)
@@ -860,6 +989,9 @@ function SaveXp(xpSource)
         end,
         ['feed'] = function()
             horseXp = Config.horseXpPerFeed
+        end,
+        ['drink'] = function()
+            horseXp = Config.horseXpPerDrink
         end
     }
     if updateXp[xpSource] then
@@ -884,26 +1016,18 @@ end
 function HorseStats()
     local currentLevel = Citizen.InvokeNative(0x147149F2E909323C, MyHorse, 7, Citizen.ResultAsInteger()) -- GetAttributeBaseRank
     local currentXp = Citizen.InvokeNative(0x219DA04BAA9CB065, MyHorse, 7, Citizen.ResultAsInteger()) --GetAttributePoints
-    local points1 = Citizen.InvokeNative(0x94A7F191DB49A44D, MyModel, 7, 1) -- GetDefaultAttributePointsNeededForRank / Bonding Level
-    local points2 = Citizen.InvokeNative(0x94A7F191DB49A44D, MyModel, 7, 2)
-    local points3 = Citizen.InvokeNative(0x94A7F191DB49A44D, MyModel, 7, 3)
-    local points4 = Citizen.InvokeNative(0x94A7F191DB49A44D, MyModel, 7, 4)
+    local level1 = Citizen.InvokeNative(0x94A7F191DB49A44D, MyModel, 7, 1) -- GetDefaultAttributePointsNeededForRank / Bonding Level
+    local level2 = Citizen.InvokeNative(0x94A7F191DB49A44D, MyModel, 7, 2)
+    local level3 = Citizen.InvokeNative(0x94A7F191DB49A44D, MyModel, 7, 3)
+    local level4 = Citizen.InvokeNative(0x94A7F191DB49A44D, MyModel, 7, 4)
     print('Horse Name:', HorseName)
     print('Current Bonding Level:', currentLevel)
     print('Current XP:', currentXp)
-    print('XP Level 1:', points1, 'Default Settings')
-    print('XP Level 2:', points2, 'Trick: Rear-Up / left-ctrl + spacebar')
-    print('Xp Level 3:', points3, 'Trick: Skid-Stop / left-ctrl')
-    print('XP Level 4:', points4, 'Trick: Dance and Drift / spacebar')
+    print('XP Level 1:', level1, 'Default Settings')
+    print('XP Level 2:', level2, 'Trick: Rear-Up / left-ctrl + spacebar')
+    print('Xp Level 3:', level3, 'Trick: Skid-Stop / left-ctrl')
+    print('XP Level 4:', level4, 'Trick: Dance and Drift / spacebar')
 end
-
-RegisterCommand('horseStats', function()
-    if MyHorse then
-        HorseStats()
-    else
-        VORPcore.NotifyRightTip(_U('noSelectedHorse'), 4000)
-    end
-end)
 
 -- Wild Horse Taming
 CreateThread(function()
@@ -912,22 +1036,20 @@ CreateThread(function()
     while true do
         local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058, PlayerPedId()) -- GetMount
         Wait(1000)
-        if mount and not MyHorse then
+        if mount and mount ~= MyHorse then
             local horseModel = GetEntityModel(mount)
             for _, v in pairs(Config.Horses) do
                 for i, r in pairs(v.colors) do
-                    local horseHash = GetHashKey(i)
+                    local horseHash = joaat(i)
                     if horseHash == horseModel then
                         Entity(mount).state.model = i
-                        if not HorseBreed then
-                            if Config.displayHorseName then
-                                if v.breed == "Other" then
-                                    VORPcore.NotifyBottomRight(r.color, 1000)
-                                else
-                                    VORPcore.NotifyBottomRight(v.breed, 1000)
-                                end
-                                HorseBreed = true
+                        if Config.displayHorseBreed and not HorseBreed then
+                            if v.breed == "Other" then
+                                VORPcore.NotifyBottomRight(r.color, 1000)
+                            else
+                                VORPcore.NotifyBottomRight(v.breed, 1000)
                             end
+                            HorseBreed = true
                         end
                     end
                 end
@@ -945,9 +1067,9 @@ CreateThread(function()
                             end
                             Citizen.InvokeNative(0xAEB97D84CDF3C00B, mount, true) -- SetAnimalIsWild
                             Citizen.InvokeNative(0xBCC76708E5677E1D, mount, true) -- ClearActiveAnimalOwner
-                            Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, false) -- SetAnimalTuningBoolParam
+                            Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, false) -- SetAnimalTuningBoolParam / CannotBeTamed
                         else
-                            Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, true) -- SetAnimalTuningBoolParam
+                            Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, true) -- SetAnimalTuningBoolParam / CannotBeTamed
                             Entity(mount).state.taming = nil
                             Entity(mount).state.canSell = true
                         end
@@ -963,9 +1085,9 @@ CreateThread(function()
                         end
                         Citizen.InvokeNative(0xAEB97D84CDF3C00B, mount, true) -- SetAnimalIsWild
                         Citizen.InvokeNative(0xBCC76708E5677E1D, mount, true) -- ClearActiveAnimalOwner
-                        Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, false) -- SetAnimalTuningBoolParam
+                        Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, false) -- SetAnimalTuningBoolParam / CannotBeTamed
                     else
-                        Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, true)
+                        Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, true) -- SetAnimalTuningBoolParam / CannotBeTamed
                         Entity(mount).state.taming = nil
                         Entity(mount).state.canSell = true
                     end
@@ -1020,7 +1142,7 @@ function HorseCaptureMinigame()
 end
 
 -- Manage Tamed Horse
-CreateThread(function() -- distance and seller
+CreateThread(function()
     local markerLoc = nil
     local allowSale = Config.allowSale
     while true do
@@ -1212,18 +1334,6 @@ function NameHorse(tempData)
     InMenu = false
 end
 
--- Set Horse Wild
-RegisterCommand('releaseHorse',function()
-    if Config.devMode then
-        local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058, PlayerPedId()) -- GetMount
-        Citizen.InvokeNative(0xAEB97D84CDF3C00B, mount, true) -- SetAnimalIsWild
-        Citizen.InvokeNative(0xBCC76708E5677E1D, mount, true) -- ClearActiveAnimalOwner
-        Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, false) -- SetAnimalTuningBoolParam
-    else
-        print('Command used in Developer Mode Only!')
-    end
-end)
-
 RegisterNetEvent('bcc-stables:BrushHorse', function()
     local playerPed = PlayerPedId()
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
@@ -1232,7 +1342,7 @@ RegisterNetEvent('bcc-stables:BrushHorse', function()
             Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Brush'), joaat('p_brushHorse02x'), 1) -- TaskAnimalInteraction
 
             if Config.boost.brushHealth > 0 then
-                local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
+                local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
                 Wait(2000)
                 local newHealth = health + Config.boost.brushHealth
                 if newHealth > 100 then
@@ -1242,7 +1352,7 @@ RegisterNetEvent('bcc-stables:BrushHorse', function()
             end
 
             if Config.boost.brushStamina > 0 then
-                local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1) -- GetAttributeCoreValue
+                local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
                 Wait(2000)
                 local newStamina = stamina + Config.boost.brushStamina
                 if newStamina > 100 then
@@ -1266,12 +1376,12 @@ RegisterNetEvent('bcc-stables:BrushHorse', function()
             Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Core_Fill_Up', 'Consumption_Sounds', true, 0) -- PlaySoundFrontend
 
             local bCooldown = math.floor(Config.timer.brush * 60000)
-            VORPcore.NotifyRightTip(_U('brushCooldown') .. Config.timer.brush .. _U('minutes'), 4000)
+            VORPcore.NotifyRightTip(HorseName .. _U('brushCooldown') .. Config.timer.brush .. _U('minutes'), 4000)
             BrushCooldown = true
             Wait(bCooldown)
             BrushCooldown = false
         else
-            VORPcore.NotifyRightTip(_U('notDirty'), 4000)
+            VORPcore.NotifyRightTip(HorseName .. _U('notDirty'), 4000)
         end
     else
         VORPcore.NotifyRightTip(_U('tooFar'), 4000)
@@ -1283,11 +1393,10 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
     if dist <= 2.0 then
         if not FeedCooldown then
-            Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Food'),
-                joaat('s_horsnack_haycube01x'), 1) -- TaskAnimalInteraction
+            Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Food'), joaat('s_horsnack_haycube01x'), 1) -- TaskAnimalInteraction
 
             if Config.boost.feedHealth > 0 then
-                local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0) -- GetAttributeCoreValue
+                local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
                 Wait(2000)
                 local newHealth = health + Config.boost.feedHealth
                 if newHealth > 100 then
@@ -1297,7 +1406,7 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
             end
 
             if Config.boost.feedStamina > 0 then
-                local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1) -- GetAttributeCoreValue
+                local stamina = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
                 Wait(2000)
                 local newStamina = stamina + Config.boost.feedStamina
                 if newStamina > 100 then
@@ -1318,12 +1427,12 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
             TriggerServerEvent('bcc-stables:RemoveItem', item)
 
             local fCooldown = math.ceil(Config.timer.feed * 60000)
-            VORPcore.NotifyRightTip(_U('feedCooldown') .. Config.timer.feed .. _U('minutes'), 4000)
+            VORPcore.NotifyRightTip(HorseName .. _U('feedCooldown') .. Config.timer.feed .. _U('minutes'), 4000)
             FeedCooldown = true
             Wait(fCooldown)
             FeedCooldown = false
         else
-            VORPcore.NotifyRightTip(_U('notHungry'), 4000)
+            VORPcore.NotifyRightTip(HorseName .. _U('notHungry'), 4000)
         end
     else
         VORPcore.NotifyRightTip(_U('tooFar'), 4000)
@@ -1343,6 +1452,51 @@ RegisterNetEvent('bcc-stables:UseLantern', function()
         end
     end
 end)
+
+AddEventHandler('bcc-stables:TradeHorse', function()
+    while MyHorse do
+        Wait(0)
+        local playerPed = PlayerPedId()
+        local sleep = true
+        local lastLed = Citizen.InvokeNative(0x693126B5D0457D0D, playerPed) -- GetLastLedMount
+        if not IsEntityDead(playerPed) and lastLed == MyHorse and Citizen.InvokeNative(0xEFC4303DDC6E60D3, playerPed) then  -- IsPedLeadingHorse
+            local closestPlayer, closestDistance = GetClosestPlayer()
+            if closestPlayer and closestDistance <= 2.0 then
+                sleep = false
+                local tradePrompt = CreateVarString(10, 'LITERAL_STRING', HorseName)
+                PromptSetActiveGroupThisFrame(TradeGroup, tradePrompt)
+                PromptSetEnabled(TradeHorse, true)
+                if Citizen.InvokeNative(0xE0F65F0640EF0617, TradeHorse) then  -- PromptHasHoldModeCompleted
+                    local serverId = GetPlayerServerId(closestPlayer)
+                    TriggerServerEvent('bcc-stables:SaveHorseTrade', serverId, MyHorseId)
+                    FleeHorse()
+                end
+            end
+        end
+        if sleep then
+            Wait(1000)
+        end
+    end
+end)
+
+function GetClosestPlayer()
+    local players = GetActivePlayers()
+    local player = PlayerId()
+    local coords = GetEntityCoords(PlayerPedId())
+    local closestDistance = nil
+    local closestPlayer = nil
+    for i = 1, #players, 1 do
+        local target = GetPlayerPed(players[i])
+        if players[i] ~= player then
+            local distance = #(coords - GetEntityCoords(target))
+            if closestDistance == nil or closestDistance > distance then
+                closestPlayer = players[i]
+                closestDistance = distance
+            end
+        end
+    end
+    return closestPlayer, closestDistance
+end
 
 -- Select Horse Tack from Menu
 RegisterNUICallback('Saddles', function(data, cb)
@@ -1514,7 +1668,6 @@ function ReturnHorse()
                 Wait(10)
             end
         end
-        TriggerServerEvent('bcc-stables:DeregisterInventory', MyHorseId)
         DeleteEntity(MyHorse)
         MyHorse = nil
         VORPcore.NotifyRightTip(_U('horseReturned'), 4000)
@@ -1572,18 +1725,39 @@ function Rotation(dir)
     end
 end
 
-RegisterCommand('horseRespawn', function()
+-- Commands
+RegisterCommand(Config.commands.horseStats, function()
+    if MyHorse then
+        HorseStats()
+    else
+        VORPcore.NotifyRightTip(_U('noSelectedHorse'), 4000)
+    end
+end)
+
+RegisterCommand(Config.commands.horseSetWild, function()
+    if Config.devMode then
+        local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058, PlayerPedId()) -- GetMount
+        Citizen.InvokeNative(0xAEB97D84CDF3C00B, mount, true) -- SetAnimalIsWild
+        Citizen.InvokeNative(0xBCC76708E5677E1D, mount, true) -- ClearActiveAnimalOwner
+        Citizen.InvokeNative(0x9FF1E042FA597187, mount, 97, false) -- SetAnimalTuningBoolParam
+    else
+        print('Command used in Developer Mode Only!') -- Not for use on live server
+    end
+end)
+
+RegisterCommand(Config.commands.horseRespawn, function()
     Spawning = false
     WhistleSpawn()
 end)
 
+-- Prompts
 function StartPrompts()
     local shopStr = CreateVarString(10, 'LITERAL_STRING', _U('shopPrompt'))
     OpenShops = PromptRegisterBegin()
     PromptSetControlAction(OpenShops, Config.keys.shop)
     PromptSetText(OpenShops, shopStr)
-    PromptSetVisible(OpenShops, 1)
-    PromptSetStandardMode(OpenShops, 1)
+    PromptSetVisible(OpenShops, true)
+    PromptSetStandardMode(OpenShops, true)
     PromptSetGroup(OpenShops, ShopGroup)
     PromptRegisterEnd(OpenShops)
 
@@ -1591,8 +1765,8 @@ function StartPrompts()
     OpenCall = PromptRegisterBegin()
     PromptSetControlAction(OpenCall, Config.keys.call)
     PromptSetText(OpenCall, callStr)
-    PromptSetVisible(OpenCall, 1)
-    PromptSetStandardMode(OpenCall, 1)
+    PromptSetVisible(OpenCall, true)
+    PromptSetStandardMode(OpenCall, true)
     PromptSetGroup(OpenCall, ShopGroup)
     PromptRegisterEnd(OpenCall)
 
@@ -1600,8 +1774,8 @@ function StartPrompts()
     OpenReturn = PromptRegisterBegin()
     PromptSetControlAction(OpenReturn, Config.keys.ret)
     PromptSetText(OpenReturn, returnStr)
-    PromptSetVisible(OpenReturn, 1)
-    PromptSetStandardMode(OpenReturn, 1)
+    PromptSetVisible(OpenReturn, true)
+    PromptSetStandardMode(OpenReturn, true)
     PromptSetGroup(OpenReturn, ShopGroup)
     PromptRegisterEnd(OpenReturn)
 
@@ -1609,7 +1783,7 @@ function StartPrompts()
     SellTame = PromptRegisterBegin()
     PromptSetControlAction(SellTame, Config.keys.sell)
     PromptSetText(SellTame, sellStr)
-    PromptSetStandardMode(SellTame, 1)
+    PromptSetStandardMode(SellTame, true)
     PromptSetGroup(SellTame, TameGroup)
     PromptRegisterEnd(SellTame)
 
@@ -1617,10 +1791,88 @@ function StartPrompts()
     KeepTame = PromptRegisterBegin()
     PromptSetControlAction(KeepTame, Config.keys.keep)
     PromptSetText(KeepTame, keepStr)
-    PromptSetStandardMode(KeepTame, 1)
+    PromptSetStandardMode(KeepTame, true)
     PromptSetGroup(KeepTame, TameGroup)
     PromptRegisterEnd(KeepTame)
+
+    local tradeStr = CreateVarString(10, 'LITERAL_STRING', _U('tradePrompt'))
+    TradeHorse = PromptRegisterBegin()
+    PromptSetControlAction(TradeHorse, Config.keys.trade)
+    PromptSetText(TradeHorse, tradeStr)
+    PromptSetVisible(TradeHorse, true)
+    PromptSetHoldMode(TradeHorse, 2000)
+    PromptSetGroup(TradeHorse, TradeGroup)
+    PromptRegisterEnd(TradeHorse)
 end
+
+AddEventHandler('bcc-stables:HorsePrompts', function(menuGroup)
+    local currentLevel = Citizen.InvokeNative(0x147149F2E909323C, MyHorse, 7, Citizen.ResultAsInteger()) -- GetAttributeBaseRank
+    local horseDrink
+    local horseRest
+    local horseSleep
+    local horseWallow
+
+    if not PromptsStarted then
+        local drinkStr = CreateVarString(10, 'LITERAL_STRING', 'Drink')
+        horseDrink = PromptRegisterBegin()
+        PromptSetControlAction(horseDrink, Config.keys.drink)
+        PromptSetText(horseDrink, drinkStr)
+        PromptSetVisible(horseDrink, true)
+        PromptSetStandardMode(horseDrink, true)
+        PromptSetGroup(horseDrink, menuGroup)
+        PromptRegisterEnd(horseDrink)
+
+        local restStr = CreateVarString(10, 'LITERAL_STRING', 'Rest')
+        horseRest = PromptRegisterBegin()
+        PromptSetControlAction(horseRest, Config.keys.rest)
+        PromptSetText(horseRest, restStr)
+        PromptSetVisible(horseRest, true)
+        PromptSetStandardMode(horseRest, true)
+        PromptSetGroup(horseRest, menuGroup)
+        PromptRegisterEnd(horseRest)
+
+        local sleepStr = CreateVarString(10, 'LITERAL_STRING', 'Sleep')
+        horseSleep = PromptRegisterBegin()
+        PromptSetControlAction(horseSleep, Config.keys.sleep)
+        PromptSetText(horseSleep, sleepStr)
+        PromptSetVisible(horseSleep, true)
+        PromptSetStandardMode(horseSleep, true)
+        PromptSetGroup(horseSleep, menuGroup)
+        PromptRegisterEnd(horseSleep)
+
+        local wallowStr = CreateVarString(10, 'LITERAL_STRING', 'Wallow')
+        horseWallow = PromptRegisterBegin()
+        PromptSetControlAction(horseWallow, Config.keys.wallow)
+        PromptSetText(horseWallow, wallowStr)
+        PromptSetVisible(horseWallow, true)
+        PromptSetStandardMode(horseWallow, true)
+        PromptSetGroup(horseWallow, menuGroup)
+        PromptRegisterEnd(horseWallow)
+
+        PromptsStarted = true
+    end
+
+    if currentLevel >= 1 then
+        PromptSetEnabled(horseDrink, true)
+    else
+        PromptSetEnabled(horseDrink, false)
+    end
+    if currentLevel >= 2 then
+        PromptSetEnabled(horseRest, true)
+    else
+        PromptSetEnabled(horseRest, false)
+    end
+    if currentLevel >= 3 then
+        PromptSetEnabled(horseSleep, true)
+    else
+        PromptSetEnabled(horseSleep, false)
+    end
+    if currentLevel >= 4 then
+        PromptSetEnabled(horseWallow, true)
+    else
+        PromptSetEnabled(horseWallow, false)
+    end
+end)
 
 function CheckTrainerJob()
     IsTrainer = false
