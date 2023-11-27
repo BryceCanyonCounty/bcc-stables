@@ -41,7 +41,7 @@ Config.sellPrice = 0.60 -- Default: 0.60
 -----------------------------------------------------
 
 -- Max Number of Horses per Player
-Config.maxHorses        = 5  -- Default: 5
+Config.maxPlayerHorses  = 5  -- Default: 5
 Config.maxTrainerHorses = 10 -- Default: 10
 -----------------------------------------------------
 
@@ -65,15 +65,7 @@ Config.shareInventory   = false -- Default: false / Share with All Players
 Config.allowWeapons     = true  -- Default: true / Allow Weapons
 -----------------------------------------------------
 
--- Cooldown for Brushing, Feeding and Drinking
-Config.timer = {
-	brush = 5, -- Default: 5 / Time in Minutes
-	feed  = 5, -- Default: 5 / Time in Minutes
-    drink = 5, -- Default: 5 / Time in Minutes
-}
------------------------------------------------------
-
--- Health and Stamina Boosts (Set to 0 to Disable)
+-- Health and Stamina Boosts (Set to 0 to Disable Boost - Animations Still Work)
 Config.boost = {
 	brushHealth  = 10, -- Increase for Brushing Horse
 	brushStamina = 10,
@@ -84,14 +76,18 @@ Config.boost = {
 }
 -----------------------------------------------------
 
+-- Horse Drinking
+Config.drinkLength = 15 -- Default: 15 / Time in Seconds for Animation to Run
+-----------------------------------------------------
+
 -- Places Horse Name Above Horse When Saddle is Empty
 Config.horseTag    = true -- Default: true / Set to false to disable
 Config.tagDistance = 15   -- Default: 15 / Distance from Horse the Tag is Visible
 -----------------------------------------------------
 
 -- Horse Training
-Config.trainerOnly = false -- Can only horse trainers capture, sell and train horses?
-Config.Trainerjob = {
+Config.trainerOnly = false -- Default: false / Only Trainers can Tame, Sell and Train Horses
+Config.trainerJob = {
 	{ name = 'trainer', grade = 0 },
 }
 Config.trainingDistance = 100  -- Default:100 / Distance Traveled to Increase XP
@@ -133,12 +129,12 @@ Config.shops = {
 		npcModel = 'u_m_m_bwmstablehand_01',             -- Sets Model for NPCs
 		nDistance = 100.0,                               -- Distance from Shop for NPC to Spawn
 		sDistance = 2.0,                                 -- Distance from NPC to Get Menu Prompt
-		npc = vector3(-365.08, 791.21, 116.18),          -- Location for NPC and Stable
-		npcHeading = 179.76,                             -- NPC Heading
-		horseCam = vector3(-368.48, 789.89, 116.16),     -- Camera Location to View Horse When In-Menu
-		spawn = vector4(-371.35, 786.71, 116.17, 269.3), -- Location for Horse Preview When In-Menu
-		allowedJobs = {},                                -- If Empty, Everyone Can Use / Insert Job to limit access - ex. 'police'
-		jobGrade = 0,                                    -- Enter Minimum Rank / Job Grade to Access Shop
+		npc = vector3(-367.87, 784.27, 115.95),          -- Location for NPC and Stable
+		npcHeading = 6.27,                               -- NPC Heading
+		horseCam = vector3(-369.24, 784.41, 116.16),     -- Camera Location to View Horse When In-Menu
+		spawn = vector3(-371.35, 786.71, 116.17),        -- Location for Horse Preview When In-Menu
+        spawnHeading = 269.3,                            -- Horse Heading When In-Menu
+		allowedJobs = {},                                -- Insert Job to limit access - ex. allowedJobs = {{name = 'police', grade = 1},{name = 'doctor', grade = 3}}
 		shopHours = false,                               -- If You Want the Shops to Use Open and Closed Hours
 		shopOpen = 7,                                    -- Shop Open Time / 24 Hour Clock
 		shopClose = 21,                                  -- Shop Close Time / 24 Hour Clock
@@ -159,9 +155,9 @@ Config.shops = {
 		npc = vector3(-1817.85, -564.86, 156.06),
 		npcHeading = 335.86,
 		horseCam = vector3(-1822.55, -563.93, 156.13),
-		spawn = vector4(-1823.94, -560.85, 156.06, 257.86),
+		spawn = vector3(-1823.94, -560.85, 156.06),
+        spawnHeading = 257.86,
 		allowedJobs = {},
-		jobGrade = 0,
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
@@ -182,9 +178,9 @@ Config.shops = {
 		npc = vector3(2967.53, 792.71, 51.4),
 		npcHeading = 353.62,
 		horseCam = vector3(2970.67, 793.65, 51.4),
-		spawn = vector4(2971.66, 796.82, 51.4, 96.54),
+		spawn = vector3(2971.66, 796.82, 51.4),
+        spawnHeading = 96.54,
 		allowedJobs = {},
-		jobGrade = 0,
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
@@ -205,9 +201,9 @@ Config.shops = {
 		npc = vector3(1210.73, -189.78, 101.39),
 		npcHeading = 107.52,
 		horseCam = vector3(1211.89, -192.76, 101.46),
-		spawn = vector4(1210.5, -196.25, 101.38, 15.61),
+		spawn = vector3(1210.5, -196.25, 101.38),
+        spawnHeading = 15.61,
 		allowedJobs = {},
-		jobGrade = 0,
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
@@ -228,9 +224,9 @@ Config.shops = {
 		npc = vector3(2505.53, -1453.93, 46.32),
 		npcHeading = 99.45,
 		horseCam = vector3(2505.65, -1441.49, 46.29),
-		spawn = vector4(2502.59, -1438.62, 46.32, 182.93),
+		spawn = vector3(2502.59, -1438.62, 46.32),
+        spawnHeading = 182.93,
 		allowedJobs = {},
-		jobGrade = 0,
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
@@ -251,7 +247,31 @@ Config.shops = {
 		npc = vector3(-871.0, -1369.63, 43.53),
 		npcHeading = 6.64,
 		horseCam = vector3(-867.11, -1368.86, 43.54),
-		spawn = vector4(-864.7, -1366.19, 43.55, 88.47),
+		spawn = vector3(-864.7, -1366.19, 43.55),
+        spawnHeading = 88.47,
+		allowedJobs = {},
+		shopHours = false,
+		shopOpen = 7,
+		shopClose = 21,
+	},
+    armadillo = {
+		shopName = 'Armadillo Stable',
+		promptName = 'Armadillo Stable',
+		blipOn = true,
+		blipName = 'Armadillo Stable',
+		blipSprite = 1938782895,
+		blipOpen = 'WHITE',
+		blipClosed = 'RED',
+		blipJob = 'YELLOW_ORANGE',
+		npcOn = true,
+		npcModel = 'u_m_m_bwmstablehand_01',
+		nDistance = 100.0,
+		sDistance = 2.0,
+		npc = vector3(-3706.91, -2539.68, -13.78),
+		npcHeading = 358.23,
+		horseCam = vector3(-3704.84, -2537.68, -13.84),
+		spawn = vector3(-3702.17, -2534.99, -14.02),
+        spawnHeading = 87.22,
 		allowedJobs = {},
 		jobGrade = 0,
 		shopHours = false,
@@ -274,9 +294,9 @@ Config.shops = {
 		npc = vector3(-5515.2, -3040.17, -2.39),
 		npcHeading = 180.76,
 		horseCam = vector3(-5521.37, -3041.23, -2.39),
-		spawn = vector4(-5524.48, -3044.31, -2.39, 263.98),
+		spawn = vector3(-5524.48, -3044.31, -2.39),
+        spawnHeading = 263.98,
 		allowedJobs = {},
-		jobGrade = 0,
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
@@ -297,9 +317,9 @@ Config.shops = {
 		npc = vector3(1340.28, -6853.88, 47.19),
 		npcHeading = 68.92,
 		horseCam = vector3(1337.84, -6853.13, 47.23),
-		spawn = vector4(1335.06, -6850.62, 47.34, 185.14),
+		spawn = vector3(1335.06, -6850.62, 47.34),
+        spawnHeading = 185.14,
 		allowedJobs = {},
-		jobGrade = 0,
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
