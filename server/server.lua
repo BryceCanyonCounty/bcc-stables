@@ -1,10 +1,6 @@
-local VORPcore = {}
-TriggerEvent('getCore', function(core)
-    VORPcore = core
-end)
-local ServerRPC = exports.vorp_core:ServerRpcCall()
+local VORPcore = exports.vorp_core:GetCore()
 
-ServerRPC.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
+VORPcore.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local charid = Character.charIdentifier
@@ -60,7 +56,7 @@ RegisterNetEvent('bcc-stables:BuyTack', function(data)
     TriggerClientEvent('bcc-stables:SaveComps', src)
 end)
 
-ServerRPC.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, data)
+VORPcore.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, data)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local identifier = Character.identifier
@@ -77,7 +73,7 @@ ServerRPC.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, dat
     cb(true)
 end)
 
-ServerRPC.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, data)
+VORPcore.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, data)
     MySQL.query.await('UPDATE player_horses SET name = ? WHERE id = ?', { data.name, data.horseId })
     cb(true)
 end)
@@ -102,7 +98,7 @@ RegisterServerEvent('bcc-stables:SelectHorse', function(data)
     end
 end)
 
-ServerRPC.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
+VORPcore.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local charid = Character.charIdentifier
@@ -153,7 +149,7 @@ RegisterNetEvent('bcc-stables:UpdateComponents', function(components, horseId, M
     TriggerClientEvent('bcc-stables:SetComponents', src, MyHorse_entity, components)
 end)
 
-ServerRPC.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
+VORPcore.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local charid = Character.charIdentifier
@@ -235,6 +231,7 @@ RegisterServerEvent('bcc-stables:RegisterInventory', function(id, horseModel)
                     whitelistWeapons = false
                 }
                 exports.vorp_inventory:registerInventory(data)
+                break
             end
         end
     end
@@ -270,13 +267,14 @@ exports.vorp_inventory:registerUsableItem('oil_lantern', function(data)
 end)
 
 -- Check if Player has Required Job
-ServerRPC.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer, shop)
+VORPcore.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer, shop)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local charJob = Character.job
     local jobGrade = Character.jobGrade
     if not charJob then
-        return cb(false)
+        cb(false)
+        return
     end
     local jobConfig
     if trainer then
@@ -284,15 +282,22 @@ ServerRPC.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer
     else
         jobConfig = Config.shops[shop].allowedJobs
     end
-    for _, job in pairs(jobConfig) do
-        if charJob == job.name then
-            if tonumber(jobGrade) >= tonumber(job.grade) then
-                return cb(true)
-            end
-        end
+    local hasJob = false
+    hasJob = CheckPlayerJob(charJob, jobGrade, jobConfig)
+    if hasJob then
+        cb(true)
+    else
         cb(false)
     end
 end)
+
+function CheckPlayerJob(charJob, jobGrade, jobConfig)
+    for _, job in pairs(jobConfig) do
+        if (charJob == job.name) and (tonumber(jobGrade) >= tonumber(job.grade)) then
+            return true
+        end
+    end
+end
 
 RegisterNetEvent('vorp_core:instanceplayers', function(setRoom)
     local src = source
