@@ -1,8 +1,4 @@
-local VORPcore = {}
-TriggerEvent('getCore', function(core)
-    VORPcore = core
-end)
-local ClientRPC = exports.vorp_core:ClientRpcCall()
+local VORPcore = exports.vorp_core:GetCore()
 -- Shop Prompts
 local OpenShops
 local OpenCall
@@ -375,7 +371,7 @@ RegisterNUICallback('BuyHorse', function(data, cb)
         data.isTrainer = false
     end
     data.origin = 'buyHorse'
-    local canBuy = ClientRPC.Callback.TriggerAwait('bcc-stables:BuyHorse', data)
+    local canBuy = VORPcore.Callback.TriggerAwait('bcc-stables:BuyHorse', data)
     if canBuy then
         SetHorseName(data)
     else
@@ -404,7 +400,7 @@ function SetHorseName(data)
         if string.len(horseName) > 0 then
             data.name = horseName
             if data.origin == 'updateHorse' then
-                local nameSaved = ClientRPC.Callback.TriggerAwait('bcc-stables:UpdateHorseName', data)
+                local nameSaved = VORPcore.Callback.TriggerAwait('bcc-stables:UpdateHorseName', data)
                 if nameSaved then
                     StableMenu()
                 end
@@ -412,7 +408,7 @@ function SetHorseName(data)
                 return
             elseif data.origin == 'buyHorse' then
                 data.captured = 0
-                local horseSaved = ClientRPC.Callback.TriggerAwait('bcc-stables:SaveNewHorse', data)
+                local horseSaved = VORPcore.Callback.TriggerAwait('bcc-stables:SaveNewHorse', data)
                 if horseSaved then
                     StableMenu()
                 end
@@ -425,7 +421,7 @@ function SetHorseName(data)
                 while not Citizen.InvokeNative(0x01FEE67DB37F59B2, playerPed) do -- IsPedOnFoot
                     Wait(10)
                 end
-                local horseSaved = ClientRPC.Callback.TriggerAwait('bcc-stables:SaveNewHorse', data)
+                local horseSaved = VORPcore.Callback.TriggerAwait('bcc-stables:SaveNewHorse', data)
                 if horseSaved then
                     DeleteEntity(data.mount)
                     HorseBreed = nil
@@ -512,7 +508,7 @@ RegisterNUICallback('selectHorse', function(data, cb)
 end)
 
 function GetSelectedHorse()
-    local data = ClientRPC.Callback.TriggerAwait('bcc-stables:GetHorseData')
+    local data = VORPcore.Callback.TriggerAwait('bcc-stables:GetHorseData')
     if data then
         HorseComponents = data.components
         MyHorseId = data.id
@@ -867,8 +863,10 @@ end)
 
 function LoadAnim(dict)
     RequestAnimDict(dict)
-    while not HasAnimDictLoaded(dict) do
-        Wait(10)
+    local timeout = 5
+    while not HasAnimDictLoaded(dict) and timeout >= 1 do
+        timeout = timeout - 1
+        Wait(300)
     end
 end
 
@@ -1072,7 +1070,6 @@ end
 
 -- Wild Horse Taming
 CreateThread(function()
-    AddSellPointBlip()
     local maxTamecount = Config.tameDifficulty
     while true do
         local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058, PlayerPedId()) -- GetMount
@@ -1343,7 +1340,7 @@ function KeepTamedHorse(tameData)
         tameData.isTrainer = false
     end
     tameData.Cash = Config.tameCost
-    local canKeep = ClientRPC.Callback.TriggerAwait('bcc-stables:BuyHorse', tameData)
+    local canKeep = VORPcore.Callback.TriggerAwait('bcc-stables:BuyHorse', tameData)
     if canKeep then
         SetHorseName(tameData)
     else
@@ -1650,7 +1647,7 @@ RegisterNUICallback('sellHorse', function(data, cb)
     cb('ok')
     DeleteEntity(MyEntity)
     Cam = false
-    local horseSold = ClientRPC.Callback.TriggerAwait('bcc-stables:SellMyHorse', data)
+    local horseSold = VORPcore.Callback.TriggerAwait('bcc-stables:SellMyHorse', data)
     if horseSold then
         StableMenu()
     end
@@ -1878,7 +1875,7 @@ function CheckPlayerJob(trainer, shop)
     else
         HasJob = false
     end
-    local result = ClientRPC.Callback.TriggerAwait('bcc-stables:CheckJob', trainer, shop)
+    local result = VORPcore.Callback.TriggerAwait('bcc-stables:CheckJob', trainer, shop)
     if result then
         if trainer then
             IsTrainer = true
@@ -1888,11 +1885,24 @@ function CheckPlayerJob(trainer, shop)
     end
 end
 
+RegisterNetEvent('vorp:SelectedCharacter', function(charid)
+    if Config.trainerOnly then
+        CheckPlayerJob(true)
+        if IsTrainer then
+            AddSellPointBlip()
+        end
+    else
+        AddSellPointBlip()
+    end
+ end)
+
 function AddSellPointBlip()
-    for _, v in pairs(Config.sellPoints) do
-        local blip = Citizen.InvokeNative(0x554d9d53f696d002, 1664425300, v.coords) -- BlipAddForCoords
-        SetBlipSprite(blip, -1103135225, true)
-        Citizen.InvokeNative(0x9CB1A1623062F402, blip, 'Trainer') -- SetBlipName
+    for _, pointCfg in pairs(Config.sellPoints) do
+        if pointCfg.blipOn then
+            local blip = Citizen.InvokeNative(0x554d9d53f696d002, 1664425300, pointCfg.coords) -- BlipAddForCoords
+            SetBlipSprite(blip, pointCfg.blipSprite, true)
+            Citizen.InvokeNative(0x9CB1A1623062F402, blip,  pointCfg.blipName) -- SetBlipName
+        end
     end
 end
 
