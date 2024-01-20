@@ -106,7 +106,12 @@ Config.allowSale  = true -- Default: true / Allow Player to Sell Tamed Horse
 Config.sellCooldown = 15 -- Cooldown for Selling Tamed Horses in Minutes
 Config.allowKeep  = true -- Default: true / Allow Player to Keep Tamed Horse
 Config.sellPoints = {    -- Sell/Keep locations for Tamed Horses
-    Valentine = { coords = vector3(-357.57, 771.3, 116.45) }
+    valentine = {
+        coords = vector3(-357.57, 771.3, 116.45),
+        blipOn = true,              -- Turns Blip On / Off
+        blipName = 'Trainer',       -- Name of the Blip on the Map
+        blipSprite = -1103135225
+    }
  }
 -----------------------------------------------------
 
@@ -495,7 +500,7 @@ Config.Horses = { -- Gold to Dollar Ratio Based on 1899 Gold Price / sellPrice i
 			['a_c_horse_mustang_grullodun']       = { color = 'Grullo Dun',        cashPrice = 130, goldPrice = 6,  invLimit = 200 },
 			['a_c_horse_mustang_wildbay']         = { color = 'Wild Bay',          cashPrice = 130, goldPrice = 6,  invLimit = 200 },
 			['a_c_horse_mustang_blackovero']      = { color = 'Black Overo',       cashPrice = 500, goldPrice = 24, invLimit = 200 },
-			['a_c_horse_mustang_buckskin']        = { color = 'Buckskin',          cashPrice = 500, goldPrice = 24, invLimit = 150 },
+			['a_c_horse_mustang_buckskin']        = { color = 'Buckskin',          cashPrice = 500, goldPrice = 24, invLimit = 200 },
 			['a_c_horse_mustang_chestnuttovero']  = { color = 'Chestnut Tovero',   cashPrice = 500, goldPrice = 24, invLimit = 200 },
 			['a_c_horse_mustang_reddunovero']     = { color = 'Red Dun Overo',     cashPrice = 500, goldPrice = 24, invLimit = 200 },
 		}
