@@ -19,10 +19,11 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - Return horse at stable (when open) or using the flee button in the horse menu
 - Feed and water your horse to increase horse's health and stamina
 - Brushing your horse will clean him and give a slight increase in health and stamina
-- Configurable cooldown time for feeding, drinking, brushing and selling tamed horses
+- Configurable cooldown time selling tamed horses
 - Distance-based NPC spawns
 - Horse Training System
 - Horse Trading between players
+- Config option: Only trainers can buy horses from a stable (set per stable)
 
 #### Horse Training
 - XP System
