@@ -86,7 +86,7 @@ Config.tagDistance = 15   -- Default: 15 / Distance from Horse the Tag is Visibl
 -----------------------------------------------------
 
 -- Horse Training
-Config.trainerOnly = false -- Default: false / Only Trainers can Tame, Sell and Train Horses
+Config.trainerOnly = false -- Default: false / Only Trainers can Tame and Keep/Sell Wild Horses / Only Trainers can Train Horses
 Config.trainerJob = {
 	{ name = 'trainer', grade = 0 },
 }
@@ -143,6 +143,7 @@ Config.shops = {
 		shopHours = false,                               -- If You Want the Shops to Use Open and Closed Hours
 		shopOpen = 7,                                    -- Shop Open Time / 24 Hour Clock
 		shopClose = 21,                                  -- Shop Close Time / 24 Hour Clock
+        trainerBuy = false,                               -- Only Trainers can Buy Horses from this Stable
 	},
 	strawberry = {
 		shopName = 'Strawberry Stable',
@@ -166,6 +167,7 @@ Config.shops = {
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
+        trainerBuy = false
 	},
 	vanhorn = {
 		shopName = 'Van Horn Stable',
@@ -189,6 +191,7 @@ Config.shops = {
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
+        trainerBuy = false
 	},
 	lemoyne = {
 		shopName = 'Lemoyne Stable',
@@ -212,6 +215,7 @@ Config.shops = {
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
+        trainerBuy = false
 	},
 	saintdenis = {
 		shopName = 'Saint Denis Stable',
@@ -235,6 +239,7 @@ Config.shops = {
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
+        trainerBuy = false
 	},
 	blackwater = {
 		shopName = 'Blackwater Stable',
@@ -258,6 +263,7 @@ Config.shops = {
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
+        trainerBuy = false
 	},
     armadillo = {
 		shopName = 'Armadillo Stable',
@@ -282,6 +288,7 @@ Config.shops = {
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
+        trainerBuy = false
 	},
 	tumbleweed = {
 		shopName = 'Tumbleweed Stable',
@@ -305,6 +312,7 @@ Config.shops = {
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
+        trainerBuy = false
 	},
 	guarma = {
 		shopName = 'Guarma Stable',
@@ -328,6 +336,7 @@ Config.shops = {
 		shopHours = false,
 		shopOpen = 7,
 		shopClose = 21,
+        trainerBuy = false
 	}
 }
 -----------------------------------------------------
