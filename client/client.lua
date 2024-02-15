@@ -365,6 +365,11 @@ end)
 RegisterNUICallback('BuyHorse', function(data, cb)
     cb('ok')
     CheckPlayerJob(true)
+    if Config.shops[Shop].trainerBuy and not IsTrainer then
+        VORPcore.NotifyRightTip(_U('trainerBuyHorse'), 4000)
+        StableMenu()
+        return
+    end
     if IsTrainer then
         data.isTrainer = true
     else
