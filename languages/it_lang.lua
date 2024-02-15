@@ -37,4 +37,5 @@ Locales["it_lang"] = {
     aHorse = " a horse",
     gaveHorse = " gave you a horse",
     needWater = " needs to be in the water!",
+    trainerBuyHorse = "Only Trainers can purchase horses!"
 }
