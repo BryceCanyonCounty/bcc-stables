@@ -48,7 +48,7 @@ local LastLoc = nil
 local MaxBonding = false
 local MiniGame = exports['bcc-minigames'].initiate()
 local TamingMount = nil
-local TameCount = 0
+local TameCount = 1
 local HorseBreed = nil
 local TamedCooldown = false
 
@@ -1076,6 +1076,10 @@ end
 -- Wild Horse Taming
 CreateThread(function()
     local maxTamecount = Config.tameDifficulty
+    if maxTamecount < 1 then
+        maxTamecount = 1
+    end
+    Citizen.InvokeNative(0x0751D461F06E41CE, PlayerId(), 27, 1, true) -- ModifyPlayerUiPrompt / HORSE_CALM
     while true do
         local mount = Citizen.InvokeNative(0xE7E11B8DCBED1058, PlayerPedId()) -- GetMount
         Wait(1000)
@@ -1162,7 +1166,7 @@ CreateThread(function()
                 Entity(TamingMount).state.taming = nil
                 TamingMount = nil
             end
-            TameCount = 0
+            TameCount = 1
         end
     end
 end)
