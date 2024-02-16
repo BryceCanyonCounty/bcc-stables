@@ -100,7 +100,7 @@ Config.showXpMessage    = true -- Default: true / Show XP Increase Message on Sc
 Config.displayHorseBreed = true -- Default: true / Display Breed of Horse Player Mounted
 
 Config.tameCost       = 50 -- Default: 50 / Cost of Registering a Tamed Horse
-Config.tameDifficulty = 2  -- Default: 2 / How Hard do you Want Taming to Be
+Config.tameDifficulty = 1  -- Default: 1 / How Many Times to Run the Minigame (Minimum: 1)
 
 Config.allowSale  = true -- Default: true / Allow Player to Sell Tamed Horse
 Config.sellCooldown = 15 -- Cooldown for Selling Tamed Horses in Minutes
