@@ -31,11 +31,11 @@ Locales["it_lang"] = {
     tooFar = "You're not close enough to your horse",
     nameHorse = "Name your horse:",
     stableSpawn = "You must go to a Stable to call your horse!",
-    manageHorse = "Manage Horse",
     standingInv = "Dismount horse to open saddlebags",
     youGave = "You gave ",
     aHorse = " a horse",
     gaveHorse = " gave you a horse",
     needWater = " needs to be in the water!",
-    trainerBuyHorse = "Only Trainers can purchase horses!"
+    trainerBuyHorse = "Only Trainers can purchase horses!",
+    trainerTameHorse = "Only Trainers can keep or sell tamed horses!",
 }
