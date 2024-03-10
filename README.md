@@ -1,11 +1,11 @@
 # bcc-stables
 
-#### Description
+### Description
 Are you ready to embark on a journey through the untamed wilderness of the Old West? Look no further than bcc-stables, where your trusty steed awaits!
 Personalize your horse with unique mane styles, tail variations, coat colors, and stylish accessories.
 Groom, feed, and clean your horse to keep them at peak performance.
 
-#### Features
+### Features
 - Buy and sell horses through the stables
 - Cash and/or gold may be used for payments in the menu
 - Max owned horses set separately for players and trainers in the config
@@ -25,30 +25,30 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - Horse Trading between players
 - Config option: Only trainers can buy horses from a stable (set per stable)
 
-#### Horse Training
+### Horse Training
 - XP System
   - Ride, feed, water and brush your horse to gain XP. As xp is gained, bonding levels will increase (0-4) for better horse stats and tricks
 - Tame wild horses and return to a trainer area to sell or register your tamed horse
-  - If you want to keep the tame, if you have room in your stable, you'll pay a registration fee and it will be added
+  - If you want to keep the tame, if you have room in your stable, you'll pay a registration fee and it will be added to your stable
 - Job check if Trainer job is required
 
-#### Horse Trading
+### Horse Trading
 - While leading your horse, approach another player and a trade prompt will appear
 
-#### Tips
+### Tips
 - Whistleing -- A short whistle will call your horse. A long one will set your horse to follow you. A second whistle or mounting your horse will cancel following.
 
-#### Commands
+### Commands
 - `/horseRespawn` Respawn your horse while bypassing the distance check
 - `/horseStats` Check horse xp staus. Displays in F8 console (temporary)
 - `/horseSetWild` In dev mode, set a tamed horse wild to test taming
 
-#### Dependencies
+### Dependencies
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
 - [vorp_inventory](https://github.com/VORPCORE/vorp_inventory-lua)
-- [bcc-minigames](https://github.com/BryceCanyonCounty/bcc-minigames)
+- [bcc-utils](https://github.com/BryceCanyonCounty/bcc-utils)
 
-#### Installation
+### Installation
 - Download the latest release `bcc-stables.zip` at [/releases/latest](https://github.com/BryceCanyonCounty/bcc-stables/releases/latest)
 - Add `bcc-stables` folder to your resources folder
 - Add `ensure bcc-stables` to your `resources.cfg`
@@ -57,12 +57,12 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - Make sure dependencies are ensured above `bcc-stables`
 - Restart server
 
-#### Credits
+### Credits
 - lrp_stables
 - [ByteSizd](https://github.com/AndrewR3K) - Vue Boilerplate for RedM
 - [SavSin](https://github.com/DavFount) - UI conversion to VueJS
 - Stephenlikewhoa
 - [Dokoboe](https://github.com/dokoboe)
 
-#### GitHub
+### GitHub
 - https://github.com/BryceCanyonCounty/bcc-stables

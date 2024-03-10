@@ -163,8 +163,8 @@ VORPcore.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
             MySQL.query.await('DELETE FROM player_horses WHERE charid = ? AND id = ?', { charid, id })
         end
     end
-    for _, horseConfig in pairs(Config.Horses) do
-        for models, values in pairs(horseConfig.colors) do
+    for _, horseCfg in pairs(Horses) do
+        for models, values in pairs(horseCfg.colors) do
             if models == modelHorse then
                 if captured then
                     local sellPrice = (Config.sellPrice * (values.cashPrice/2))
@@ -185,8 +185,8 @@ end)
 RegisterServerEvent('bcc-stables:SellTamedHorse', function(horseModel)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
-    for _, v in pairs(Config.Horses) do
-        for i, r in pairs(v.colors) do
+    for _, horseCfg in pairs(Horses) do
+        for i, r in pairs(horseCfg.colors) do
             local horseHash = joaat(i)
             if horseHash == horseModel then
                 local sellPrice = (Config.sellPrice * (r.cashPrice / 2))
@@ -215,8 +215,8 @@ end)
 
 -- Inventory
 RegisterServerEvent('bcc-stables:RegisterInventory', function(id, horseModel)
-    for _, horseConfig in pairs(Config.Horses) do
-        for model, value in pairs(horseConfig.colors) do
+    for _, horseCfg in pairs(Horses) do
+        for model, value in pairs(horseCfg.colors) do
             if model == horseModel then
                 local data = {
                     id = 'horse_' .. tostring(id),
@@ -267,7 +267,7 @@ exports.vorp_inventory:registerUsableItem('oil_lantern', function(data)
 end)
 
 -- Check if Player has Required Job
-VORPcore.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer, shop)
+VORPcore.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer, site)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     local charJob = Character.job
@@ -280,7 +280,7 @@ VORPcore.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer,
     if trainer then
         jobConfig = Config.trainerJob
     else
-        jobConfig = Config.shops[shop].allowedJobs
+        jobConfig = Stables[site].shop.jobs
     end
     local hasJob = false
     hasJob = CheckPlayerJob(charJob, jobGrade, jobConfig)

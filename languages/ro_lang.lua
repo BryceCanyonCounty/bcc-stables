@@ -31,11 +31,11 @@ Locales["ro_lang"] = {
     tooFar = "Nu ești destul de aproape de calul tau",
     nameHorse = "Da nume calului tau:",
     stableSpawn = "Trebuie sa mergi la un Grajd pentru a-ti chema calul!",
-    manageHorse = "Administreaza Calul",
     standingInv = "Da jos de pe cal pentru a deschide bagajele",
     youGave = "Ai dat ",
     aHorse = " un cal",
     gaveHorse = " ti-a dat un cal",
     needWater = " trebuie sa fie in apa!",
     trainerBuyHorse = "Doar Antrenorii pot cumpara cai!",
+    trainerTameHorse = "Doar Antrenorii pot păstra sau vinde cai îmblânziți!",
 }
