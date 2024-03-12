@@ -25,6 +25,7 @@ Config.keys = {
     rest   = 0x620A6C5E, --[V] Horse Rest
     sleep  = 0x43CDA5B0, --[Z] Horse Sleep
     wallow = 0x9959A6F0, --[C] Horse Wallow
+    inv	   = 0x4CC0E2FE, --[B] Open Inventory
 }
 -----------------------------------------------------
 
