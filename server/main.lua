@@ -243,10 +243,10 @@ RegisterServerEvent('bcc-stables:OpenInventory', function(id)
 end)
 
 -- Horse Care
-exports.vorp_inventory:registerUsableItem('consumable_haycube', function(data)
+exports.vorp_inventory:registerUsableItem(Config.haycube, function(data)
     local src = data.source
     exports.vorp_inventory:closeInventory(src)
-    TriggerClientEvent('bcc-stables:FeedHorse', src, 'consumable_haycube')
+    TriggerClientEvent('bcc-stables:FeedHorse', src, Config.haycube)
 end)
 
 RegisterServerEvent('bcc-stables:RemoveItem', function(item)
@@ -254,16 +254,71 @@ RegisterServerEvent('bcc-stables:RemoveItem', function(item)
     exports.vorp_inventory:subItem(src, item, 1)
 end)
 
-exports.vorp_inventory:registerUsableItem('horsebrush', function(data)
+exports.vorp_inventory:registerUsableItem(Config.horsebrush, function(data)
     local src = data.source
+    local item = exports.vorp_inventory:getItem(src,Config.horsebrush,callback,metadata)
     exports.vorp_inventory:closeInventory(src)
     TriggerClientEvent('bcc-stables:BrushHorse', src)
+    if Config.horsebrushdurability == true then
+        if not next(item.metadata) then
+            print("No meta data")
+            -- if not metadata we add new values
+            local newData = {
+                description = "A brush used for grooming horses. | Durability " .. 100 - 1 .. "%",
+                durability = 100 - 1,
+                id = item.id
+            }
+            exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1, callback)
+        else
+            print("meta data")
+            if item.metadata.durability < 1 then
+                exports.vorp_inventory:subItemID(src, item.id, callback)
+                breakage = true 
+            else              
+                local newData = {
+                    description = "A brush used for grooming horses. | Durability " .. item.metadata.durability - 1 .."%",
+                    durability = item.metadata.durability - 1,
+                    id = item.id
+                }
+                exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1, callback)
+
+            end
+        end
+    end
+        
 end)
 
-exports.vorp_inventory:registerUsableItem('oil_lantern', function(data)
+exports.vorp_inventory:registerUsableItem(Config.lantern, function(data)
     local src = data.source
+    local item = exports.vorp_inventory:getItem(src,Config.lantern,callback,metadata)
     exports.vorp_inventory:closeInventory(src)
     TriggerClientEvent('bcc-stables:UseLantern', src)
+    if Config.lanterndurability == true then
+        if not next(item.metadata) then
+            print("No meta data")
+            -- if not metadata we add new values
+            local newData = {
+                description = "Durability " .. 100 - 1 .. "%",
+                durability = 100 - 1,
+                id = item.id
+            }
+            exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1, callback)
+        else
+            print("meta data")
+            if item.metadata.durability < 1 then
+                exports.vorp_inventory:subItemID(src, item.id, callback)
+                breakage = true 
+            else              
+                local newData = {
+                    description = "Durability " .. item.metadata.durability - 1 .."%",
+                    durability = item.metadata.durability - 1,
+                    id = item.id
+                }
+                exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1, callback)
+
+            end
+        end
+    end
 end)
 
 -- Check if Player has Required Job
