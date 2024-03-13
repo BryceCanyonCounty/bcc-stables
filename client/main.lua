@@ -1,5 +1,6 @@
 local VORPcore = exports.vorp_core:GetCore()
 local BccUtils = exports['bcc-utils'].initiate()
+local FeatherMenu =  exports['feather-menu'].initiate()
 
 -- Shop Prompts
 local OpenShops, OpenCall, OpenReturn
@@ -1043,6 +1044,62 @@ function HorseStats()
     print('XP Level 2:', level2, 'Trick: Rear-Up / left-ctrl + spacebar')
     print('Xp Level 3:', level3, 'Trick: Skid-Stop / left-ctrl')
     print('XP Level 4:', level4, 'Trick: Dance and Drift / spacebar')
+     -- Menu Horse Stats
+     MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
+        top = '3%',
+        left = '3%',
+        ['720width'] = '400px',
+        ['1080width'] = '500px',
+        ['2kwidth'] = '600px',
+        ['4kwidth'] = '800px',
+        style = {},
+        contentslot = {
+            style = {
+                ['height'] = '300px',
+                ['min-height'] = '300px'
+            }
+        },
+        draggable = true,
+    })
+        HomePage = MyMenu:RegisterPage('HomePage')
+        HomePage:RegisterElement('header', {
+            value = 'Horse Information',
+            slot = "header",
+            style = {}
+        })
+        HomePage:RegisterElement('textdisplay', {
+            value = "Horse Name: "..HorseName.."\n".."Current Bonding Level: "..currentLevel.."\n".."Current XP: "..currentXp,
+            slot = "header",
+            style = {}
+        })
+        HomePage:RegisterElement('line', {
+            slot = "header",
+            style = {}
+        })
+        HomePage:RegisterElement('subheader', {
+            value = "Horse Bonding Information",
+            slot = "content",
+            style = {}
+        })
+        HomePage:RegisterElement('textdisplay', {
+            value = "XP Level 1: "..level1.."\n".."XP Level 2: "..level2.."\n".."Tricks: Rear-Up | left ctrl + spacebar".."\n".."XP Level 3:"..level3.."\n".."Trick: Skid-Stop | left ctrl".."\n".."XP Level 4:"..level4.."\n".."Trick: Dance and Drift | spacebar",
+            slot = "content",
+            style = {}
+        })
+        HomePage:RegisterElement('line', {
+            slot = "footer",
+            style = {}
+        })
+        HomePage:RegisterElement('subheader', {
+            value = "Other Tricks - Bonding Level Unknown",
+            slot = "footer",
+            style = {}
+        })
+        HomePage:RegisterElement('textdisplay', {
+            value = "Walk backgrounds | Double tap ctrl".."\n".."Walk sidewats | Space + A or D",
+            slot = "footer",
+            style = {}
+        })
 end
 
 -- Wild Horse Taming
@@ -1570,6 +1627,7 @@ end
 RegisterCommand(Config.commands.horseStats, function()
     if MyHorse then
         HorseStats()
+        MyMenu:Open({startupPage = HomePage})
     else
         VORPcore.NotifyRightTip(_U('noSelectedHorse'), 4000)
     end
