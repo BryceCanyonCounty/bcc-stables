@@ -29,6 +29,14 @@ Config.keys = {
 }
 -----------------------------------------------------
 
+Config.horsebrush = "kit_horsebrush"
+Config.horsebrushdurability = true
+Config.haycube = "consumable_haycube"
+Config.lantern = "kit_horselantern"
+Config.lanterndurability = true
+
+-----------------------------------------------------
+
 -- Change / Translate Stables Commands
 Config.commands = {
     horseStats   = 'horseStats',   -- Check Horse Bonding Stats in Console
