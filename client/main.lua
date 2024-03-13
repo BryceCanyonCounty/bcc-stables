@@ -942,24 +942,14 @@ function SendHorse()
 end
 
 function OpenInventory()
-    local playerPed = PlayerPedId()
-    local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459) -- IsMetaPedUsingComponent
-    local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
-    if dist <= 1.5 then
-        if Config.useSaddlebags then
-            if not hasSaddlebags then
-                return VORPcore.NotifyRightTip(_U('noSaddlebags'), 4000)
-            end
-        end
-        if Config.searchSaddlebags and hasSaddlebags then
-            if not IsPedOnFoot(playerPed) then
-                return VORPcore.NotifyRightTip(_U('standingInv'), 4000)
-            else
-                Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_LootSaddleBags'), 0, 1) -- TaskAnimalInteraction
-            end
-        end
-        TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
+    local hasBags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459) -- IsMetaPedUsingComponent
+    if Config.useSaddlebags and not hasBags then
+        return VORPcore.NotifyRightTip(_U('noSaddlebags'), 4000)
     end
+    if hasBags then
+        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat('Interaction_LootSaddleBags'), 0, 1) -- TaskAnimalInteraction
+    end
+    TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
 end
 
 function FleeHorse()
