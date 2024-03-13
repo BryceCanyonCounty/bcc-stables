@@ -739,7 +739,6 @@ AddEventHandler('bcc-stables:HorseMenu', function()
                 PromptSetVisible(HorseRest, false)
                 PromptSetVisible(HorseSleep, false)
                 PromptSetVisible(HorseWallow, false)
-                PromptSetVisible(HorseBags, false)
                 PromptsStarted = false
             end
             goto continue
@@ -1738,6 +1737,7 @@ AddEventHandler('bcc-stables:HorsePrompts', function(menuGroup)
         PromptSetControlAction(HorseBags, Config.keys.inv)
         PromptSetText(HorseBags, CreateVarString(10, 'LITERAL_STRING', 'Bags'))
         PromptSetVisible(HorseBags, true)
+        PromptSetEnabled(HorseBags, true)
         PromptSetStandardMode(HorseBags, true)
         PromptSetGroup(HorseBags, menuGroup)
         PromptRegisterEnd(HorseBags)
