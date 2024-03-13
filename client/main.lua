@@ -14,7 +14,7 @@ local TradeHorse
 local TradeGroup = GetRandomIntInRange(0, 0xffffff)
 
 -- Target Prompts
-local HorseDrink, HorseRest, HorseSleep, HorseWallow = nil, nil, nil, nil
+local HorseDrink, HorseRest, HorseSleep, HorseWallow, HorseBags = nil, nil, nil, nil, nil
 
 -- Horse Tack
 local BedrollsUsing, MasksUsing, MustachesUsing = nil, nil, nil
@@ -716,10 +716,6 @@ AddEventHandler('bcc-stables:HorseActions', function()
     local fleeEnabled = Config.fleeEnabled
     while MyHorse do
         Wait(0)
-        -- Open Saddlebags (key: U)
-        if Citizen.InvokeNative(0x580417101DDB492F, 0, 0xD8F73058) then -- IsControlJustPressed
-            OpenInventory()
-        end
         --Horse Flee (key: F in Horse Menu)
         if fleeEnabled then
             if Citizen.InvokeNative(0x580417101DDB492F, 0, `INPUT_HORSE_COMMAND_FLEE`) then -- IsControlJustPressed
@@ -742,6 +738,7 @@ AddEventHandler('bcc-stables:HorseMenu', function()
                 PromptSetVisible(HorseRest, false)
                 PromptSetVisible(HorseSleep, false)
                 PromptSetVisible(HorseWallow, false)
+                PromptSetVisible(HorseBags, false)
                 PromptsStarted = false
             end
             goto continue
@@ -773,6 +770,9 @@ AddEventHandler('bcc-stables:HorseMenu', function()
                 if not Drinking then
                     TriggerEvent('bcc-stables:HorseWallow')
                 end
+            end
+            if Citizen.InvokeNative(0x580417101DDB492F, 0, Config.keys.inv) then -- [B] IsControlJustPressed
+                TriggerEvent('bcc-stables:HorseBags')
             end
         end
         ::continue::
@@ -849,6 +849,13 @@ AddEventHandler('bcc-stables:HorseWallow', function()
     local dict = 'amb_creature_mammal@world_horse_wallow_shake@idle'
     LoadAnim(dict)
     TaskPlayAnim(MyHorse, dict, 'idle_a', 1.0, 1.0, -1, 3, 1.0, false, false, false)
+end)
+
+AddEventHandler('bcc-stables:HorseBags', function()
+    if not Citizen.InvokeNative(0xAAB0FE202E9FC9F0, MyHorse, -1) then -- IsMountSeatFree
+        return
+    end
+    OpenInventory()
 end)
 
 function LoadAnim(dict)
@@ -935,9 +942,6 @@ function SendHorse()
 end
 
 function OpenInventory()
-    if Citizen.InvokeNative(0x4605C66E0F935F83, PlayerId()) then -- IsPlayerTargettingAnything
-        return
-    end
     local playerPed = PlayerPedId()
     local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459) -- IsMetaPedUsingComponent
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
@@ -1671,6 +1675,14 @@ AddEventHandler('bcc-stables:HorsePrompts', function(menuGroup)
         PromptSetStandardMode(HorseWallow, true)
         PromptSetGroup(HorseWallow, menuGroup)
         PromptRegisterEnd(HorseWallow)
+
+        HorseBags = PromptRegisterBegin()
+        PromptSetControlAction(HorseBags, Config.keys.inv)
+        PromptSetText(HorseBags, CreateVarString(10, 'LITERAL_STRING', 'Bags'))
+        PromptSetVisible(HorseBags, true)
+        PromptSetStandardMode(HorseBags, true)
+        PromptSetGroup(HorseBags, menuGroup)
+        PromptRegisterEnd(HorseBags)
 
         PromptsStarted = true
     end
