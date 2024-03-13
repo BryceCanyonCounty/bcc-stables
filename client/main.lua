@@ -1,5 +1,6 @@
 local VORPcore = exports.vorp_core:GetCore()
 local BccUtils = exports['bcc-utils'].initiate()
+local FeatherMenu =  exports['feather-menu'].initiate()
 
 -- Shop Prompts
 local OpenShops, OpenCall, OpenReturn
@@ -738,7 +739,6 @@ AddEventHandler('bcc-stables:HorseMenu', function()
                 PromptSetVisible(HorseRest, false)
                 PromptSetVisible(HorseSleep, false)
                 PromptSetVisible(HorseWallow, false)
-                PromptSetVisible(HorseBags, false)
                 PromptsStarted = false
             end
             goto continue
@@ -942,24 +942,14 @@ function SendHorse()
 end
 
 function OpenInventory()
-    local playerPed = PlayerPedId()
-    local hasSaddlebags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459) -- IsMetaPedUsingComponent
-    local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
-    if dist <= 1.5 then
-        if Config.useSaddlebags then
-            if not hasSaddlebags then
-                return VORPcore.NotifyRightTip(_U('noSaddlebags'), 4000)
-            end
-        end
-        if Config.searchSaddlebags and hasSaddlebags then
-            if not IsPedOnFoot(playerPed) then
-                return VORPcore.NotifyRightTip(_U('standingInv'), 4000)
-            else
-                Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_LootSaddleBags'), 0, 1) -- TaskAnimalInteraction
-            end
-        end
-        TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
+    local hasBags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459) -- IsMetaPedUsingComponent
+    if Config.useSaddlebags and not hasBags then
+        return VORPcore.NotifyRightTip(_U('noSaddlebags'), 4000)
     end
+    if hasBags then
+        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat('Interaction_LootSaddleBags'), 0, 1) -- TaskAnimalInteraction
+    end
+    TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
 end
 
 function FleeHorse()
@@ -1043,6 +1033,62 @@ function HorseStats()
     print('XP Level 2:', level2, 'Trick: Rear-Up / left-ctrl + spacebar')
     print('Xp Level 3:', level3, 'Trick: Skid-Stop / left-ctrl')
     print('XP Level 4:', level4, 'Trick: Dance and Drift / spacebar')
+     -- Menu Horse Stats
+     MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
+        top = '3%',
+        left = '3%',
+        ['720width'] = '400px',
+        ['1080width'] = '500px',
+        ['2kwidth'] = '600px',
+        ['4kwidth'] = '800px',
+        style = {},
+        contentslot = {
+            style = {
+                ['height'] = '300px',
+                ['min-height'] = '300px'
+            }
+        },
+        draggable = true,
+    })
+        HomePage = MyMenu:RegisterPage('HomePage')
+        HomePage:RegisterElement('header', {
+            value = 'Horse Information',
+            slot = "header",
+            style = {}
+        })
+        HomePage:RegisterElement('textdisplay', {
+            value = "Horse Name: "..HorseName.."\n".."Current Bonding Level: "..currentLevel.."\n".."Current XP: "..currentXp,
+            slot = "header",
+            style = {}
+        })
+        HomePage:RegisterElement('line', {
+            slot = "header",
+            style = {}
+        })
+        HomePage:RegisterElement('subheader', {
+            value = "Horse Bonding Information",
+            slot = "content",
+            style = {}
+        })
+        HomePage:RegisterElement('textdisplay', {
+            value = "XP Level 1: "..level1.."\n".."XP Level 2: "..level2.."\n".."Tricks: Rear-Up | left ctrl + spacebar".."\n".."XP Level 3:"..level3.."\n".."Trick: Skid-Stop | left ctrl".."\n".."XP Level 4:"..level4.."\n".."Trick: Dance and Drift | spacebar",
+            slot = "content",
+            style = {}
+        })
+        HomePage:RegisterElement('line', {
+            slot = "footer",
+            style = {}
+        })
+        HomePage:RegisterElement('subheader', {
+            value = "Other Tricks - Bonding Level Unknown",
+            slot = "footer",
+            style = {}
+        })
+        HomePage:RegisterElement('textdisplay', {
+            value = "Walk backgrounds | Double tap ctrl".."\n".."Walk sidewats | Space + A or D",
+            slot = "footer",
+            style = {}
+        })
 end
 
 -- Wild Horse Taming
@@ -1570,6 +1616,7 @@ end
 RegisterCommand(Config.commands.horseStats, function()
     if MyHorse then
         HorseStats()
+        MyMenu:Open({startupPage = HomePage})
     else
         VORPcore.NotifyRightTip(_U('noSelectedHorse'), 4000)
     end
@@ -1680,6 +1727,7 @@ AddEventHandler('bcc-stables:HorsePrompts', function(menuGroup)
         PromptSetControlAction(HorseBags, Config.keys.inv)
         PromptSetText(HorseBags, CreateVarString(10, 'LITERAL_STRING', 'Bags'))
         PromptSetVisible(HorseBags, true)
+        PromptSetEnabled(HorseBags, true)
         PromptSetStandardMode(HorseBags, true)
         PromptSetGroup(HorseBags, menuGroup)
         PromptRegisterEnd(HorseBags)
