@@ -15,7 +15,7 @@ local TradeHorse
 local TradeGroup = GetRandomIntInRange(0, 0xffffff)
 
 -- Target Prompts
-local HorseDrink, HorseRest, HorseSleep, HorseWallow, HorseBags = nil, nil, nil, nil, nil
+local HorseDrink, HorseRest, HorseSleep, HorseWallow, HorseInf = nil, nil, nil, nil, nil
 
 -- Horse Tack
 local BedrollsUsing, MasksUsing, MustachesUsing = nil, nil, nil
@@ -642,6 +642,7 @@ function SpawnHorse(horseModel, horseName, gender, xp)
     if not Config.fleeEnabled then
         Citizen.InvokeNative(0xA3DB37EDF9A74635, player, MyHorse, 33, 1, true) -- HORSE_FLEE
     end
+    Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse)  -- HORSE WEAPONS AND CARGO
 
     -- SetPedConfigFlag
     Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 113, true) -- DisableShockingEvents
@@ -723,6 +724,9 @@ AddEventHandler('bcc-stables:HorseActions', function()
                 FleeHorse()
             end
         end
+        if Citizen.InvokeNative(0x580417101DDB492F, 0, `INPUT_OPEN_SATCHEL_HORSE_MENU`) then -- IsControlJustPressed
+            OpenInventory()
+        end
     end
 end)
 
@@ -771,8 +775,8 @@ AddEventHandler('bcc-stables:HorseMenu', function()
                     TriggerEvent('bcc-stables:HorseWallow')
                 end
             end
-            if Citizen.InvokeNative(0x580417101DDB492F, 0, Config.keys.inv) then -- [B] IsControlJustPressed
-                TriggerEvent('bcc-stables:HorseBags')
+            if Citizen.InvokeNative(0x580417101DDB492F, 0, Config.keys.inf) then -- [R] IsControlJustPressed
+                TriggerEvent('bcc-stables:HorseInf')
             end
         end
         ::continue::
@@ -851,11 +855,12 @@ AddEventHandler('bcc-stables:HorseWallow', function()
     TaskPlayAnim(MyHorse, dict, 'idle_a', 1.0, 1.0, -1, 3, 1.0, false, false, false)
 end)
 
-AddEventHandler('bcc-stables:HorseBags', function()
+AddEventHandler('bcc-stables:HorseInf', function()
     if not Citizen.InvokeNative(0xAAB0FE202E9FC9F0, MyHorse, -1) then -- IsMountSeatFree
         return
     end
-    OpenInventory()
+    HorseStats()
+    MyMenu:Open({startupPage = HomePage})
 end)
 
 function LoadAnim(dict)
@@ -1723,14 +1728,14 @@ AddEventHandler('bcc-stables:HorsePrompts', function(menuGroup)
         PromptSetGroup(HorseWallow, menuGroup)
         PromptRegisterEnd(HorseWallow)
 
-        HorseBags = PromptRegisterBegin()
-        PromptSetControlAction(HorseBags, Config.keys.inv)
-        PromptSetText(HorseBags, CreateVarString(10, 'LITERAL_STRING', 'Bags'))
-        PromptSetVisible(HorseBags, true)
-        PromptSetEnabled(HorseBags, true)
-        PromptSetStandardMode(HorseBags, true)
-        PromptSetGroup(HorseBags, menuGroup)
-        PromptRegisterEnd(HorseBags)
+        HorseInf = PromptRegisterBegin()
+        PromptSetControlAction(HorseInf, Config.keys.inf)
+        PromptSetText(HorseInf, CreateVarString(10, 'LITERAL_STRING', 'Info'))
+        PromptSetVisible(HorseInf, true)
+        PromptSetEnabled(HorseInf, true)
+        PromptSetStandardMode(HorseInf, true)
+        PromptSetGroup(HorseInf, menuGroup)
+        PromptRegisterEnd(HorseInf)
 
         PromptsStarted = true
     end

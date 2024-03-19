@@ -26,6 +26,7 @@ Config.keys = {
     sleep  = 0x43CDA5B0, --[Z] Horse Sleep
     wallow = 0x9959A6F0, --[C] Horse Wallow
     inv	   = 0x4CC0E2FE, --[B] Open Inventory
+    inf    = 0x4BC9DABB, --[N] Horse Info
 }
 -----------------------------------------------------
 
