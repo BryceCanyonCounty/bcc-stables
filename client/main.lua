@@ -1057,12 +1057,12 @@ function HorseStats()
     })
         HomePage = MyMenu:RegisterPage('HomePage')
         HomePage:RegisterElement('header', {
-            value = 'Horse Information',
+            value = _U('horseInformation'),
             slot = "header",
             style = {}
         })
         HomePage:RegisterElement('textdisplay', {
-            value = "Horse Name: "..HorseName.."\n".."Current Bonding Level: "..currentLevel.."\n".."Current XP: "..currentXp,
+            value = _U('horseName')..HorseName.."\n".._U('horseCurrBondLevel')..currentLevel.."\n".._U('horseCurrXp')..currentXp,
             slot = "header",
             style = {}
         })
@@ -1071,12 +1071,12 @@ function HorseStats()
             style = {}
         })
         HomePage:RegisterElement('subheader', {
-            value = "Horse Bonding Information",
+            value = _U('horseBondInf'),
             slot = "content",
             style = {}
         })
         HomePage:RegisterElement('textdisplay', {
-            value = "XP Level 1: "..level1.."\n".."XP Level 2: "..level2.."\n".."Tricks: Rear-Up | left ctrl + spacebar".."\n".."XP Level 3:"..level3.."\n".."Trick: Skid-Stop | left ctrl".."\n".."XP Level 4:"..level4.."\n".."Trick: Dance and Drift | spacebar",
+            value = _U('horseXpLvl1')..level1.."\n".._U('horseXpLvl2')..level2.."\n".._U('horseTrick1').."\n".._U('horseXpLvl3')..level3.."\n".._U('horseTrick2').."\n".._U('horseXpLvl4')..level4.."\n".._U('horseTrick3'),
             slot = "content",
             style = {}
         })
@@ -1085,12 +1085,12 @@ function HorseStats()
             style = {}
         })
         HomePage:RegisterElement('subheader', {
-            value = "Other Tricks - Bonding Level Unknown",
+            value = _U('horseLvlUnknown'),
             slot = "footer",
             style = {}
         })
         HomePage:RegisterElement('textdisplay', {
-            value = "Walk backgrounds | Double tap ctrl".."\n".."Walk sidewats | Space + A or D",
+            value = _U('horseTrick4').."\n".._U('horseTrick5'),
             slot = "footer",
             style = {}
         })
