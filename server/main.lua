@@ -182,6 +182,14 @@ VORPcore.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
     end
 end)
 
+RegisterServerEvent('bcc-stables:SetTamedData', function(netId)
+    if not netId then
+        return print('Invalid netId sent to SetTamedData')
+    end
+    local tamed = NetworkGetEntityFromNetworkId(netId)
+    Entity(tamed).state:set('netId', netId, true)
+end)
+
 RegisterServerEvent('bcc-stables:SellTamedHorse', function(horseModel)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
@@ -213,7 +221,6 @@ RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
     VORPcore.NotifyRightTip(serverId, curOwnerName .._U('gaveHorse'), 4000)
 end)
 
--- Inventory
 RegisterServerEvent('bcc-stables:RegisterInventory', function(id, horseModel)
     for _, horseCfg in pairs(Horses) do
         for model, value in pairs(horseCfg.colors) do
@@ -242,7 +249,6 @@ RegisterServerEvent('bcc-stables:OpenInventory', function(id)
     exports.vorp_inventory:openInventory(src, 'horse_' .. tostring(id))
 end)
 
--- Horse Care
 exports.vorp_inventory:registerUsableItem(Config.haycube, function(data)
     local src = data.source
     exports.vorp_inventory:closeInventory(src)
@@ -256,72 +262,72 @@ end)
 
 exports.vorp_inventory:registerUsableItem(Config.horsebrush, function(data)
     local src = data.source
-    local item = exports.vorp_inventory:getItem(src,Config.horsebrush,callback,metadata)
+    local item = exports.vorp_inventory:getItem(src, Config.horsebrush)
     exports.vorp_inventory:closeInventory(src)
     TriggerClientEvent('bcc-stables:BrushHorse', src)
-    if Config.horsebrushdurability == true then
+    if Config.horsebrushDurability == true then
         if not next(item.metadata) then
-            print("No meta data")
-            -- if not metadata we add new values
             local newData = {
-                description = "A brush used for grooming horses. | Durability " .. 100 - 1 .. "%",
+                description = _U('horsebrushDesc') .. '</br>' .. _U('durability') .. 100 - 1 .. '%',
                 durability = 100 - 1,
                 id = item.id
             }
-            exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1, callback)
+            exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
         else
-            print("meta data")
             if item.metadata.durability < 1 then
-                exports.vorp_inventory:subItemID(src, item.id, callback)
-                breakage = true 
-            else              
+                exports.vorp_inventory:subItemID(src, item.id)
+            else
                 local newData = {
-                    description = "A brush used for grooming horses. | Durability " .. item.metadata.durability - 1 .."%",
+                    description = _U('horsebrushDesc') .. '</br>' .. _U('durability') .. item.metadata.durability - 1 .. '%',
                     durability = item.metadata.durability - 1,
                     id = item.id
                 }
-                exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1, callback)
-
+                exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
             end
         end
     end
-        
 end)
 
 exports.vorp_inventory:registerUsableItem(Config.lantern, function(data)
     local src = data.source
-    local item = exports.vorp_inventory:getItem(src,Config.lantern,callback,metadata)
+    local item = exports.vorp_inventory:getItem(src, Config.lantern)
     exports.vorp_inventory:closeInventory(src)
     TriggerClientEvent('bcc-stables:UseLantern', src)
-    if Config.lanterndurability == true then
+    if Config.lanternDurability == true then
         if not next(item.metadata) then
-            print("No meta data")
-            -- if not metadata we add new values
             local newData = {
-                description = "Durability " .. 100 - 1 .. "%",
+                description = _U('durability') .. 100 - 1 .. '%',
                 durability = 100 - 1,
                 id = item.id
             }
-            exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1, callback)
+            exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
         else
-            print("meta data")
             if item.metadata.durability < 1 then
-                exports.vorp_inventory:subItemID(src, item.id, callback)
-                breakage = true 
-            else              
+                exports.vorp_inventory:subItemID(src, item.id)
+            else
                 local newData = {
-                    description = "Durability " .. item.metadata.durability - 1 .."%",
+                    description = _U('durability') .. item.metadata.durability - 1 .. '%',
                     durability = item.metadata.durability - 1,
                     id = item.id
                 }
-                exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1, callback)
-
+                exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
             end
         end
     end
 end)
 
--- Check if Player has Required Job
+VORPcore.Callback.Register('bcc-stables:HorseReviveItem', function(source, cb)
+    local src = source
+    local reviveItem = Config.reviver
+    local item = exports.vorp_inventory:getItem(src, reviveItem)
+    if not item then
+        cb(false)
+        return
+    end
+    exports.vorp_inventory:subItem(src, reviveItem, 1)
+    cb(true)
+end)
+
 VORPcore.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer, site)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
