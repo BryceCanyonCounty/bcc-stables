@@ -19,3 +19,6 @@ ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS (`born` datetime NOT NULL D
 
 INSERT INTO `items`(`item`, `label`, `limit`, `can_remove`, `type`, `usable`) VALUES ('oil_lantern', 'Oil Lantern', 1, 1, 'item_standard', 1)
   ON DUPLICATE KEY UPDATE `item`='oil_lantern', `label`='Oil Lantern', `limit`=1, `can_remove`=1, `type`='item_standard', `usable`=1;
+  
+INSERT INTO `items`(`item`, `label`, `limit`, `can_remove`, `type`, `usable`, `desc`) VALUES ('consumable_horse_reviver', 'Horse Reviver', 1, 1, 'item_standard', 1, 'Curative compound for injured horse.')
+  ON DUPLICATE KEY UPDATE `item`='consumable_horse_reviver', `label`='Horse Reviver', `limit`=1, `can_remove`=1, `type`='item_standard', `usable`=1, `desc`='Curative compound for injured horse.';
