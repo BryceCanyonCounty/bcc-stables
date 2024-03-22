@@ -935,6 +935,25 @@ CreateThread(function()
                             TriggerEvent('bcc-stables:HorseDown')
                         end
                     end
+                elseif event == 402722103 then -- EVENT_ENTITY_DAMAGED 
+                    local eventDataSize = 9
+                    local eventDataStruct = DataView.ArrayBuffer(128)
+                    eventDataStruct:SetInt32(0, 0)  -- Damaged Entity Id
+                    eventDataStruct:SetInt32(8, 0)  -- Object/Ped Id that Damaged Entity
+                    eventDataStruct:SetInt32(16, 0) -- Weapon Hash that Damaged Entity
+                    eventDataStruct:SetInt32(24, 0) -- Ammo Hash that Damaged Entity
+                    eventDataStruct:SetInt32(32, 0) -- (float) Damage Amount
+                    eventDataStruct:SetInt32(40, 0) -- Unknown
+                    eventDataStruct:SetInt32(48, 0) -- (float) Entity Coord x
+                    eventDataStruct:SetInt32(56, 0) -- (float) Entity Coord y
+                    eventDataStruct:SetInt32(64, 0) -- (float) Entity Coord z
+
+                    local data = Citizen.InvokeNative(0x57EC5FA4D4D6AFCA, 0, i, eventDataStruct:Buffer(), eventDataSize) -- GetEventData
+                    if data then
+                        if eventDataStruct:GetInt32(0) == MyHorse then
+                            TriggerEvent('bcc-stables:HorseDamaged')
+                        end
+                    end
                 end
             end
         end
@@ -1109,8 +1128,8 @@ CreateThread(function()
                     end
                 end
                 if Citizen.InvokeNative(0xE0F65F0640EF0617, KeepTame) then  -- PromptHasHoldModeCompleted
+                    CheckPlayerJob(true)
                     if Config.trainerOnly then
-                        CheckPlayerJob(true)
                         if not IsTrainer then
                             VORPcore.NotifyRightTip(_U('trainerRegHorse'), 4000)
                             HorseBreed = false
@@ -1157,6 +1176,17 @@ AddEventHandler('bcc-stables:SellTamedCooldown', function()
     TamedCooldown = true
     Wait(cooldown)
     TamedCooldown = false
+end)
+
+AddEventHandler('bcc-stables:HorseDamaged', function()
+    local writheHealth = Config.writheHealth
+    if writheHealth <= 0 then
+        return
+    end
+    local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
+    if health <= writheHealth then
+        Citizen.InvokeNative(0x8C038A39C4A4B6D6, MyHorse, 0, 0) -- TaskAnimalWrithe
+    end
 end)
 
 AddEventHandler('bcc-stables:HorseDown', function()
@@ -1375,10 +1405,11 @@ end
 RegisterNetEvent('bcc-stables:BrushHorse', function()
     local playerPed = PlayerPedId()
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
-    if dist > 2.0 then
+    if dist > 3.5 then
         VORPcore.NotifyRightTip(_U('tooFar'), 4000)
         return
     end
+    ClearPedTasksImmediately(playerPed)
     Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Brush'), joaat('p_brushHorse02x'), 1) -- TaskAnimalInteraction
     Wait(5000)
     Citizen.InvokeNative(0x6585D955A68452A5, MyHorse) -- ClearPedEnvDirt
@@ -1419,10 +1450,11 @@ end)
 RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     local playerPed = PlayerPedId()
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
-    if dist > 2.0 then
+    if dist > 3.5 then
         VORPcore.NotifyRightTip(_U('tooFar'), 4000)
         return
     end
+    ClearPedTasksImmediately(playerPed)
     Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Food'), joaat('s_horsnack_haycube01x'), 1) -- TaskAnimalInteraction
     TriggerServerEvent('bcc-stables:RemoveItem', item)
     Wait(5000)
@@ -1459,8 +1491,10 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
 end)
 
 RegisterNetEvent('bcc-stables:UseLantern', function()
-    local dist = #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(MyHorse))
-    if dist <= 2.0 then
+    local playerPed = PlayerPedId()
+    local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
+    if dist <= 3.5 then
+        ClearPedTasksImmediately(playerPed)
         if not UsingLantern then
             Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse, 0x635E387C, 1, 1, 1) -- ApplyShopItemToPed
             UsingLantern = true
@@ -1754,8 +1788,12 @@ RegisterCommand(Config.commands.horseSetWild, function()
     end
 end)
 
-RegisterCommand('writhe', function()
-    Citizen.InvokeNative(0x8C038A39C4A4B6D6, MyHorse, 0, 0)
+RegisterCommand(Config.commands.horseWrithe, function()
+    if Config.devMode then
+        Citizen.InvokeNative(0x8C038A39C4A4B6D6, MyHorse, 0, 0) -- TaskAnimalWrithe
+    else
+        print('Command used in Developer Mode Only!') -- Not for use on live server
+    end
 end)
 
 function StartPrompts()
