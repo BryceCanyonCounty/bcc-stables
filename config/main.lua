@@ -48,6 +48,7 @@ Config.reviver = 'consumable_horse_reviver'
 Config.commands = {
     horseRespawn = 'horseRespawn', -- Respawn Horse if Stuck or Unable to Reach
     horseSetWild = 'horseSetWild', -- Dev Mode: Make a Horse Wild
+    horseWrithe  = 'horseWrithe',  -- Dev Mode: Set Horse to Writhe State
 }
 -----------------------------------------------------
 
@@ -71,6 +72,10 @@ Config.fleeEnabled = true -- Default: true / Set to false to Return Horse at Sta
 -- Can Use when Stable is Closed
 Config.closedCall   = true -- Default: true / 'Call Horse' Button at Stable
 Config.closedReturn = true -- Default: true / 'Return Horse' Button at Stable
+-----------------------------------------------------
+
+-- Horse Health Level to set Writhe State (Horse Down)
+Config.writheHealth = 35 -- Default: 35 / Set to 0 to Disable
 -----------------------------------------------------
 
 -- Horse Inventory
