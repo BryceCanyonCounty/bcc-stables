@@ -25,10 +25,6 @@ Config.keys = {
     rest    = 0x620A6C5E, --[V] Horse Rest
     sleep   = 0x43CDA5B0, --[Z] Horse Sleep
     wallow  = 0x9959A6F0, --[C] Horse Wallow
-    info    = 0x80F28E95, --[L] Horse Info 
-    inv	    = 0x5966D52A, --[B] Open Inventory
-    revive  = 0x27D1C284, --[R] Revive Horse
-    weapons = 0xAC4BD4F1, --[Tab] HorseWeapons
 }
 -----------------------------------------------------
 
@@ -50,10 +46,6 @@ Config.commands = {
     horseSetWild = 'horseSetWild', -- Dev Mode: Make a Horse Wild
     horseWrithe  = 'horseWrithe',  -- Dev Mode: Set Horse to Writhe State
 }
------------------------------------------------------
-
--- Sell Price in Stable is 60% of Horse cashPrice
-Config.sellPrice = 0.60 -- Default: 0.60
 -----------------------------------------------------
 
 -- Max Number of Horses per Player
@@ -118,11 +110,16 @@ Config.showXpMessage    = true -- Default: true / Show XP Increase Message on Sc
 
 Config.displayHorseBreed = true -- Default: true / Display Breed of Horse Player Mounted
 
-Config.tameCost       = 25 -- Default: 25 / Cost of Registering a Tamed Horse
+Config.allowKeep  = true -- Default: true / Allow to Register Tamed Horse
+Config.regCost    = 25   -- Default: 25 / Cost of Registering a Tamed Horse
 
-Config.allowSale  = true -- Default: true / Allow Player to Sell Tamed Horse
-Config.sellCooldown = 15 -- Cooldown for Selling Tamed Horses in Minutes
-Config.allowKeep  = true -- Default: true / Allow Player to Keep Tamed Horse
+Config.allowSale      = true -- Default: true / Allow Player to Sell Tamed Horse
+Config.tamedSellPrice = 0.30 -- Default: 0.30 / Sell Price is 30% of Horse cashPrice in Stable
+Config.sellCooldown   = 15   -- Cooldown for Selling Tamed Horses in Minutes
+-----------------------------------------------------
+
+-- Sell Price for Horse Purchased in Stable is 60% of Horse cashPrice
+Config.sellPrice = 0.70 -- Default: 0.70
 -----------------------------------------------------
 
 Config.BlipColors = {
