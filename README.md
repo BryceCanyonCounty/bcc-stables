@@ -39,11 +39,12 @@ Groom, feed, and clean your horse to keep them at peak performance.
 
 ### Tips
 - Whistleing -- A short whistle will call your horse. A long one will set your horse to follow you. A second whistle or mounting your horse will cancel following.
-- Horse Info -- Press `L` in the second tab of the horse prompts to view current XP and bonding levels.
+- Horse Info -- Press `Q` in the horse prompts to view health, stamina, current XP and bonding levels.
 
 ### Commands
 - `/horseRespawn` Respawn your horse while bypassing the distance check.
 - `/horseSetWild` *Dev Mode Only* - Set a tamed horse wild to test taming.
+- `/horseWrithe` *Dev Mode Only* - Set horse to writhe state to test reviving.
 
 ### Dependencies
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
