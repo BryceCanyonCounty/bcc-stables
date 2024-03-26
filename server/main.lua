@@ -194,10 +194,10 @@ RegisterServerEvent('bcc-stables:SellTamedHorse', function(horseModel)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
     for _, horseCfg in pairs(Horses) do
-        for i, r in pairs(horseCfg.colors) do
-            local horseHash = joaat(i)
+        for model, modelCfg in pairs(horseCfg.colors) do
+            local horseHash = joaat(model)
             if horseHash == horseModel then
-                local sellPrice = (Config.sellPrice * (r.cashPrice / 2))
+                local sellPrice = (Config.tamedSellPrice * modelCfg.cashPrice)
                 Character.addCurrency(0, math.floor(sellPrice))
                 VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 4000)
             end
