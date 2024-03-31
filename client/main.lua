@@ -22,9 +22,8 @@ local SaddlesUsing, SaddleclothsUsing, StirrupsUsing = nil, nil, nil
 local BagsUsing, ManesUsing, TailsUsing, SaddleHornsUsing = nil, nil, nil, nil
 
 -- Horse Training
-local TamedCooldown = false
-local IsTrainer, IsNaming, MaxBonding = false, false, false
-local LastLoc, HorseBreed, TamedModel = nil, nil, nil
+local LastLoc, TamedModel = nil, nil
+local IsTrainer, IsNaming, MaxBonding, HorseBreed = false, false, false, false
 
 -- Misc.
 local MyHorse = nil
@@ -405,7 +404,7 @@ function SetHorseName(data)
                 local horseSaved = VORPcore.Callback.TriggerAwait('bcc-stables:SaveNewHorse', data)
                 if horseSaved then
                     DeleteEntity(data.mount)
-                    HorseBreed = nil
+                    HorseBreed = false
                 end
                 IsNaming = false
                 return
@@ -1076,23 +1075,20 @@ CreateThread(function()
             if (distance <= siteCfg.shop.distance) and IsPedOnMount(playerPed) and (mountNetId == tamedNetId) and (not IsNaming) then
                 sleep = 0
                 PromptSetActiveGroupThisFrame(TameGroup, CreateVarString(10, 'LITERAL_STRING', siteCfg.shop.prompt), 1, 0, 0, 0)
-                if allowSale then
-                    PromptSetVisible(SellTame, true)
-                    if not TamedCooldown then
-                        PromptSetEnabled(SellTame, true)
-                    else
-                        PromptSetEnabled(SellTame, false)
-                    end
-                else
-                    PromptSetVisible(SellTame, false)
-                end
-                if allowKeep then
-                    PromptSetVisible(KeepTame, true)
-                    PromptSetEnabled(KeepTame, true)
-                else
-                    PromptSetVisible(KeepTame, false)
-                end
+
+                PromptSetVisible(SellTame, allowSale)
+                PromptSetEnabled(SellTame, allowSale)
+
+                PromptSetVisible(KeepTame, allowKeep)
+                PromptSetEnabled(KeepTame, allowKeep)
+
                 if Citizen.InvokeNative(0xE0F65F0640EF0617, SellTame) then  -- PromptHasHoldModeCompleted
+                    local onCooldown = VORPcore.Callback.TriggerAwait('bcc-stables:CheckPlayerCooldown', 'sellTame')
+                    if onCooldown then
+                        VORPcore.NotifyRightTip(_U('sellCooldown'), 4000)
+                        HorseBreed = false
+                        goto continue
+                    end
                     if Config.trainerOnly then
                         CheckPlayerJob(true)
                         if not IsTrainer then
@@ -1102,16 +1098,16 @@ CreateThread(function()
                         end
                     end
                     TriggerServerEvent('bcc-stables:SellTamedHorse', GetEntityModel(mount))
-                    TriggerEvent('bcc-stables:SellTamedCooldown')
                     if mount then
                         Citizen.InvokeNative(0x48E92D3DDE23C23A, playerPed, 0, 0, 0, 0, mount) -- TaskDismountAnimal
                         while not Citizen.InvokeNative(0x01FEE67DB37F59B2, playerPed) do -- IsPedOnFoot
                             Wait(10)
                         end
+                        VORPcore.NotifyRightTip(_U('tamedCooldown') .. Config.cooldown.sellTame .. _U('minutes'), 4000)
                         DeleteEntity(mount)
                         mount = nil
                         Wait(200)
-                        HorseBreed = nil
+                        HorseBreed = false
                     end
                 end
                 if Citizen.InvokeNative(0xE0F65F0640EF0617, KeepTame) then  -- PromptHasHoldModeCompleted
@@ -1153,17 +1149,9 @@ function KeepTamedHorse(tameData)
     if canKeep then
         SetHorseName(tameData)
     else
-        HorseBreed = nil
+        HorseBreed = false
     end
 end
-
-AddEventHandler('bcc-stables:SellTamedCooldown', function()
-    local cooldown = math.floor(Config.sellCooldown * 60000)
-    VORPcore.NotifyRightTip(_U('tamedCooldown') .. Config.sellCooldown .. _U('minutes'), 4000)
-    TamedCooldown = true
-    Wait(cooldown)
-    TamedCooldown = false
-end)
 
 AddEventHandler('bcc-stables:HorseDamaged', function()
     if IsEntityDead(MyHorse) then

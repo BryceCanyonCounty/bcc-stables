@@ -26,6 +26,7 @@ Locales["it_lang"] = {
     noHorse = "Non hai un cavallo da restituire",
     tamedCooldown = "You can sell another horse in ~o~",
     minutes = "~q~ minuti",
+    sellCooldown = "You've recently sold a horse, check back later!",
     notDirty = " non è pronto per essere spazzolato",
     notHungry = " non è affamato!",
     horseInv = "Bisacce",

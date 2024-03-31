@@ -1,5 +1,7 @@
 local VORPcore = exports.vorp_core:GetCore()
 
+local CooldownData = {}
+
 VORPcore.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
@@ -193,6 +195,7 @@ end)
 RegisterServerEvent('bcc-stables:SellTamedHorse', function(horseModel)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
+    local charid = Character.charIdentifier
     for _, horseCfg in pairs(Horses) do
         for model, modelCfg in pairs(horseCfg.colors) do
             local horseHash = joaat(model)
@@ -200,8 +203,36 @@ RegisterServerEvent('bcc-stables:SellTamedHorse', function(horseModel)
                 local sellPrice = (Config.tamedSellPrice * modelCfg.cashPrice)
                 Character.addCurrency(0, math.floor(sellPrice))
                 VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 4000)
+                SetPlayerCooldown('sellTame', charid)
             end
         end
+    end
+end)
+
+function SetPlayerCooldown(type, charid)
+    CooldownData[type .. tostring(charid)] = os.time()
+end
+
+VORPcore.Callback.Register('bcc-stables:CheckPlayerCooldown', function(source, cb, type)
+    local src = source
+    local Character = VORPcore.getUser(src).getUsedCharacter
+    local cooldown = Config.cooldown[type]
+    local onList = false
+    local typeId = type .. tostring(Character.charIdentifier)
+    for id, time in pairs(CooldownData) do
+        if id == typeId then
+            onList = true
+            if os.difftime(os.time(), time) >= cooldown * 60 then
+                cb(false) -- Not on Cooldown
+                break
+            else
+                cb(true)
+                break
+            end
+        end
+    end
+    if not onList then
+        cb(false)
     end
 end)
 
