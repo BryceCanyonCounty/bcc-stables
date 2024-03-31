@@ -115,7 +115,9 @@ Config.regCost    = 25   -- Default: 25 / Cost of Registering a Tamed Horse
 
 Config.allowSale      = true -- Default: true / Allow Player to Sell Tamed Horse
 Config.tamedSellPrice = 0.30 -- Default: 0.30 / Sell Price is 30% of Horse cashPrice in Stable
-Config.sellCooldown   = 15   -- Cooldown for Selling Tamed Horses in Minutes
+Config.cooldown   = {
+    sellTame = 15,   -- Cooldown for Selling Tamed Horses in Minutes
+}
 -----------------------------------------------------
 
 -- Sell Price for Horse Purchased in Stable is 60% of Horse cashPrice
