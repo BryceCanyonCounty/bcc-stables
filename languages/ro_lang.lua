@@ -26,6 +26,7 @@ Locales["ro_lang"] = {
     noHorse = "Nu ai niciun cal de intors",
     tamedCooldown = "Poti vinde un alt cal in ~o~",
     minutes = "~q~ minute",
+    sellCooldown = "You've recently sold a horse, check back later!",
     notDirty = " nu este inca gata sa fie periat",
     notHungry = " nu este flamand!",
     horseInv = "Bagaje",
