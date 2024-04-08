@@ -2039,3 +2039,103 @@ AddEventHandler('onResourceStop', function(resourceName)
         end
     end
 end)
+
+-- to count length of maps
+local function len(t)
+    local counter = 0
+    for _, _ in pairs(t) do
+        counter += 1
+    end
+    return counter
+end
+
+--let's go fancy with an implementation that orders pairs for you using default table.sort(). Taken from a lua-users post.
+
+local function __genOrderedIndex( t )
+    local orderedIndex = {}
+    for key in pairs(t) do
+        table.insert( orderedIndex, key )
+    end
+    table.sort( orderedIndex )
+    return orderedIndex
+end
+
+local function orderedNext(t, state)
+    -- Equivalent of the next function, but returns the keys in the alphabetic
+    -- order. We use a temporary ordered key table that is stored in the
+    -- table being iterated.
+
+    local key = nil
+    --print("orderedNext: state = "..tostring(state) )
+    if state == nil then
+        -- the first time, generate the index
+        t.__orderedIndex = __genOrderedIndex( t )
+        key = t.__orderedIndex[1]
+    else
+        -- fetch the next value
+        for i = 1, #(t.__orderedIndex) do
+            if t.__orderedIndex[i] == state then
+                key = t.__orderedIndex[i+1]
+            end
+        end
+    end
+
+    if key then
+        return key, t[key]
+    end
+
+    -- no more value to return, cleanup
+    t.__orderedIndex = nil
+    return
+end
+
+local function orderedPairs(t)
+    -- Equivalent of the pairs() function on tables. Allows to iterate
+    -- in order
+    return orderedNext, t, nil
+end
+
+ function findHorsesByJob(job)
+    local matchingHorses = {}
+    for _, horseType in ipairs(Horses) do
+        local matchingColors = {}
+
+        
+        for horseColor, horseColorData in orderedPairs(horseType.colors) do
+            -- using maps to break a loop, though technically making another loop, albeit simpler. Preferably you already configure jobs as a map so that you could expand
+            -- perhaps when a request comes to have color accesses by job grade or similar
+            local horseJobs = {}
+            for _, horseJob in pairs(horseColorData.job) do
+                horseJobs[horseJob] = horseJob
+            end
+            -- add matching color directly 
+                if horseJobs[job] ~= nil then
+                        matchingColors[horseColor] = {
+                            color = horseColorData.color,
+                            cashPrice = horseColorData.cashPrice,
+                            goldPrice = horseColorData.goldPrice,
+                            invLimit = horseColorData.invLimit,
+                            job = horseColorData.job
+                        }
+                end
+                --handle case where there isn\t a job attached to horse color config
+                if len(horseJobs) == 0 then
+                    matchingColors[horseColor] = {
+                        color = horseColorData.color,
+                        cashPrice = horseColorData.cashPrice,
+                        goldPrice = horseColorData.goldPrice,
+                        invLimit = horseColorData.invLimit,
+                        job = nil
+                    }
+                end
+        end
+
+        if len(matchingColors) > 0 then
+            matchingHorses[#matchingHorses + 1] = {
+                breed = horseType.breed,
+                colors = matchingColors
+            }
+        end
+    end
+    return matchingHorses
+end
