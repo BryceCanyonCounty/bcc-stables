@@ -377,9 +377,9 @@ VORPcore.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer,
     local hasJob = false
     hasJob = CheckPlayerJob(charJob, jobGrade, jobConfig)
     if hasJob then
-        cb(true)
+        cb({true,charJob})
     else
-        cb(false)
+        cb({false,charJob})
     end
 end)
 
