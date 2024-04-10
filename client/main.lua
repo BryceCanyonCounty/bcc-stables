@@ -133,6 +133,7 @@ CreateThread(function()
                             PromptSetEnabled(OpenReturn, true)
 
                             if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then  -- UiPromptHasStandardModeCompleted
+                                CheckPlayerJob(false, site)
                                 OpenStable(site)
                             elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then -- UiPromptHasStandardModeCompleted
                                 GetSelectedHorse()
@@ -218,6 +219,7 @@ CreateThread(function()
                         PromptSetEnabled(OpenReturn, true)
 
                         if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then      -- UiPromptHasStandardModeCompleted
+                                CheckPlayerJob(false, site)
                             OpenStable(site)
                         elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then -- UiPromptHasStandardModeCompleted
                             GetSelectedHorse()
@@ -282,6 +284,7 @@ CreateThread(function()
 end)
 
 function OpenStable(site)
+    local matchingHorses = findHorsesByJob(CharJob)
     DisplayRadar(false)
     InMenu = true
     Site = site
@@ -290,7 +293,7 @@ function OpenStable(site)
 
     SendNUIMessage({
         action = 'show',
-        shopData = Horses,
+        shopData = matchingHorses,
         compData = HorseComp,
         location = StableName,
         currencyType = Config.currencyType
@@ -1926,6 +1929,7 @@ function CheckPlayerJob(trainer, site)
     end
     local result = VORPcore.Callback.TriggerAwait('bcc-stables:CheckJob', trainer, site)
     if result then
+        CharJob = result[2]
         if trainer then
             IsTrainer = true
         else
