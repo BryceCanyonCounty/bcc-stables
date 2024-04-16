@@ -284,7 +284,6 @@ CreateThread(function()
 end)
 
 function OpenStable(site)
-    local matchingHorses = findHorsesByJob(CharJob)
     DisplayRadar(false)
     InMenu = true
     Site = site
@@ -293,7 +292,7 @@ function OpenStable(site)
 
     SendNUIMessage({
         action = 'show',
-        shopData = matchingHorses,
+        shopData = JobMatchedHorses,
         compData = HorseComp,
         location = StableName,
         currencyType = Config.currencyType
@@ -1935,6 +1934,7 @@ function CheckPlayerJob(trainer, site)
         else
             HasJob = true
         end
+     JobMatchedHorses = findHorsesByJob(CharJob)
     end
 end
 
