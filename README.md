@@ -50,6 +50,7 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - [vorp_core](https://github.com/VORPCORE/vorp-core-lua)
 - [vorp_inventory](https://github.com/VORPCORE/vorp_inventory-lua)
 - [bcc-utils](https://github.com/BryceCanyonCounty/bcc-utils)
+- [feather-menu](https://github.com/FeatherFramework/feather-menu/releases)
 
 ### Installation
 - Download the latest release `bcc-stables.zip` at [/releases/latest](https://github.com/BryceCanyonCounty/bcc-stables/releases/latest)
