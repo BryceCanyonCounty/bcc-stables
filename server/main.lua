@@ -10,7 +10,7 @@ VORPcore.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
     if data.isTrainer then
         maxHorses = tonumber(Config.maxTrainerHorses)
     end
-    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE charid = ?', { charid })
+    local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ?', { charid })
     if #horses >= maxHorses then
         VORPcore.NotifyRightTip(src, _U('horseLimit') .. maxHorses .. _U('horses'), 4000)
         cb(false)
@@ -64,7 +64,7 @@ VORPcore.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, data
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
-    MySQL.query.await('INSERT INTO player_horses (identifier, charid, name, model, gender, captured) VALUES (?, ?, ?, ?, ?, ?)',
+    MySQL.query.await('INSERT INTO `player_horses` (identifier, charid, name, model, gender, captured) VALUES (?, ?, ?, ?, ?, ?)',
         { identifier, charid, tostring(data.name), data.ModelH, data.gender,  data.captured })
 
     if data.IsCash then
@@ -76,12 +76,16 @@ VORPcore.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, data
 end)
 
 VORPcore.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, data)
-    MySQL.query.await('UPDATE player_horses SET name = ? WHERE id = ?', { data.name, data.horseId })
+    MySQL.query.await('UPDATE `player_horses` SET `name` = ? WHERE `id` = ?', { data.name, data.horseId })
     cb(true)
 end)
 
 RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
-    MySQL.query.await('UPDATE player_horses SET xp = ? WHERE id = ?', { Xp, horseId })
+    MySQL.query.await('UPDATE `player_horses` SET `xp` = ? WHERE `id` = ?', { Xp, horseId })
+end)
+
+RegisterServerEvent('bcc-stables:SaveHorseStats', function(data, horseId)
+    MySQL.query.await('UPDATE `player_horses` SET `health` = ?, `stamina` = ? WHERE id = ?', { data.health, data.stamina, horseId })
 end)
 
 RegisterServerEvent('bcc-stables:SelectHorse', function(data)
@@ -90,12 +94,12 @@ RegisterServerEvent('bcc-stables:SelectHorse', function(data)
     local charid = Character.charIdentifier
     local id = tonumber(data.horseId)
 
-    local horse = MySQL.query.await('SELECT * FROM player_horses WHERE charid = ?', { charid })
+    local horse = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ?', { charid })
     for i = 1, #horse do
         local horseId = horse[i].id
-        MySQL.query.await('UPDATE player_horses SET selected = ? WHERE charid = ? AND id = ?', { 0, charid, horseId })
+        MySQL.query.await('UPDATE `player_horses` SET `selected` = ? WHERE `charid` = ? AND `id` = ?', { 0, charid, horseId })
         if horse[i].id == id then
-            MySQL.query.await('UPDATE player_horses SET selected = ? WHERE charid = ? AND id = ?', { 1, charid, id })
+            MySQL.query.await('UPDATE `player_horses` SET `selected` = ? WHERE `charid` = ? AND `id` = ?', { 1, charid, id })
         end
     end
 end)
@@ -106,7 +110,7 @@ VORPcore.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
     local charid = Character.charIdentifier
     local data = nil
 
-    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE charid = ?', { charid })
+    local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ?', { charid })
     if #horses ~= 0 then
         for i = 1, #horses do
             if horses[i].selected == 1 then
@@ -117,7 +121,9 @@ VORPcore.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
                     id = horses[i].id,
                     gender = horses[i].gender,
                     xp = horses[i].xp,
-                    captured = horses[i].captured
+                    captured = horses[i].captured,
+                    health = horses[i].health,
+                    stamina = horses[i].stamina
                 }
                 cb(data)
             end
@@ -137,7 +143,7 @@ RegisterNetEvent('bcc-stables:GetMyHorses', function()
     local Character = VORPcore.getUser(src).getUsedCharacter
     local charid = Character.charIdentifier
 
-    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE charid = ?', { charid })
+    local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ?', { charid })
     TriggerClientEvent('bcc-stables:ReceiveHorsesData', src, horses)
 end)
 
@@ -147,7 +153,7 @@ RegisterNetEvent('bcc-stables:UpdateComponents', function(components, horseId, M
     local charid = Character.charIdentifier
     local encodedComponents = json.encode(components)
 
-    MySQL.query.await('UPDATE player_horses SET components = ? WHERE charid = ? AND id = ?', { encodedComponents, charid, horseId })
+    MySQL.query.await('UPDATE `player_horses` SET `components` = ? WHERE `charid` = ? AND `id` = ?', { encodedComponents, charid, horseId })
     TriggerClientEvent('bcc-stables:SetComponents', src, MyHorse_entity, components)
 end)
 
@@ -158,11 +164,11 @@ VORPcore.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
     local modelHorse = nil
     local id = tonumber(data.horseId)
     local captured = data.captured
-    local horses = MySQL.query.await('SELECT * FROM player_horses WHERE charid = ?', { charid })
+    local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ?', { charid })
     for i = 1, #horses do
         if tonumber(horses[i].id) == id then
             modelHorse = horses[i].model
-            MySQL.query.await('DELETE FROM player_horses WHERE charid = ? AND id = ?', { charid, id })
+            MySQL.query.await('DELETE FROM `player_horses` WHERE `charid` = ? AND `id` = ?', { charid, id })
         end
     end
     for _, horseCfg in pairs(Horses) do
@@ -246,7 +252,7 @@ RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
     local newOwnerId = newOwner.identifier
     local newOwnerCharId = newOwner.charIdentifier
     local newOwnerName = newOwner.firstname .. " " .. newOwner.lastname
-    MySQL.query.await('UPDATE player_horses SET identifier = ?, charid = ?, selected = ? WHERE id = ?', { newOwnerId, newOwnerCharId, 0, horseId })
+    MySQL.query.await('UPDATE `player_horses` SET `identifier` = ?, `charid` = ?, `selected` = ? WHERE `id` = ?', { newOwnerId, newOwnerCharId, 0, horseId })
 
     VORPcore.NotifyRightTip(src, _U('youGave') .. newOwnerName .. _U('aHorse'), 4000)
     VORPcore.NotifyRightTip(serverId, curOwnerName .._U('gaveHorse'), 4000)
@@ -377,9 +383,9 @@ VORPcore.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer,
     local hasJob = false
     hasJob = CheckPlayerJob(charJob, jobGrade, jobConfig)
     if hasJob then
-        cb({true,charJob})
+        cb({true, charJob})
     else
-        cb({false,charJob})
+        cb({false, charJob})
     end
 end)
 
