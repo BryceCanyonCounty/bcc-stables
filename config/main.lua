@@ -45,6 +45,7 @@ Config.commands = {
     horseRespawn = 'horseRespawn', -- Respawn Horse if Stuck or Unable to Reach
     horseSetWild = 'horseSetWild', -- Dev Mode: Make a Horse Wild
     horseWrithe  = 'horseWrithe',  -- Dev Mode: Set Horse to Writhe State
+    horseInfo    = 'horseInfo',    -- Display Additional Horse Info
 }
 -----------------------------------------------------
 
