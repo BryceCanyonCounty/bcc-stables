@@ -1,2 +1,5 @@
-<1.4.5>
-Fix: Trainer job check
+<1.4.6>
+Add: Standard horse info panel.
+Add: Health and Stamina core values saved to DB.
+Update: Scenarios changed to animations. No distance check for rest and sleep.
+Update: Bonding levels. See Readme file for more info.
