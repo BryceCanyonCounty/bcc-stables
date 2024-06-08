@@ -17,7 +17,7 @@ local TradeGroup = GetRandomIntInRange(0, 0xffffff)
 local HorseDrink, HorseRest, HorseSleep, HorseWallow = nil, nil, nil, nil
 
 -- Horse Tack
-local BedrollsUsing, MasksUsing, MustachesUsing = nil, nil, nil
+local BedrollsUsing, MasksUsing, MustachesUsing, HolstersUsing = nil, nil, nil, nil
 local SaddlesUsing, SaddleclothsUsing, StirrupsUsing = nil, nil, nil
 local BagsUsing, ManesUsing, TailsUsing, SaddleHornsUsing = nil, nil, nil, nil
 
@@ -376,7 +376,8 @@ RegisterNetEvent('bcc-stables:SaveComps', function()
         SaddleHornsUsing,
         BedrollsUsing,
         MasksUsing,
-        MustachesUsing
+        MustachesUsing,
+        HolstersUsing
     }
     local compDataEncoded = json.encode(compData)
     if compDataEncoded ~= '[]' then
@@ -522,8 +523,7 @@ function SpawnHorse(data)
         end
     end
 
-    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, data.health) -- SetAttributeCoreValue
-    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, data.stamina) -- SetAttributeCoreValue
+    SetHorseStats(data)
 
     TriggerServerEvent('bcc-stables:RegisterInventory', MyHorseId, horseModel)
 
@@ -838,22 +838,16 @@ end
 
 -- Move horse to Player
 function SendHorse()
-    CreateThread(function()
-        local playerPed = PlayerPedId()
-        Citizen.InvokeNative(0x6A071245EB0D1882, MyHorse, playerPed, -1, 10.2, 2.0, 0.0, 0) -- TaskGoToEntity
-        while Sending == true do
-            Wait(0)
-            local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
-            if (dist <= 10.0) then
-                ClearPedTasks(MyHorse)
-                local hasSaddle = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -1163401704) -- IsMetaPedUsingComponent
-                if hasSaddle then
-                    Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse, 0xF772CED6, true, true, true) -- ApplyShopItemToPed / Holster
-                end
-                Sending = false
-            end
+    local playerPed = PlayerPedId()
+    TaskGoToEntity(MyHorse, playerPed, -1, 10.2, 2.0, 0.0, 0)
+    while Sending do
+        Wait(0)
+        local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
+        if dist <= 10.0 then
+            ClearPedTasks(MyHorse)
+            Sending = false
         end
-    end)
+    end
 end
 
 -- Wild Horse Taming
@@ -1565,6 +1559,20 @@ RegisterNUICallback('Mustaches', function(data, cb)
     end
 end)
 
+RegisterNUICallback('Holsters', function(data, cb)
+    cb('ok')
+    if tonumber(data.id) == -1 then
+        HolstersUsing = 0
+        local playerHorse = MyEntity
+        Citizen.InvokeNative(0x0D7FFA1B2F69ED82, playerHorse, 0xF772CED6, 0, false) -- RemoveShopItemFromPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+    else
+        local hash = data.hash
+        SetModel(hash)
+        HolstersUsing = hash
+    end
+end)
+
 function SetModel(hash)
     local model = joaat(tonumber(hash))
     if not HasModelLoaded(model) then
@@ -1605,21 +1613,27 @@ function ReturnHorse()
 end
 
 function SaveHorseStats(dead)
+    local data = {}
     local healthCore, staminaCore
 
     if not dead then
-        healthCore = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
-        staminaCore = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
+        healthCore = GetAttributeCoreValue(MyHorse, 0, Citizen.ResultAsInteger())
+        staminaCore = GetAttributeCoreValue(MyHorse, 1, Citizen.ResultAsInteger())
     else
         healthCore = 20
         staminaCore = 20
     end
 
-    local data = {
+    data = {
         health = healthCore,
         stamina = staminaCore,
     }
     TriggerServerEvent('bcc-stables:SaveHorseStats', data, MyHorseId)
+end
+
+function SetHorseStats(data)
+    SetAttributeCoreValue(MyHorse, 0, data.healthCore)
+    SetAttributeCoreValue(MyHorse, 1, data.staminaCore)
 end
 
 -- View Horses While in Menu
