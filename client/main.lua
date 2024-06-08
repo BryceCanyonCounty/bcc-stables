@@ -1617,8 +1617,8 @@ function SaveHorseStats(dead)
     local healthCore, staminaCore
 
     if not dead then
-        healthCore = GetAttributeCoreValue(MyHorse, 0, Citizen.ResultAsInteger())
-        staminaCore = GetAttributeCoreValue(MyHorse, 1, Citizen.ResultAsInteger())
+        healthCore = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0, Citizen.ResultAsInteger())  -- GetAttributeCoreValue
+        staminaCore = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
     else
         healthCore = 20
         staminaCore = 20
@@ -1632,8 +1632,8 @@ function SaveHorseStats(dead)
 end
 
 function SetHorseStats(data)
-    SetAttributeCoreValue(MyHorse, 0, data.healthCore)
-    SetAttributeCoreValue(MyHorse, 1, data.staminaCore)
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, data.health)  -- SetAttributeCoreValue
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, data.stamina) -- SetAttributeCoreValue
 end
 
 -- View Horses While in Menu
