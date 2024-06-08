@@ -259,6 +259,10 @@ RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
 end)
 
 RegisterServerEvent('bcc-stables:RegisterInventory', function(id, horseModel)
+    local isRegistered = exports.vorp_inventory:isCustomInventoryRegistered('horse_' .. tostring(id))
+
+    if isRegistered then return end
+
     for _, horseCfg in pairs(Horses) do
         for model, value in pairs(horseCfg.colors) do
             if model == horseModel then
