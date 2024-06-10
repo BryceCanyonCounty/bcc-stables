@@ -13,6 +13,10 @@ local TameGroup = GetRandomIntInRange(0, 0xffffff)
 local TradeHorse
 local TradeGroup = GetRandomIntInRange(0, 0xffffff)
 
+-- Loot Prompts
+local LootHorse
+local LootGroup = GetRandomIntInRange(0, 0xffffff)
+
 -- Target Prompts
 local HorseDrink, HorseRest, HorseSleep, HorseWallow = nil, nil, nil, nil
 
@@ -56,14 +60,14 @@ CreateThread(function()
                     PromptSetEnabled(OpenShops, false)
                     PromptSetEnabled(OpenCall, Config.closedCall)
                     PromptSetEnabled(OpenReturn, Config.closedReturn)
-                    if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then  -- UiPromptHasStandardModeCompleted
+                    if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then  -- PromptHasStandardModeCompleted
                         if siteCfg.shop.jobsEnabled then
                             CheckPlayerJob(false, site)
                             if not HasJob then goto END end
                         end
                         GetSelectedHorse()
                     end
-                    if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then  -- UiPromptHasStandardModeCompleted
+                    if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then  -- PromptHasStandardModeCompleted
                         if siteCfg.shop.jobsEnabled then
                             CheckPlayerJob(false, site)
                             if not HasJob then goto END end
@@ -88,21 +92,21 @@ CreateThread(function()
                     PromptSetEnabled(OpenCall, true)
                     PromptSetEnabled(OpenReturn, true)
 
-                    if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then  -- UiPromptHasStandardModeCompleted
+                    if Citizen.InvokeNative(0xC92AC953F0A982AE, OpenShops) then  -- PromptHasStandardModeCompleted
                         CheckPlayerJob(false, site)
                         if siteCfg.shop.jobsEnabled then
                             if not HasJob then goto END end
                         end
                         OpenStable(site)
 
-                    elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then -- UiPromptHasStandardModeCompleted
+                    elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenCall) then -- PromptHasStandardModeCompleted
                         if siteCfg.shop.jobsEnabled then
                             CheckPlayerJob(false, site)
                             if not HasJob then goto END end
                         end
                         GetSelectedHorse()
 
-                    elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- UiPromptHasStandardModeCompleted
+                    elseif Citizen.InvokeNative(0xC92AC953F0A982AE, OpenReturn) then -- PromptHasStandardModeCompleted
                         if siteCfg.shop.jobsEnabled then
                             CheckPlayerJob(false, site)
                             if not HasJob then goto END end
@@ -419,7 +423,10 @@ function SpawnHorse(data)
     end
     Spawning = true
 
-    DeleteMyHorse()
+    if MyHorse then
+        DeleteEntity(MyHorse)
+        MyHorse = nil
+    end
 
     local horseModel = data.model
     local xp = data.xp
@@ -527,6 +534,9 @@ function SpawnHorse(data)
 
     TriggerServerEvent('bcc-stables:RegisterInventory', MyHorseId, horseModel)
 
+    local myHorseNetId = NetworkGetNetworkIdFromEntity(MyHorse)
+    TriggerServerEvent('bcc-stables:SetLootHorseData', myHorseNetId, MyHorseId)
+
     if Config.horseTag then
         TriggerEvent('bcc-stables:HorseTag')
     end
@@ -543,6 +553,34 @@ function SpawnHorse(data)
     Sending = true
     SendHorse()
 end
+
+-- Loot Players Horse Inventory
+CreateThread(function()
+    if Config.shareInventory then
+        while true do
+            local pedId, horseId, isLeading, ownerOfMount = nil, nil, nil, nil
+            local playerPed = PlayerPedId()
+            local sleep = 1000
+
+            pedId = Citizen.InvokeNative(0x0501D52D24EA8934, 1, Citizen.ResultAsInteger()) -- Get HorsePedId in Range
+
+            if (IsEntityDead(playerPed)) or (pedId == 0) or (pedId == MyHorse) then goto END end
+
+            ownerOfMount = Citizen.InvokeNative(0xAD03B03737CE6810, pedId) -- GetPlayerOwnerOfMount
+            isLeading = Citizen.InvokeNative(0xEFC4303DDC6E60D3, playerPed) -- IsPedLeadingHorse
+            if (ownerOfMount == 255) or isLeading then goto END end
+
+            sleep = 0
+            PromptSetActiveGroupThisFrame(LootGroup, CreateVarString(10, 'LITERAL_STRING', _U('lootInventory')), 1, 0, 0, 0)
+            if Citizen.InvokeNative(0xC92AC953F0A982AE, LootHorse) then  -- PromptHasStandardModeCompleted
+                horseId = Entity(pedId).state.myHorseId
+                OpenInventory(pedId, horseId, true)
+            end
+            ::END::
+            Wait(sleep)
+        end
+    end
+end)
 
 -- Set Horse Name and Health Bar Above Horse
 AddEventHandler('bcc-stables:HorseTag', function()
@@ -584,7 +622,7 @@ AddEventHandler('bcc-stables:HorsePrompts', function()
         sleep = 0
 
         if Citizen.InvokeNative(0x91AEF906BCA88877, 0, `INPUT_OPEN_SATCHEL_HORSE_MENU`) then -- IsDisabledControlJustPressed
-            OpenInventory()
+            OpenInventory(MyHorse, MyHorseId, false)
         end
 
         if InWrithe then
@@ -798,7 +836,8 @@ function WhistleHorse()
         if Citizen.InvokeNative(0x77F1BEB8863288D5, MyHorse, 0x4924437D, 0) ~= 0 then -- GetScriptTaskStatus
             local dist = #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(MyHorse))
             if dist >= 100 then
-                DeleteMyHorse()
+                DeleteEntity(MyHorse)
+                MyHorse = nil
                 GetSelectedHorse()
             else
                 Sending = true
@@ -1004,7 +1043,8 @@ AddEventHandler('bcc-stables:HorseDamaged', function()
     if IsEntityDead(MyHorse) then
         SaveHorseStats(true)
         Wait(5000)
-        DeleteMyHorse()
+        DeleteEntity(MyHorse)
+        MyHorse = nil
         return
     end
 
@@ -1047,10 +1087,10 @@ AddEventHandler('bcc-stables:ReviveHorse', function()
     end
 end)
 
-function OpenInventory()
-    local hasBags = Citizen.InvokeNative(0xFB4891BD7578CDC1, MyHorse, -2142954459) -- IsMetaPedUsingComponent
+function OpenInventory(horsePedId, horseId, isLooting)
+    local hasBags = Citizen.InvokeNative(0xFB4891BD7578CDC1, horsePedId, -2142954459) -- IsMetaPedUsingComponent
 
-    if Config.useSaddlebags and not hasBags then
+    if not isLooting and Config.useSaddlebags and not hasBags then
         VORPcore.NotifyRightTip(_U('noSaddlebags'), 4000)
         return
     end
@@ -1059,14 +1099,15 @@ function OpenInventory()
         Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), MyHorse, joaat('Interaction_LootSaddleBags'), 0, 1) -- TaskAnimalInteraction
     end
 
-    TriggerServerEvent('bcc-stables:OpenInventory', MyHorseId)
+    TriggerServerEvent('bcc-stables:OpenInventory', horseId)
 end
 
 function FleeHorse()
     Citizen.InvokeNative(0x22B0D0E37CCB840D, MyHorse, PlayerPedId(), 150.0, 10000, 6, 3.0) -- TaskSmartFleePed
     SaveHorseStats(false)
     Wait(10000)
-    DeleteMyHorse()
+    DeleteEntity(MyHorse)
+    MyHorse = nil
 end
 
 AddEventHandler('bcc-stables:HorseBonding', function()
@@ -1387,7 +1428,6 @@ AddEventHandler('bcc-stables:TradeHorse', function()
             if closestPlayer and closestDistance <= 2.0 then
                 sleep = 0
                 PromptSetActiveGroupThisFrame(TradeGroup, CreateVarString(10, 'LITERAL_STRING', HorseName), 1, 0, 0, 0)
-                PromptSetEnabled(TradeHorse, true)
                 if Citizen.InvokeNative(0xE0F65F0640EF0617, TradeHorse) then  -- PromptHasHoldModeCompleted
                     local serverId = GetPlayerServerId(closestPlayer)
                     TriggerServerEvent('bcc-stables:SaveHorseTrade', serverId, MyHorseId)
@@ -1608,7 +1648,8 @@ function ReturnHorse()
     end
 
     SaveHorseStats(false)
-    DeleteMyHorse()
+    DeleteEntity(MyHorse)
+    MyHorse = nil
     VORPcore.NotifyRightTip(_U('horseReturned'), 4000)
 end
 
@@ -1682,13 +1723,6 @@ function Rotation(dir)
     end
 
     SetEntityHeading(entity, (GetEntityHeading(entity) + dir) % 360)
-end
-
-function DeleteMyHorse()
-    if MyHorse then
-        DeleteEntity(MyHorse)
-        MyHorse = nil
-    end
 end
 
 RegisterCommand(Config.commands.horseRespawn, function(source, args, rawCommand)
@@ -1771,9 +1805,19 @@ function StartPrompts()
     PromptSetControlAction(TradeHorse, Config.keys.trade)
     PromptSetText(TradeHorse, CreateVarString(10, 'LITERAL_STRING', _U('tradePrompt')))
     PromptSetVisible(TradeHorse, true)
+    PromptSetEnabled(TradeHorse, true)
     PromptSetHoldMode(TradeHorse, 2000)
     PromptSetGroup(TradeHorse, TradeGroup, 0)
     PromptRegisterEnd(TradeHorse)
+
+    LootHorse = PromptRegisterBegin()
+    PromptSetControlAction(LootHorse, Config.keys.loot)
+    PromptSetText(LootHorse, CreateVarString(10, 'LITERAL_STRING', _U('lootHorsePrompt')))
+    PromptSetVisible(LootHorse, true)
+    PromptSetEnabled(LootHorse, true)
+    PromptSetStandardMode(LootHorse)
+    PromptSetGroup(LootHorse, LootGroup, 0)
+    PromptRegisterEnd(LootHorse)
 end
 
 function HorseTargetPrompts(menuGroup)
@@ -2067,7 +2111,8 @@ AddEventHandler('onResourceStop', function(resourceName)
 
     if MyHorse then
         SaveHorseStats(false)
-        DeleteMyHorse()
+        DeleteEntity(MyHorse)
+        MyHorse = nil
     end
     for _, siteCfg in pairs(Stables) do
         if siteCfg.Blip then
