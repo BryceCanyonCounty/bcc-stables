@@ -25,6 +25,7 @@ Config.keys = {
     rest    = 0x620A6C5E, --[V] Horse Rest
     sleep   = 0x43CDA5B0, --[Z] Horse Sleep
     wallow  = 0x9959A6F0, --[C] Horse Wallow
+    loot    = 0x27D1C284, --[R] Loot Horse
 }
 -----------------------------------------------------
 
@@ -73,7 +74,7 @@ Config.writheHealth = 35 -- Default: 35 / Set to 0 to Disable
 
 -- Horse Inventory
 Config.useSaddlebags    = true  -- Default: true / Require Saddlebags for Inventory
-Config.shareInventory   = false -- Default: false / Share with All Players
+Config.shareInventory   = false -- Default: false / Share with All Players / Allows Looting Player Horses
 Config.allowWeapons     = true  -- Default: true / Allow Weapons
 -----------------------------------------------------
 
