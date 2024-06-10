@@ -534,8 +534,10 @@ function SpawnHorse(data)
 
     TriggerServerEvent('bcc-stables:RegisterInventory', MyHorseId, horseModel)
 
-    local myHorseNetId = NetworkGetNetworkIdFromEntity(MyHorse)
-    TriggerServerEvent('bcc-stables:SetLootHorseData', myHorseNetId, MyHorseId)
+    if Config.shareInventory then
+        local myHorseNetId = NetworkGetNetworkIdFromEntity(MyHorse)
+        TriggerServerEvent('bcc-stables:SetLootHorseData', myHorseNetId, MyHorseId)
+    end
 
     if Config.horseTag then
         TriggerEvent('bcc-stables:HorseTag')
