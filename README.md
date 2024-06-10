@@ -26,6 +26,7 @@ Groom, feed, and clean your horse to keep them at peak performance.
 - Horse Trading between players.
 - Config option: Only trainers can buy horses from a stable (set per stable).
 - Revive your downed horse using the horse reviver item.
+- Allow player horse looting. 
 
 ## Horse Training
 ### XP System
