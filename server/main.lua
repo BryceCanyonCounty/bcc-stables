@@ -198,6 +198,14 @@ RegisterServerEvent('bcc-stables:SetTamedData', function(netId)
     Entity(tamed).state:set('netId', netId, true)
 end)
 
+RegisterServerEvent('bcc-stables:SetLootHorseData', function(netId, myHorseId)
+    if not netId or not myHorseId then
+        return print('Invalid params sent to SetMyHorseData')
+    end
+    local myHorse = NetworkGetEntityFromNetworkId(netId)
+    Entity(myHorse).state:set('myHorseId', myHorseId, true)
+end)
+
 RegisterServerEvent('bcc-stables:SellTamedHorse', function(horseModel)
     local src = source
     local Character = VORPcore.getUser(src).getUsedCharacter
