@@ -68,8 +68,13 @@ Config.closedCall   = true -- Default: true / 'Call Horse' Button at Stable
 Config.closedReturn = true -- Default: true / 'Return Horse' Button at Stable
 -----------------------------------------------------
 
--- Horse Health Level to set Writhe State (Horse Down)
-Config.writheHealth = 35 -- Default: 35 / Set to 0 to Disable
+-- Horse Death Settings
+Config.death = {
+    deselect = false,   -- Default: false / If true, Player Must Return to Stable to Select Horse to Spawn
+    permanent = false,  -- Default: false / If true, Horse is Permanently Dead
+    health = 20,        -- Default: 20 / Health Level for First Spawn After Death
+    stamina = 20,       -- Default: 20 / Stamina Level for First Spawn After Death
+}
 -----------------------------------------------------
 
 -- Horse Inventory

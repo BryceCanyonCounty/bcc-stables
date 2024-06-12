@@ -65,4 +65,5 @@ Locales["ro_lang"] = {
     horseInfoTrickLvl_3 = "Truc: Skid/Slide | ctrl-stanga",
     horseInfoTrickLvl_4a = "Truc: Dans | space",
     horseInfoTrickLvl_4b = "Side-Pass | space + A sau D",
+    horseDied = "Your horse has died, return to stable to select a horse.",
 }

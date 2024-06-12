@@ -796,18 +796,6 @@ CreateThread(function()
                             TriggerServerEvent('bcc-stables:SetTamedData', tamedNetId)
                         end
                     end
-                elseif event == 1784289253 then -- EVENT_TRIGGERED_ANIMAL_WRITHE 
-                    local eventDataSize = 2
-                    local eventDataStruct = DataView.ArrayBuffer(128)
-                    eventDataStruct:SetInt32(0, 0)  -- Animal Ped Id
-                    eventDataStruct:SetInt32(8, 0)  -- Ped Id that Damaged Animal
-
-                    local data = Citizen.InvokeNative(0x57EC5FA4D4D6AFCA, 0, i, eventDataStruct:Buffer(), eventDataSize) -- GetEventData
-                    if data then
-                        if eventDataStruct:GetInt32(0) == MyHorse then
-                            TriggerEvent('bcc-stables:HorseDown')
-                        end
-                    end
                 elseif event == 402722103 then -- EVENT_ENTITY_DAMAGED 
                     local eventDataSize = 9
                     local eventDataStruct = DataView.ArrayBuffer(128)
@@ -824,7 +812,7 @@ CreateThread(function()
                     local data = Citizen.InvokeNative(0x57EC5FA4D4D6AFCA, 0, i, eventDataStruct:Buffer(), eventDataSize) -- GetEventData
                     if data then
                         if eventDataStruct:GetInt32(0) == MyHorse then
-                            TriggerEvent('bcc-stables:HorseDamaged')
+                            TriggerEvent('bcc-stables:CheckHorseHealth')
                         end
                     end
                 end
@@ -1041,37 +1029,44 @@ function KeepTamedHorse(tameData)
     end
 end
 
-AddEventHandler('bcc-stables:HorseDamaged', function()
-    if IsEntityDead(MyHorse) then
-        SaveHorseStats(true)
-        Wait(5000)
-        DeleteEntity(MyHorse)
-        MyHorse = nil
-        return
-    end
+AddEventHandler('bcc-stables:CheckHorseHealth', function()
+    if Citizen.InvokeNative(0x3317DEDB88C95038, MyHorse, false) then -- IsPedDeadOrDying
+        if not InWrithe then
+            Citizen.InvokeNative(0x71BC8E838B9C6035, MyHorse) -- ResurrectPed
+            Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 136, false)-- SetPedConfigFlag / CannotBeMounted
+            Citizen.InvokeNative(0x8C038A39C4A4B6D6, MyHorse, 0, 0) -- TaskAnimalWrithe
+            Wait(100)
+            Citizen.InvokeNative(0x925A160133003AC6, MyHorse, true) -- SetPausePedWritheBleedout
+            InWrithe = true
+            Citizen.InvokeNative(0xA3DB37EDF9A74635, PlayerId(), MyHorse, 35, 1, true) -- TARGET_INFO
+            PromptDelete(HorseDrink)
+            PromptDelete(HorseSleep)
+            PromptDelete(HorseRest)
+            PromptDelete(HorseWallow)
+            PromptsStarted = false
+        else
+            if not IsEntityDead(MyHorse) then return end
 
-    local writheHealth = Config.writheHealth
-    if writheHealth <= 0 then
-        return
-    end
+            local deselected, permaDead = false, false
+            SaveHorseStats(true)
 
-    local health = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
-    if health <= writheHealth then
-        Citizen.InvokeNative(0x8C038A39C4A4B6D6, MyHorse, 0, 0) -- TaskAnimalWrithe
-    end
-end)
+            if Config.death.deselect then
+                deselected = VORPcore.Callback.TriggerAwait('bcc-stables:DeselectHorse', MyHorseId)
+            end
 
-AddEventHandler('bcc-stables:HorseDown', function()
-    Citizen.InvokeNative(0x925A160133003AC6, MyHorse, true) -- SetPausePedWritheBleedout
-    Wait(5000)
-    if not IsEntityDead(MyHorse) then
-        InWrithe = true
-        Citizen.InvokeNative(0xA3DB37EDF9A74635, PlayerId(), MyHorse, 35, 1, true) -- TARGET_INFO
-        PromptDelete(HorseDrink)
-        PromptDelete(HorseSleep)
-        PromptDelete(HorseRest)
-        PromptDelete(HorseWallow)
-        PromptsStarted = false
+            if Config.death.permanent then
+                permaDead = VORPcore.Callback.TriggerAwait('bcc-stables:SetHorseDead', MyHorseId)
+            end
+
+            if deselected or permaDead then
+                VORPcore.NotifyRightTip(_U('horseDied'), 4000)
+            end
+
+            Wait(5000)
+            DeleteEntity(MyHorse)
+            MyHorse = nil
+            InWrithe = false
+        end
     end
 end)
 
@@ -1663,8 +1658,8 @@ function SaveHorseStats(dead)
         healthCore = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 0, Citizen.ResultAsInteger())  -- GetAttributeCoreValue
         staminaCore = Citizen.InvokeNative(0x36731AC041289BB1, MyHorse, 1, Citizen.ResultAsInteger()) -- GetAttributeCoreValue
     else
-        healthCore = 20
-        staminaCore = 20
+        healthCore = Config.death.health
+        staminaCore = Config.death.stamina
     end
 
     data = {

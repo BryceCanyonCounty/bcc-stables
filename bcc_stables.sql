@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS `player_horses` (
   `health` INT(11) NOT NULL DEFAULT 50,
   `stamina` INT(11) NOT NULL DEFAULT 50,
   `captured` INT(11) NOT NULL DEFAULT 0,
-  `born` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP()
+  `born` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  `dead` INT(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS (`gender` ENUM('male', 'female') DEFAULT 'male');
@@ -20,6 +21,7 @@ ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS (`captured` INT(11) NOT NUL
 ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS (`born` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP());
 ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS (`health` INT(11) NOT NULL DEFAULT 50);
 ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS (`stamina` INT(11) NOT NULL DEFAULT 50);
+ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS (`dead` INT(11) NOT NULL DEFAULT 0);
 
 INSERT INTO `items`(`item`, `label`, `limit`, `can_remove`, `type`, `usable`) VALUES ('oil_lantern', 'Oil Lantern', 1, 1, 'item_standard', 1)
   ON DUPLICATE KEY UPDATE `item`='oil_lantern', `label`='Oil Lantern', `limit`=1, `can_remove`=1, `type`='item_standard', `usable`=1;
