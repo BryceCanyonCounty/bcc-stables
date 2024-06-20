@@ -1,19 +1,16 @@
 local VORPcore = exports.vorp_core:GetCore()
 local FeatherMenu =  exports['feather-menu'].initiate()
 
--- Shop Prompts
+-- Prompts
 local OpenShops, OpenCall, OpenReturn
 local ShopGroup = GetRandomIntInRange(0, 0xffffff)
 
--- Tame Prompts
 local KeepTame, SellTame
 local TameGroup = GetRandomIntInRange(0, 0xffffff)
 
--- Trade Prompts
 local TradeHorse
 local TradeGroup = GetRandomIntInRange(0, 0xffffff)
 
--- Loot Prompts
 local LootHorse
 local LootGroup = GetRandomIntInRange(0, 0xffffff)
 
@@ -22,8 +19,8 @@ local HorseDrink, HorseRest, HorseSleep, HorseWallow = nil, nil, nil, nil
 
 -- Horse Tack
 local BedrollsUsing, MasksUsing, MustachesUsing, HolstersUsing = nil, nil, nil, nil
-local SaddlesUsing, SaddleclothsUsing, StirrupsUsing = nil, nil, nil
-local BagsUsing, ManesUsing, TailsUsing, SaddleHornsUsing = nil, nil, nil, nil
+local SaddlesUsing, SaddleclothsUsing, StirrupsUsing, HorseshoesUsing = nil, nil, nil, nil
+local BagsUsing, ManesUsing, TailsUsing, SaddleHornsUsing, BridlesUsing = nil, nil, nil, nil, nil
 
 -- Horse Training
 local LastLoc, TamedModel = nil, nil
@@ -381,7 +378,9 @@ RegisterNetEvent('bcc-stables:SaveComps', function()
         BedrollsUsing,
         MasksUsing,
         MustachesUsing,
-        HolstersUsing
+        HolstersUsing,
+        BridlesUsing,
+        HorseshoesUsing
     }
     local compDataEncoded = json.encode(compData)
     if compDataEncoded ~= '[]' then
@@ -1601,12 +1600,40 @@ RegisterNUICallback('Holsters', function(data, cb)
     if tonumber(data.id) == -1 then
         HolstersUsing = 0
         local playerHorse = MyEntity
-        Citizen.InvokeNative(0x0D7FFA1B2F69ED82, playerHorse, 0xF772CED6, 0, false) -- RemoveShopItemFromPed
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xAC106B30, 0) -- RemoveTagFromMetaPed
         Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
     else
         local hash = data.hash
         SetModel(hash)
         HolstersUsing = hash
+    end
+end)
+
+RegisterNUICallback('Bridles', function(data, cb)
+    cb('ok')
+    if tonumber(data.id) == -1 then
+        BridlesUsing = 0
+        local playerHorse = MyEntity
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x94B2E3AF, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+    else
+        local hash = data.hash
+        SetModel(hash)
+        BridlesUsing = hash
+    end
+end)
+
+RegisterNUICallback('Horseshoes', function(data, cb)
+    cb('ok')
+    if tonumber(data.id) == -1 then
+        HorseshoesUsing = 0
+        local playerHorse = MyEntity
+        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xFACFC3C0, 0) -- RemoveTagFromMetaPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+    else
+        local hash = data.hash
+        SetModel(hash)
+        HorseshoesUsing = hash
     end
 end)
 
@@ -2105,6 +2132,16 @@ AddEventHandler('onResourceStop', function(resourceName)
     ClearPedTasksImmediately(PlayerPedId())
     DestroyAllCams(true)
     DisplayRadar(true)
+
+    if ShopEntity then
+        DeleteEntity(ShopEntity)
+        ShopEntity = nil
+    end
+
+    if MyEntity then
+        DeleteEntity(MyEntity)
+        MyEntity = nil
+    end
 
     if MyHorse then
         SaveHorseStats(false)
