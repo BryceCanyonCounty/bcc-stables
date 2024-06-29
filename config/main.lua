@@ -127,6 +127,9 @@ Config.cooldown   = {
 }
 -----------------------------------------------------
 
+Config.disableKick = false -- Default: false / Disable Kick from Horse
+-----------------------------------------------------
+
 -- Sell Price for Horse Purchased in Stable is 60% of Horse cashPrice
 Config.sellPrice = 0.70 -- Default: 0.70
 -----------------------------------------------------
