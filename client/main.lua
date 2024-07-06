@@ -609,8 +609,17 @@ AddEventHandler('bcc-stables:HorsePrompts', function()
     while MyHorse do
         local playerPed = PlayerPedId()
         local sleep = 1000
+		local maxDistance = 50.0 -- Set a maximum distance for the horse to be sent away
         local distance = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
-
+		
+        -- Check if the player is getting away from the horse
+        if distance > maxDistance then
+            Wait(500)
+            FleeHorse()
+            Wait(500)
+            break
+        end
+		
         if (IsPlayerFreeAiming(player)) or (distance > 2.8) or (IsEntityDead(playerPed)) then
             Citizen.InvokeNative(0xA3DB37EDF9A74635, player, MyHorse, 35, 1, true) -- Hide TARGET_INFO
             Citizen.InvokeNative(0xA3DB37EDF9A74635, player, MyHorse, 33, 1, true) -- Hide HORSE_FLEE
