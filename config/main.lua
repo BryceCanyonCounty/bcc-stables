@@ -36,7 +36,11 @@ Config.horsebrushDurability = true
 Config.lantern = 'oil_lantern'
 Config.lanternDurability = true
 
-Config.haycube = 'consumable_haycube'
+Config.horseFood = {
+	'consumable_haycube',
+	'consumable_carrots',
+	'consumable_apple'
+}
 
 Config.reviver = 'consumable_horse_reviver'
 -----------------------------------------------------
