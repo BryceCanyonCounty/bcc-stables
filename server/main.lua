@@ -294,11 +294,16 @@ RegisterServerEvent('bcc-stables:OpenInventory', function(id)
     exports.vorp_inventory:openInventory(src, 'horse_' .. tostring(id))
 end)
 
-exports.vorp_inventory:registerUsableItem(Config.haycube, function(data)
-    local src = data.source
-    exports.vorp_inventory:closeInventory(src)
-    TriggerClientEvent('bcc-stables:FeedHorse', src, Config.haycube)
-end)
+-- Iterate over each item in the Config.horseFood array to register them as usable items
+for _, item in ipairs(Config.horseFood) do
+    exports.vorp_inventory:registerUsableItem(item, function(data)
+        local src = data.source
+        -- Close the inventory when the item is used
+        exports.vorp_inventory:closeInventory(src)
+        -- Trigger an event on the client side to handle the feeding action, passing the specific item used
+        TriggerClientEvent('bcc-stables:FeedHorse', src, item)
+    end)
+end
 
 RegisterServerEvent('bcc-stables:RemoveItem', function(item)
     local src = source
