@@ -609,11 +609,10 @@ AddEventHandler('bcc-stables:HorsePrompts', function()
     while MyHorse do
         local playerPed = PlayerPedId()
         local sleep = 1000
-		local maxDistance = 50.0 -- Set a maximum distance for the horse to be sent away
         local distance = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
 		
         -- Check if the player is getting away from the horse
-        if distance > maxDistance then
+        if distance > Config.maxDistanceFlee then
             Wait(500)
             FleeHorse()
             Wait(500)
