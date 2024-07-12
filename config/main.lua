@@ -59,8 +59,11 @@ Config.maxPlayerHorses  = 5  -- Default: 5
 Config.maxTrainerHorses = 10 -- Default: 10
 -----------------------------------------------------
 
---Max distance between player and horse, if he move away from horse, it will send automatically
-Config.maxDistanceFlee = 150
+-- If Distance to Horse is too Far, Horse is Returned to Stable
+Config.horseDistance = {
+    enabled = true, -- Default: true / If You Notice Horse Spawn Issues, Set to False
+    radius = 150,   -- Default: 150 / Distance from Player to Horse
+}
 -----------------------------------------------------
 
 -- Can Spawn Horse Anywhere with Whistle 
