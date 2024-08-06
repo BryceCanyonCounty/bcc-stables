@@ -4,7 +4,9 @@ local CooldownData = {}
 
 VORPcore.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return cb(false) end
+    local Character = user.getUsedCharacter
     local charid = Character.charIdentifier
     local maxHorses = tonumber(Config.maxPlayerHorses)
     if data.isTrainer then
@@ -35,7 +37,9 @@ end)
 
 RegisterNetEvent('bcc-stables:BuyTack', function(data)
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return end
+    local Character = user.getUsedCharacter
 
     if tonumber(data.cashPrice) > 0 and tonumber(data.goldPrice) > 0 then
         if tonumber(data.currencyType) == 0 then
@@ -60,7 +64,9 @@ end)
 
 VORPcore.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, data)
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return cb(false) end
+    local Character = user.getUsedCharacter
     local identifier = Character.identifier
     local charid = Character.charIdentifier
 
@@ -90,7 +96,9 @@ end)
 
 RegisterServerEvent('bcc-stables:SelectHorse', function(data)
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return end
+    local Character = user.getUsedCharacter
     local charid = Character.charIdentifier
     local id = tonumber(data.horseId)
 
@@ -105,20 +113,20 @@ RegisterServerEvent('bcc-stables:SelectHorse', function(data)
 end)
 
 VORPcore.Callback.Register('bcc-stables:DeselectHorse', function(source, cb, horseId)
-
     MySQL.query.await('UPDATE `player_horses` SET `selected` = ? WHERE `id` = ?', { 0, horseId })
     cb(true)
 end)
 
 VORPcore.Callback.Register('bcc-stables:SetHorseDead', function(source, cb, horseId)
-
     MySQL.query.await('UPDATE `player_horses` SET `selected` = ?, `dead` = ? WHERE `id` = ?', { 0, 1, horseId })
     cb(true)
 end)
 
 VORPcore.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return cb(false) end
+    local Character = user.getUsedCharacter
     local charid = Character.charIdentifier
     local data = nil
 
@@ -152,26 +160,31 @@ end)
 
 RegisterNetEvent('bcc-stables:GetMyHorses', function()
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return end
+    local Character = user.getUsedCharacter
     local charid = Character.charIdentifier
 
     local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ? AND `dead` = ?', { charid, 0 })
     TriggerClientEvent('bcc-stables:ReceiveHorsesData', src, horses)
 end)
 
-RegisterNetEvent('bcc-stables:UpdateComponents', function(components, horseId, MyHorse_entity)
+RegisterNetEvent('bcc-stables:UpdateComponents', function(encodedComponents, horseId, MyHorse_entity)
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return end
+    local Character = user.getUsedCharacter
     local charid = Character.charIdentifier
-    local encodedComponents = json.encode(components)
 
     MySQL.query.await('UPDATE `player_horses` SET `components` = ? WHERE `charid` = ? AND `id` = ?', { encodedComponents, charid, horseId })
-    TriggerClientEvent('bcc-stables:SetComponents', src, MyHorse_entity, components)
+    TriggerClientEvent('bcc-stables:SetComponents', src, MyHorse_entity, encodedComponents)
 end)
 
 VORPcore.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return cb(false) end
+    local Character = user.getUsedCharacter
     local charid = Character.charIdentifier
     local modelHorse = nil
     local id = tonumber(data.horseId)
@@ -204,7 +217,9 @@ end)
 
 RegisterServerEvent('bcc-stables:SellTamedHorse', function(horseModel)
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return end
+    local Character = user.getUsedCharacter
     local charid = Character.charIdentifier
     for _, horseCfg in pairs(Horses) do
         for model, modelCfg in pairs(horseCfg.colors) do
@@ -225,7 +240,9 @@ end
 
 VORPcore.Callback.Register('bcc-stables:CheckPlayerCooldown', function(source, cb, type)
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return cb(false) end
+    local Character = user.getUsedCharacter
     local cooldown = Config.cooldown[type]
     local onList = false
     local typeId = type .. tostring(Character.charIdentifier)
@@ -249,10 +266,14 @@ end)
 RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
     -- Current Owner
     local src = source
-    local curOwner = VORPcore.getUser(src).getUsedCharacter
+    local curUser = VORPcore.getUser(src)
+    if not curUser then return end
+    local curOwner = curUser.getUsedCharacter
     local curOwnerName = curOwner.firstname .. " " .. curOwner.lastname
     -- New Owner
-    local newOwner = VORPcore.getUser(serverId).getUsedCharacter
+    local newUser = VORPcore.getUser(serverId)
+    if not newUser then return end
+    local newOwner = newUser.getUsedCharacter
     local newOwnerId = newOwner.identifier
     local newOwnerCharId = newOwner.charIdentifier
     local newOwnerName = newOwner.firstname .. " " .. newOwner.lastname
@@ -264,7 +285,6 @@ end)
 
 RegisterServerEvent('bcc-stables:RegisterInventory', function(id, horseModel)
     local isRegistered = exports.vorp_inventory:isCustomInventoryRegistered('horse_' .. tostring(id))
-
     if isRegistered then return end
 
     for _, horseCfg in pairs(Horses) do
@@ -291,6 +311,8 @@ end)
 
 RegisterServerEvent('bcc-stables:OpenInventory', function(id)
     local src = source
+    local user = VORPcore.getUser(src)
+    if not user then return end
     exports.vorp_inventory:openInventory(src, 'horse_' .. tostring(id))
 end)
 
@@ -307,11 +329,15 @@ end
 
 RegisterServerEvent('bcc-stables:RemoveItem', function(item)
     local src = source
+    local user = VORPcore.getUser(src)
+    if not user then return end
     exports.vorp_inventory:subItem(src, item, 1)
 end)
 
 exports.vorp_inventory:registerUsableItem(Config.horsebrush, function(data)
     local src = data.source
+    local user = VORPcore.getUser(src)
+    if not user then return end
     local item = exports.vorp_inventory:getItem(src, Config.horsebrush)
     exports.vorp_inventory:closeInventory(src)
     TriggerClientEvent('bcc-stables:BrushHorse', src)
@@ -340,6 +366,8 @@ end)
 
 exports.vorp_inventory:registerUsableItem(Config.lantern, function(data)
     local src = data.source
+    local user = VORPcore.getUser(src)
+    if not user then return end
     local item = exports.vorp_inventory:getItem(src, Config.lantern)
     exports.vorp_inventory:closeInventory(src)
     TriggerClientEvent('bcc-stables:UseLantern', src)
@@ -368,6 +396,8 @@ end)
 
 VORPcore.Callback.Register('bcc-stables:HorseReviveItem', function(source, cb)
     local src = source
+    local user = VORPcore.getUser(src)
+    if not user then return cb(false) end
     local reviveItem = Config.reviver
     local item = exports.vorp_inventory:getItem(src, reviveItem)
     if not item then
@@ -380,7 +410,9 @@ end)
 
 VORPcore.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer, site)
     local src = source
-    local Character = VORPcore.getUser(src).getUsedCharacter
+    local user = VORPcore.getUser(src)
+    if not user then return cb(false) end
+    local Character = user.getUsedCharacter
     local charJob = Character.job
     local jobGrade = Character.jobGrade
     if not charJob then
@@ -412,6 +444,9 @@ end
 
 RegisterNetEvent('vorp_core:instanceplayers', function(setRoom)
     local src = source
+    local user = VORPcore.getUser(src)
+    if not user then return end
+
     if setRoom == 0 then
         Wait(3000)
         TriggerClientEvent('bcc-stables:UpdateMyHorseEntity', src)
