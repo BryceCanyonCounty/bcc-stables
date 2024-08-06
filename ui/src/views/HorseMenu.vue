@@ -66,7 +66,7 @@
           @mousedown="startRotate('left')"
           @mouseleave="onMouseLeave"
         >
-          <i class="fas fa-chevron-left center"></i>
+          <i class="fa-solid fa-chevron-left center"></i>
         </button>
         <div class="rotate-text">
           <span class="grey-text center">Rotate</span>
@@ -77,7 +77,7 @@
           @mousedown="startRotate('right')"
           @mouseleave="onMouseLeave"
         >
-          <i class="fas fa-chevron-right center"></i>
+          <i class="fa-solid fa-chevron-right center"></i>
         </button>
         <button id="cancel" class="btn-select" @click="close()">Cancel</button>
       </div>
