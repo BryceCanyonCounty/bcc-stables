@@ -5,13 +5,13 @@
       <div class="panel-title" @click="[SelectHorse(), Expand()]">
         <h6 class="grey-text plus">
           <i
-            class="fas fa-chevron-left center active-horse mr"
+            class="fa-solid fa-chevron-left center active-horse mr"
             v-if="isActive"
           ></i>
           {{ label }}
           <GenderIndicator :gender="horse.gender" />
           <i
-            class="fas fa-chevron-right center active-horse ml"
+            class="fa-solid fa-chevron-right center active-horse ml"
             v-if="isActive"
           ></i>
         </h6>
