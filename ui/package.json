@@ -1,7 +1,7 @@
 {
   "name": "bcc-stables",
 
-  "version": "1.4.15",
+  "version": "1.4.16",
 
   "private": true,
   "scripts": {

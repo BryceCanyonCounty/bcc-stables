@@ -28,7 +28,6 @@ local IsTrainer, IsNaming, MaxBonding, HorseBreed = false, false, false, false
 
 -- Misc.
 local MyHorse, ShopEntity, MyEntity = 0, 0, 0
-local HorseComponents = {}
 local StableName, HorseName, Site
 local MyEntityID, MyHorseId, MyModel
 local InMenu, HasJob, UsingLantern, PromptsStarted = false, false, false, false
@@ -151,8 +150,9 @@ RegisterNUICallback('loadHorse', function(data, cb)
         MyEntity = 0
     end
 
-    local model = joaat(data.horseModel)
-    LoadModel(model)
+    local modelName = data.horseModel
+    local model = joaat(modelName)
+    LoadModel(model, modelName)
 
     if ShopEntity ~= 0 then
         DeleteEntity(ShopEntity)
@@ -286,8 +286,9 @@ RegisterNUICallback('loadMyHorse', function(data, cb)
         MyEntity = 0
     end
 
-    local model = joaat(data.HorseModel)
-    LoadModel(model)
+    local modelName = data.HorseModel
+    local model = joaat(modelName)
+    LoadModel(model, modelName)
 
     local siteCfg = Stables[Site]
     MyEntity = CreatePed(model, siteCfg.horse.coords.x, siteCfg.horse.coords.y, siteCfg.horse.coords.z - 1.0, siteCfg.horse.heading, false, false, false, false)
@@ -296,7 +297,7 @@ RegisterNUICallback('loadMyHorse', function(data, cb)
     Citizen.InvokeNative(0x7D9EFB7AD6B19754, MyEntity, true) -- FreezeEntityPosition
     if data.HorseGender == 'female' then
         Citizen.InvokeNative(0x5653AB26C82938CF, MyEntity, 41611, 1.0) -- SetCharExpression
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyEntity) -- UpdatePedVariation
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyEntity, false, true, true, true, false) -- UpdatePedVariation
     end
     if not Cam then
         Cam = true
@@ -307,14 +308,10 @@ RegisterNUICallback('loadMyHorse', function(data, cb)
     Wait(300)
     Citizen.InvokeNative(0x6585D955A68452A5, MyEntity) -- ClearPedEnvDirt
 
-    local componentsHorse = json.decode(data.HorseComp)
-    if componentsHorse ~= '[]' then
-        for _, hash in pairs(componentsHorse) do
-            local compModel = joaat(tonumber(hash))
-            if not HasModelLoaded(compModel) then
-                Citizen.InvokeNative(0xFA28FE3A6246FC30, compModel) -- RequestModel
-            end
-            Citizen.InvokeNative(0xD3A7B003ED343FD9, MyEntity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
+    local components = json.decode(data.HorseComp)
+    if components ~= '[]' then
+        for _, component in pairs(components) do
+            SetComponent(MyEntity, component)
         end
     end
 end)
@@ -327,8 +324,6 @@ end)
 function GetSelectedHorse()
     local data = VORPcore.Callback.TriggerAwait('bcc-stables:GetHorseData')
     if data then
-        HorseComponents = json.decode(data.components)
-        MyHorseId = data.id
         SpawnHorse(data)
     else
         print('No selected-horse data returned!')
@@ -384,7 +379,7 @@ RegisterNetEvent('bcc-stables:SaveComps', function()
     }
     local compDataEncoded = json.encode(compData)
     if compDataEncoded ~= '[]' then
-        TriggerServerEvent('bcc-stables:UpdateComponents', compData, MyEntityID, MyEntity)
+        TriggerServerEvent('bcc-stables:UpdateComponents', compDataEncoded, MyEntityID, MyEntity)
     end
 end)
 
@@ -406,15 +401,12 @@ function StableMenu()
     TriggerServerEvent('bcc-stables:GetMyHorses')
 end
 
-RegisterNetEvent('bcc-stables:SetComponents', function(horseEntity, components)
-    for _, value in pairs(components) do
-        NativeSetPedComponentEnabled(horseEntity, value)
+RegisterNetEvent('bcc-stables:SetComponents', function(horseEntity, encodedComponents)
+    local components = json.decode(encodedComponents)
+    for _, component in pairs(components) do
+        SetComponent(horseEntity, component)
     end
 end)
-
-function NativeSetPedComponentEnabled(ped, component)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, component, true, true, true) -- ApplyShopItemToPed
-end
 
 function SpawnHorse(data)
     if Spawning then
@@ -427,11 +419,13 @@ function SpawnHorse(data)
         MyHorse = 0
     end
 
+    MyHorseId = data.id
     local horseModel = data.model
     local xp = data.xp
+    local horseComponents = json.decode(data.components)
 
     MyModel = joaat(horseModel)
-    LoadModel(MyModel)
+    LoadModel(MyModel, horseModel)
 
     for _, horseCfg in pairs(Horses) do
         for model, modelCfg in pairs(horseCfg.colors) do
@@ -482,11 +476,11 @@ function SpawnHorse(data)
     Citizen.InvokeNative(0x283978A15512B2FE, MyHorse, true) -- SetRandomOutfitVariation
     if data.gender == 'female' then
         Citizen.InvokeNative(0x5653AB26C82938CF, MyHorse, 41611, 1.0) -- SetCharExpression
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse) -- UpdatePedVariation
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse, false, true, true, true, false) -- UpdatePedVariation
     end
     Citizen.InvokeNative(0xD2CB0FB0FDCB473D, playerPed, MyHorse) -- SetPedAsSaddleHorseForPlayer
     Citizen.InvokeNative(0x931B241409216C1F, playerPed, MyHorse, false) -- SetPedOwnsAnimal
-    Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, joaat('PLAYER_HORSE')) -- SetPedPersonality
+    Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, `PLAYER_HORSE`) -- SetPedPersonality
     Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse) -- SetPlayerOwnsMount
 
     -- ModifyPlayerUiPromptForPed / Horse Prompts / (Block = 0, Hide = 1, Grey Out = 2)
@@ -530,9 +524,13 @@ function SpawnHorse(data)
     Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, HorseName) -- SetBlipName
     SetPedPromptName(MyHorse, HorseName)
 
-    if HorseComponents ~= nil and HorseComponents ~= '0' then
-        for _, componentHash in pairs(HorseComponents) do
-            NativeSetPedComponentEnabled(MyHorse, tonumber(componentHash))
+    while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, MyHorse) do -- IsPedReadyToRender
+        Wait(10)
+    end
+
+    if horseComponents ~= '[]' then
+        for _, component in pairs(horseComponents) do
+            SetComponent(MyHorse, component)
         end
     end
 
@@ -593,7 +591,7 @@ end)
 -- Set Horse Name and Health Bar Above Horse
 AddEventHandler('bcc-stables:HorseTag', function()
     local gamerTagId = Citizen.InvokeNative(0xE961BF23EAB76B12, MyHorse, HorseName) -- CreateMpGamerTagOnEntity
-    Citizen.InvokeNative(0x5F57522BC1EB9D9D, gamerTagId, joaat('PLAYER_HORSE')) -- SetMpGamerTagTopIcon
+    Citizen.InvokeNative(0x5F57522BC1EB9D9D, gamerTagId, `PLAYER_HORSE`) -- SetMpGamerTagTopIcon
     while MyHorse ~= 0 do
         Wait(1000)
         local dist = #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(MyHorse))
@@ -863,7 +861,7 @@ function LongWhistleHorse()
             local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
             if dist <= 45 then
                 if Citizen.InvokeNative(0x77F1BEB8863288D5, MyHorse, 0x3EF867F4, 0) ~= 1 then -- GetScriptTaskStatus
-                    Citizen.InvokeNative(0x304AE42E357B8C7E, MyHorse, playerPed, math.random(1.0, 4.0), math.random(5.0, 8.0), 0.0, 0.7, -1, 3.0, 1) -- TaskFollowToOffsetOfEntity
+                    Citizen.InvokeNative(0x304AE42E357B8C7E, MyHorse, playerPed, math.random(1.0, 4.0), math.random(5.0, 8.0), 0.0, 0.7, -1, 3.0, true) -- TaskFollowToOffsetOfEntity
                 else
                     ClearPedTasks(MyHorse)
                 end
@@ -964,7 +962,7 @@ CreateThread(function()
                 end
             end
 
-            if (distance <= siteCfg.shop.distance) and IsPedOnMount(playerPed) and (mountNetId == tamedNetId) and (not IsNaming) then
+            if (distance <= siteCfg.shop.distance) and (IsPedOnMount(playerPed)) and (mountNetId == tamedNetId) and (not IsNaming) then
                 sleep = 0
                 PromptSetActiveGroupThisFrame(TameGroup, CreateVarString(10, 'LITERAL_STRING', siteCfg.shop.prompt), 1, 0, 0, 0)
 
@@ -1097,7 +1095,7 @@ AddEventHandler('bcc-stables:ReviveHorse', function()
     end
 
     if not IsEntityDead(MyHorse) then
-        Citizen.InvokeNative(0x356088527D9EBAAD, PlayerPedId(), MyHorse, joaat('s_inv_horsereviver01x')) -- TaskReviveTarget
+        Citizen.InvokeNative(0x356088527D9EBAAD, PlayerPedId(), MyHorse, `s_inv_horsereviver01x`) -- TaskReviveTarget
         InWrithe = false
     end
 end)
@@ -1111,7 +1109,7 @@ function OpenInventory(horsePedId, horseId, isLooting)
     end
 
     if hasBags then
-        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), horsePedId, joaat('Interaction_LootSaddleBags'), 0, true) -- TaskAnimalInteraction
+        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), horsePedId, `Interaction_LootSaddleBags`, 0, true) -- TaskAnimalInteraction
     end
 
     TriggerServerEvent('bcc-stables:OpenInventory', horseId)
@@ -1173,7 +1171,7 @@ AddEventHandler('bcc-stables:HorseBonding', function()
                 LastLoc = GetEntityCoords(MyHorse)
             else
                 local dist = #(LastLoc - GetEntityCoords(MyHorse))
-                if dist >= Config.trainingDistance then
+                if dist >= 100 then
                     LastLoc = GetEntityCoords(MyHorse)
                     SaveXp('travel')
                 end
@@ -1375,7 +1373,7 @@ RegisterNetEvent('bcc-stables:BrushHorse', function()
     end
 
     ClearPedTasks(playerPed)
-    Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Brush'), joaat('p_brushHorse02x'), true) -- TaskAnimalInteraction
+    Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, `Interaction_Brush`, `p_brushHorse02x`, true) -- TaskAnimalInteraction
     Wait(5000)
     Citizen.InvokeNative(0x6585D955A68452A5, MyHorse) -- ClearPedEnvDirt
     Citizen.InvokeNative(0x523C79AEEFCC4A2A, MyHorse, 10, 'ALL') -- ClearPedDamageDecalByZone
@@ -1428,7 +1426,7 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     end
 
     ClearPedTasks(playerPed)
-    Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Food'), joaat('s_horsnack_haycube01x'), true) -- TaskAnimalInteraction
+    Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, `Interaction_Food`, `s_horsnack_haycube01x`, true) -- TaskAnimalInteraction
     TriggerServerEvent('bcc-stables:RemoveItem', item)
     Wait(5000)
 
@@ -1472,11 +1470,11 @@ RegisterNetEvent('bcc-stables:UseLantern', function()
     if #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse)) <= 3.5 then
         ClearPedTasksImmediately(playerPed)
         if not UsingLantern then
-            Citizen.InvokeNative(0xD3A7B003ED343FD9, MyHorse, 0x635E387C, 1, 1, 1) -- ApplyShopItemToPed
+            SetComponent(MyHorse, 0x635E387C)
             UsingLantern = true
         else
             Citizen.InvokeNative(0x0D7FFA1B2F69ED82, MyHorse, 0x635E387C, 0, 0) -- RemoveShopItemFromPed
-            Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse, 0, 1, 1, 1, 0)    -- UpdatePedVariation
+            Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse, false, true, true, true, false)    -- UpdatePedVariation
             UsingLantern = false
         end
     end
@@ -1528,12 +1526,10 @@ RegisterNUICallback('Saddles', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         SaddlesUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xBAA7E618, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0xBAA7E618)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         SaddlesUsing = hash
     end
 end)
@@ -1542,12 +1538,10 @@ RegisterNUICallback('Saddlecloths', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         SaddleclothsUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0x17CEB41A)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         SaddleclothsUsing = hash
     end
 end)
@@ -1556,12 +1550,10 @@ RegisterNUICallback('Stirrups', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         StirrupsUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xDA6DADCA, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0xDA6DADCA)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         StirrupsUsing = hash
     end
 end)
@@ -1570,12 +1562,10 @@ RegisterNUICallback('SaddleBags', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         BagsUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x80451C25, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0x80451C25)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         BagsUsing = hash
     end
 end)
@@ -1584,12 +1574,10 @@ RegisterNUICallback('Manes', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         ManesUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xAA0217AB, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0xAA0217AB)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         ManesUsing = hash
     end
 end)
@@ -1598,12 +1586,10 @@ RegisterNUICallback('Tails', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         TailsUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x17CEB41A, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0x17CEB41A)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         TailsUsing = hash
     end
 end)
@@ -1612,12 +1598,10 @@ RegisterNUICallback('SaddleHorns', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         SaddleHornsUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x5447332, 0)  -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0x5447332)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         SaddleHornsUsing = hash
     end
 end)
@@ -1626,12 +1610,10 @@ RegisterNUICallback('Bedrolls', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         BedrollsUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xEFB31921, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0xEFB31921)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         BedrollsUsing = hash
     end
 end)
@@ -1640,12 +1622,10 @@ RegisterNUICallback('Masks', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         MasksUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xD3500E5D, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0xD3500E5D)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         MasksUsing = hash
     end
 end)
@@ -1654,12 +1634,10 @@ RegisterNUICallback('Mustaches', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         MustachesUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x30DEFDDF, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0x30DEFDDF)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         MustachesUsing = hash
     end
 end)
@@ -1668,12 +1646,10 @@ RegisterNUICallback('Holsters', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         HolstersUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xAC106B30, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0xAC106B30)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         HolstersUsing = hash
     end
 end)
@@ -1682,12 +1658,10 @@ RegisterNUICallback('Bridles', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         BridlesUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0x94B2E3AF, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0x94B2E3AF)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         BridlesUsing = hash
     end
 end)
@@ -1696,22 +1670,22 @@ RegisterNUICallback('Horseshoes', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
         HorseshoesUsing = 0
-        local playerHorse = MyEntity
-        Citizen.InvokeNative(0xD710A5007C2AC539, playerHorse, 0xFACFC3C0, 0) -- RemoveTagFromMetaPed
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, playerHorse, 0, 1, 1, 1, 0) -- UpdatePedVariation
+        RemoveComponent(0xFACFC3C0)
     else
         local hash = data.hash
-        SetModel(hash)
+        SetComponent(MyEntity, hash)
         HorseshoesUsing = hash
     end
 end)
 
-function SetModel(hash)
-    local model = joaat(tonumber(hash))
-    if not HasModelLoaded(model) then
-        Citizen.InvokeNative(0xFA28FE3A6246FC30, model) -- RequestModel
-    end
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, MyEntity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
+function SetComponent(entity, hash)
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, entity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
+    Citizen.InvokeNative(0xCC8CA3E88256E58F, entity, false, true, true, true, false) -- UpdatePedVariation
+end
+
+function RemoveComponent(category)
+    Citizen.InvokeNative(0xD710A5007C2AC539, MyEntity, category, 0) -- RemoveTagFromMetaPed
+    Citizen.InvokeNative(0xCC8CA3E88256E58F, MyEntity, false, true, true, true, false) -- UpdatePedVariation
 end
 
 RegisterNUICallback('sellHorse', function(data, cb)
@@ -2004,8 +1978,9 @@ end
 
 function AddTrainerNPC(site)
     local siteCfg = Trainers[site]
-    local model = joaat(siteCfg.npc.model)
-    LoadModel(model)
+    local modelName = siteCfg.npc.model
+    local model = joaat(modelName)
+    LoadModel(model, modelName)
     siteCfg.TrainerNPC = CreatePed(model, siteCfg.npc.coords.x, siteCfg.npc.coords.y, siteCfg.npc.coords.z - 1.0, siteCfg.npc.heading, false, true, true, true)
     Citizen.InvokeNative(0x283978A15512B2FE, siteCfg.TrainerNPC, true) -- SetRandomOutfitVariation
     SetEntityCanBeDamaged(siteCfg.TrainerNPC, false)
@@ -2023,7 +1998,7 @@ function AddStableNPC(site)
         LoadModel(model, modelName)
         siteCfg.NPC = CreatePed(model, siteCfg.npc.coords.x, siteCfg.npc.coords.y, siteCfg.npc.coords.z - 1.0, siteCfg.npc.heading, false, true, true, true)
         Citizen.InvokeNative(0x283978A15512B2FE, siteCfg.NPC, true) -- SetRandomOutfitVariation
-        TaskStartScenarioInPlace(siteCfg.NPC, joaat('WORLD_HUMAN_WRITE_NOTEBOOK'), -1, true, false, false, false)
+        TaskStartScenarioInPlace(siteCfg.NPC, `WORLD_HUMAN_WRITE_NOTEBOOK`, -1, true, false, false, false)
         SetEntityCanBeDamaged(siteCfg.NPC, false)
         SetEntityInvincible(siteCfg.NPC, true)
         Wait(500)
@@ -2056,7 +2031,7 @@ RegisterNetEvent('bcc-stables:UpdateMyHorseEntity', function()
         local playerPed = PlayerPedId()
         Citizen.InvokeNative(0xD2CB0FB0FDCB473D, playerPed, MyHorse) -- SetPedAsSaddleHorseForPlayer
         Citizen.InvokeNative(0x931B241409216C1F, playerPed, MyHorse, false) -- SetPedOwnsAnimal
-        Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, joaat('PLAYER_HORSE')) -- SetPedPersonality
+        Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, `PLAYER_HORSE`) -- SetPedPersonality
 
         local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
         Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, HorseName) -- SetBlipName

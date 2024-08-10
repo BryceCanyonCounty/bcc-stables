@@ -119,7 +119,6 @@ Config.trainerOnly = false -- Default: false / Only Trainers can Tame and Keep/S
 Config.trainerJob = {
 	{ name = 'trainer', grade = 0 },
 }
-Config.trainingDistance = 100  -- Default:100 / Distance Traveled to Increase XP
 Config.horseXpPerCheck  = 1    -- Default: 1 / XP Earned per 'trainingDistance' Achieved
 Config.horseXpPerBrush  = 1    -- Default: 1 / Set to 0 to Disable / Amount of XP Earned when Brushing Horse
 Config.horseXpPerFeed   = 1    -- Default: 1 / Set to 0 to Disable / Amount of XP Earned when Feeding Horse
