@@ -480,7 +480,7 @@ function SpawnHorse(data)
     end
     Citizen.InvokeNative(0xD2CB0FB0FDCB473D, playerPed, MyHorse) -- SetPedAsSaddleHorseForPlayer
     Citizen.InvokeNative(0x931B241409216C1F, playerPed, MyHorse, false) -- SetPedOwnsAnimal
-    Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, joaat('PLAYER_HORSE')) -- SetPedPersonality
+    Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, `PLAYER_HORSE`) -- SetPedPersonality
     Citizen.InvokeNative(0xE6D4E435B56D5BD0, player, MyHorse) -- SetPlayerOwnsMount
 
     -- ModifyPlayerUiPromptForPed / Horse Prompts / (Block = 0, Hide = 1, Grey Out = 2)
@@ -591,7 +591,7 @@ end)
 -- Set Horse Name and Health Bar Above Horse
 AddEventHandler('bcc-stables:HorseTag', function()
     local gamerTagId = Citizen.InvokeNative(0xE961BF23EAB76B12, MyHorse, HorseName) -- CreateMpGamerTagOnEntity
-    Citizen.InvokeNative(0x5F57522BC1EB9D9D, gamerTagId, joaat('PLAYER_HORSE')) -- SetMpGamerTagTopIcon
+    Citizen.InvokeNative(0x5F57522BC1EB9D9D, gamerTagId, `PLAYER_HORSE`) -- SetMpGamerTagTopIcon
     while MyHorse ~= 0 do
         Wait(1000)
         local dist = #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(MyHorse))
@@ -962,7 +962,7 @@ CreateThread(function()
                 end
             end
 
-            if (distance <= siteCfg.shop.distance) and IsPedOnMount(playerPed) and (mountNetId == tamedNetId) and (not IsNaming) then
+            if (distance <= siteCfg.shop.distance) and (IsPedOnMount(playerPed)) and (mountNetId == tamedNetId) and (not IsNaming) then
                 sleep = 0
                 PromptSetActiveGroupThisFrame(TameGroup, CreateVarString(10, 'LITERAL_STRING', siteCfg.shop.prompt), 1, 0, 0, 0)
 
@@ -1095,7 +1095,7 @@ AddEventHandler('bcc-stables:ReviveHorse', function()
     end
 
     if not IsEntityDead(MyHorse) then
-        Citizen.InvokeNative(0x356088527D9EBAAD, PlayerPedId(), MyHorse, joaat('s_inv_horsereviver01x')) -- TaskReviveTarget
+        Citizen.InvokeNative(0x356088527D9EBAAD, PlayerPedId(), MyHorse, `s_inv_horsereviver01x`) -- TaskReviveTarget
         InWrithe = false
     end
 end)
@@ -1109,7 +1109,7 @@ function OpenInventory(horsePedId, horseId, isLooting)
     end
 
     if hasBags then
-        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), horsePedId, joaat('Interaction_LootSaddleBags'), 0, true) -- TaskAnimalInteraction
+        Citizen.InvokeNative(0xCD181A959CFDD7F4, PlayerPedId(), horsePedId, `Interaction_LootSaddleBags`, 0, true) -- TaskAnimalInteraction
     end
 
     TriggerServerEvent('bcc-stables:OpenInventory', horseId)
@@ -1171,7 +1171,7 @@ AddEventHandler('bcc-stables:HorseBonding', function()
                 LastLoc = GetEntityCoords(MyHorse)
             else
                 local dist = #(LastLoc - GetEntityCoords(MyHorse))
-                if dist >= Config.trainingDistance then
+                if dist >= 100 then
                     LastLoc = GetEntityCoords(MyHorse)
                     SaveXp('travel')
                 end
@@ -1373,7 +1373,7 @@ RegisterNetEvent('bcc-stables:BrushHorse', function()
     end
 
     ClearPedTasks(playerPed)
-    Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Brush'), joaat('p_brushHorse02x'), true) -- TaskAnimalInteraction
+    Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, `Interaction_Brush`, `p_brushHorse02x`, true) -- TaskAnimalInteraction
     Wait(5000)
     Citizen.InvokeNative(0x6585D955A68452A5, MyHorse) -- ClearPedEnvDirt
     Citizen.InvokeNative(0x523C79AEEFCC4A2A, MyHorse, 10, 'ALL') -- ClearPedDamageDecalByZone
@@ -1426,7 +1426,7 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     end
 
     ClearPedTasks(playerPed)
-    Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, joaat('Interaction_Food'), joaat('s_horsnack_haycube01x'), true) -- TaskAnimalInteraction
+    Citizen.InvokeNative(0xCD181A959CFDD7F4, playerPed, MyHorse, `Interaction_Food`, `s_horsnack_haycube01x`, true) -- TaskAnimalInteraction
     TriggerServerEvent('bcc-stables:RemoveItem', item)
     Wait(5000)
 
@@ -1998,7 +1998,7 @@ function AddStableNPC(site)
         LoadModel(model, modelName)
         siteCfg.NPC = CreatePed(model, siteCfg.npc.coords.x, siteCfg.npc.coords.y, siteCfg.npc.coords.z - 1.0, siteCfg.npc.heading, false, true, true, true)
         Citizen.InvokeNative(0x283978A15512B2FE, siteCfg.NPC, true) -- SetRandomOutfitVariation
-        TaskStartScenarioInPlace(siteCfg.NPC, joaat('WORLD_HUMAN_WRITE_NOTEBOOK'), -1, true, false, false, false)
+        TaskStartScenarioInPlace(siteCfg.NPC, `WORLD_HUMAN_WRITE_NOTEBOOK`, -1, true, false, false, false)
         SetEntityCanBeDamaged(siteCfg.NPC, false)
         SetEntityInvincible(siteCfg.NPC, true)
         Wait(500)
@@ -2031,7 +2031,7 @@ RegisterNetEvent('bcc-stables:UpdateMyHorseEntity', function()
         local playerPed = PlayerPedId()
         Citizen.InvokeNative(0xD2CB0FB0FDCB473D, playerPed, MyHorse) -- SetPedAsSaddleHorseForPlayer
         Citizen.InvokeNative(0x931B241409216C1F, playerPed, MyHorse, false) -- SetPedOwnsAnimal
-        Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, joaat('PLAYER_HORSE')) -- SetPedPersonality
+        Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, `PLAYER_HORSE`) -- SetPedPersonality
 
         local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
         Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, HorseName) -- SetBlipName
