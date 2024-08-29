@@ -69,6 +69,9 @@ VORPcore.Callback.Register('bcc-stables:RegisterHorse', function(source, cb, dat
     if data.IsCash and data.origin == 'tameHorse' then
         if Character.money >= Config.regCost then
             cb(true)
+        else
+            VORPcore.NotifyRightTip(src, _U('shortCash'), 4000)
+            cb(false)
         end
     end
 end)
