@@ -1050,24 +1050,6 @@ CreateThread(function()
     end
 end)
 
--- ---@param tameData table
--- function KeepTamedHorse(tameData)
---     if IsTrainer then
---         tameData.isTrainer = true
---     else
---         tameData.isTrainer = false
---     end
-
---     tameData.Cash = Config.regCost
-
---     local canKeep = VORPcore.Callback.TriggerAwait('bcc-stables:BuyHorse', tameData)
---     if canKeep then
---         SetHorseName(tameData)
---     else
---         HorseBreed = false
---     end
--- end
-
 AddEventHandler('bcc-stables:CheckHorseHealth', function()
     if Citizen.InvokeNative(0x3317DEDB88C95038, MyHorse, false) then -- IsPedDeadOrDying
         if not InWrithe then
