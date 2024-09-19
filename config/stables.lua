@@ -17,7 +17,7 @@ Stables = {
         },
         blip = {
             show = true,                                -- Show Blip On Map
-            showClosed = true,                          -- Show Blip On Map when Closed
+            showClosed = true,                          -- Show Blip On Map when Closed (if true, 'show' must be true)
             name = 'Valentine Stable',                  -- Name of Blip on Map
             sprite = 1938782895,                        -- Default: 1258184551
             color = {
