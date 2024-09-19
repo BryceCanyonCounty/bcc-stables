@@ -47,7 +47,9 @@ CreateThread(function()
             local distance = #(playerCoords - siteCfg.npc.coords)
             -- Stable Closed
             if (siteCfg.shop.hours.active and hour >= siteCfg.shop.hours.close) or (siteCfg.shop.hours.active and hour < siteCfg.shop.hours.open) then
-                ManageStableBlip(site, true)
+                if siteCfg.blip.show then
+                    ManageStableBlip(site, true)
+                end
                 RemoveStableNPC(site)
                 if distance <= siteCfg.shop.distance then
                     sleep = 0
@@ -73,7 +75,9 @@ CreateThread(function()
                 end
             -- Stable Open
             else
-                ManageStableBlip(site, false)
+                if siteCfg.blip.show then
+                    ManageStableBlip(site, false)
+                end
                 if distance <= siteCfg.npc.distance then
                     if siteCfg.npc.active then
                         AddStableNPC(site)
@@ -2004,7 +2008,7 @@ function ManageStableBlip(site, closed)
     if not Stables[site].Blip then
         siteCfg.Blip = Citizen.InvokeNative(0x554d9d53f696d002, 1664425300, siteCfg.npc.coords) -- BlipAddForCoords
         SetBlipSprite(siteCfg.Blip, siteCfg.blip.sprite, true)
-        Citizen.InvokeNative(0x9CB1A1623062F402, siteCfg.Blip, siteCfg.blip.name) -- SetBlipNameFromPlayerString
+        Citizen.InvokeNative(0x9CB1A1623062F402, siteCfg.Blip, siteCfg.blip.name) -- SetBlipName
     end
 
     local color = siteCfg.blip.color.open
