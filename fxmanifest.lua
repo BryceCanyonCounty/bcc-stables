@@ -34,5 +34,5 @@ files {
     "ui/img/*.*"
 }
 
-version '1.4.18'
+version '1.4.19'
 
