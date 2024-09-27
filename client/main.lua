@@ -482,6 +482,11 @@ function SpawnHorse(data)
     end
 
     MyHorse = CreatePed(MyModel, spawnPosition.x, spawnPosition.y, spawnPosition.z, GetEntityHeading(playerPed), true, false, false, false)
+
+    while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, MyHorse) do -- IsPedReadyToRender
+        Wait(10)
+    end
+
     SetModelAsNoLongerNeeded(MyModel)
 
     LocalPlayer.state.HorseData = {
@@ -539,10 +544,6 @@ function SpawnHorse(data)
     local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
     Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, HorseName) -- SetBlipName
     SetPedPromptName(MyHorse, HorseName)
-
-    while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, MyHorse) do -- IsPedReadyToRender
-        Wait(10)
-    end
 
     if horseComponents ~= '[]' then
         for _, component in pairs(horseComponents) do
