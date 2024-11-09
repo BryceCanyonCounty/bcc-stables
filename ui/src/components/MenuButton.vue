@@ -14,12 +14,12 @@ export default {
   props: {
     label: String,
     selectedPage: String,
-  },
-  computed: {
-    isActive() {
-      return this.label == this.selectedPage;
-    },
-  },
+    isActive: {
+      type: Boolean,
+      require: false,
+      default: false
+    }
+  }
 };
 </script>
 

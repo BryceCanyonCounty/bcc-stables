@@ -22,23 +22,23 @@
       <div></div>
       <!--  -->
       <div class="panel-myhorse item">
-        <button class="item-myhorse" @click="RenameHorse()">Rename</button>
-        <button class="item-myhorse" @click="toggleModal">Sell</button>
+        <button class="item-myhorse" @click="RenameHorse()">{{ $store.getters.getTranslation('renamePersonalHorse') }}</button>
+        <button class="item-myhorse" @click="toggleModal">{{ $store.getters.getTranslation('sellPersonalHorse') }}</button>
       </div>
       <!--  -->
       <div class=""></div>
     </div>
   </div>
   <ConfirmationModal :visible="showModal" title="Confirm" @close="toggleModal">
-    <p style="text-align: center">Are you sure you want to sell?</p>
+    <p style="text-align: center">{{ $store.getters.getTranslation('sellConfirmation') }}</p>
     <div class="divider-menu-top" style="margin-top: 1rem"></div>
     <div class="flex cta-wrapper">
       <button @click="SellHorse" class="modal-btn flex flex-auto">
-        <img src="../assets/img/money.png" />Sell
+        <img src="../assets/img/money.png" />{{ store.getters.getTranslation('sellConfirmationButton') }}
       </button>
       <!--  -->
       <button @click="toggleModal" class="modal-btn flex flex-auto">
-        Cancel
+        {{ store.getters.getTranslation('sellConfirmationCancelButton') }}
       </button>
     </div>
     <div class="divider-menu-bottom"></div>

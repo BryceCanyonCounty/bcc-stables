@@ -20,6 +20,8 @@ export default {
     onMessage(event) {
       switch (event.data.action) {
         case "show":
+          this.$store.dispatch("setTranslations", event.data.translations);
+
           this.visible = true;
           this.$store.dispatch("setHorses", event.data.shopData);
           this.$store.dispatch("setShopName", event.data.location);

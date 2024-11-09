@@ -12,8 +12,13 @@ export default createStore({
     showTackPrice: false,
     allowSave: false,
     currencyType: null,
+    translations: {}
   },
-  getters: {},
+  getters: {
+    getTranslation: (state) => (key) => {
+      return state.translations[key] ?? ''
+    }
+  },
   mutations: {
     SET_MY_HORSES(state, payload) {
       state.myHorses = payload;
@@ -45,6 +50,9 @@ export default createStore({
     SET_CURRENCY_TYPE(state, payload) {
       state.currencyType = payload;
     },
+    SET_TRANSLATIONS(state, payload) {
+      state.translations = payload
+    }
   },
   actions: {
     setMyHorses(context, payload) {
@@ -76,6 +84,9 @@ export default createStore({
     },
     setCurrencyType(context, payload) {
       context.commit("SET_CURRENCY_TYPE", payload);
+    },
+    setTranslations(context, payload) {
+      context.commit("SET_TRANSLATIONS", payload);
     },
   },
   modules: {},
