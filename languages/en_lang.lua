@@ -66,4 +66,12 @@ Locales["en_lang"] = {
     horseInfoTrickLvl_4a = "Trick: Dance | space",
     horseInfoTrickLvl_4b = "Side-Pass | space + A or D",
     horseDied = "Your horse has died, return to stable to select a horse.",
+    -- Discord Alerts
+    discordHorsePurchased = "Horse Purchased!",
+    discordTamedPurchased = "Tammed Horse Saved!",
+    discordHorseXPGain = "Horse XP Gained!",
+    discordHorseSold = "Horse Sold!",
+    discordTamedSold = "Tamed Horse Sold!",
+    discordTraded = "Horse Traded to "
+
 }

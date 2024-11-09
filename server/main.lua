@@ -1,6 +1,16 @@
 local VORPcore = exports.vorp_core:GetCore()
-
+local BccUtils = exports['bcc-utils'].initiate()
 local CooldownData = {}
+
+if Config.discord.active == true then
+    Discord = BccUtils.Discord.setup(Config.discord.webhookURL, 'My Script', 'https://cdn2.iconfinder.com/data/icons/frosted-glass/256/Danger.png')    
+end
+function LogToDiscord(name, description, embeds)
+    if Config.discord.active == true then
+        Discord:sendMessage(name, description, embeds)
+    end
+end
+
 
 ---@param data table
 VORPcore.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
@@ -131,6 +141,8 @@ VORPcore.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, data
                 end
                 MySQL.query.await('INSERT INTO `player_horses` (identifier, charid, name, model, gender, captured) VALUES (?, ?, ?, ?, ?, ?)',
                 { identifier, charid, tostring(data.name), data.ModelH, data.gender,  data.captured })
+
+                LogToDiscord(charid, _U('discordHorsePurchased'))
                 break
             end
         end
@@ -157,6 +169,8 @@ VORPcore.Callback.Register('bcc-stables:SaveTamedHorse', function(source, cb, da
     end
     MySQL.query.await('INSERT INTO `player_horses` (identifier, charid, name, model, gender, captured) VALUES (?, ?, ?, ?, ?, ?)',
     { identifier, charid, tostring(data.name), data.ModelH, data.gender,  data.captured })
+
+    LogToDiscord(charid, _U('discordTamedPurchased'))
     cb(true)
 end)
 
@@ -186,6 +200,8 @@ RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
 
     MySQL.query.await('UPDATE `player_horses` SET `xp` = ? WHERE `id` = ? AND `identifier` = ? AND `charid` = ?',
     { Xp, horseId, identifier, charid })
+
+    LogToDiscord(charid, _U('discordHorseXPGain'))
 end)
 
 ---@param data table
@@ -339,6 +355,7 @@ VORPcore.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
             model = horses[i].model
             MySQL.query.await('DELETE FROM `player_horses` WHERE `id` = ? AND `charid` = ? AND `identifier` = ?',
             { id, charid, identifier })
+            LogToDiscord(charid, _U('discordHorseSold'))
             break
         end
     end
@@ -379,6 +396,8 @@ RegisterServerEvent('bcc-stables:SellTamedHorse', function(hash)
                 character.addCurrency(0, math.floor(sellPrice))
                 VORPcore.NotifyRightTip(src, _U('soldHorse') .. sellPrice, 4000)
                 SetPlayerCooldown('sellTame', charid)
+
+                LogToDiscord(charid, _U('discordTamedSold'))
             end
         end
     end
@@ -438,6 +457,9 @@ RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
             { newOwnerId, newOwnerCharId, 0, horseId })
             VORPcore.NotifyRightTip(src, _U('youGave') .. newOwnerName .. _U('aHorse'), 4000)
             VORPcore.NotifyRightTip(serverId, curOwnerName .._U('gaveHorse'), 4000)
+
+
+            LogToDiscord(curOwnerName, _U('discordTraded') .. newOwnerName)
             break
         end
     end

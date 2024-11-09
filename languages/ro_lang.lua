@@ -66,4 +66,11 @@ Locales["ro_lang"] = {
     horseInfoTrickLvl_4a = "Truc: Dans | space",
     horseInfoTrickLvl_4b = "Side-Pass | space + A sau D",
     horseDied = "Your horse has died, return to stable to select a horse.",
+    -- Discord Alerts
+    discordHorsePurchased = "Cal cumpărat!",
+    discordTamedPurchased = "Cal îmblânzit salvat!",
+    discordHorseXPGain = "XP cal câștigat!",
+    discordHorseSold = "Cal vândut!",
+    discordTamedSold = "Cal îmblânzit vândut!",
+    discordTraded = "Cal schimbat cu "
 }
