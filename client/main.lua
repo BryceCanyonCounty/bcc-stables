@@ -133,6 +133,7 @@ function OpenStable(site)
         action = 'show',
         shopData = JobMatchedHorses,
         compData = HorseComp,
+        transData = Translation,
         location = StableName,
         currencyType = Config.currencyType
     })
@@ -265,6 +266,7 @@ function SetHorseName(data)
             action = 'show',
             shopData = Horses,
             compData = HorseComp,
+            transData = Translation,
             location = StableName,
             currencyType = Config.currencyType
         })
@@ -407,6 +409,7 @@ function StableMenu()
         action = 'show',
         shopData = Horses,
         compData = HorseComp,
+        transData = Translation,
         location = StableName,
         currencyType = Config.currencyType
     })

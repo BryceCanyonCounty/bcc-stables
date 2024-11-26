@@ -2,7 +2,7 @@
   <div class="tackshop">
     <div class="col s12 panel-cust mb">
       <div class="col s6 item-cust">
-        <h6 class="grey-text-cust title">{{ label }}</h6>
+        <h6 class="grey-text-cust title">{{ translated }}</h6>
       </div>
       <div class="col s6 flex justify-end">
         <!--  -->
@@ -30,6 +30,10 @@ export default {
   name: "TackShopMenuItem",
   props: {
     label: {
+      type: String,
+      required: true,
+    },
+    translated: {
       type: String,
       required: true,
     },
@@ -141,7 +145,7 @@ export default {
     },
     updateItem() {
       api
-        .post(this.label.replace(/\s+/g, ""), {
+        .post(this.label, {
           id: this.curItem - 1,
           hash:
             this.curItem - 1 == -1

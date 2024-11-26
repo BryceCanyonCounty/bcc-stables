@@ -2,12 +2,14 @@
   <TackShopMenuItem
     v-for="(comp, index) in comps"
     :label="index"
+    :translated="translation[index]"
     :maxItems="Object.keys(comp).length"
     :horseComps="comp"
     :key="index"
   />
   <TackShopCostDisplay :visible="showTackPrice" title="Tack Price" />
 </template>
+
 
 <script>
 import { mapState } from "vuex";
@@ -23,6 +25,7 @@ export default {
   methods: {},
   computed: {
     ...mapState([
+      "translation",
       "comps",
       "compCashPrice",
       "compGoldPrice",

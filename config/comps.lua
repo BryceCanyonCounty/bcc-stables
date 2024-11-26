@@ -1,5 +1,5 @@
 HorseComp = {
-  ['Saddlecloths'] = {
+  Saddlecloths = {
     { hash = '0x127E0412', cashPrice = 10, goldPrice = 1 },
     { hash = '0x19C5E80C', cashPrice = 10, goldPrice = 1 },
     { hash = '0x20D4A0BF', cashPrice = 10, goldPrice = 1 },
@@ -67,7 +67,7 @@ HorseComp = {
     { hash = '0xFFB1DE72', cashPrice = 10, goldPrice = 1 },
     { hash = '0x7FC85282', cashPrice = 10, goldPrice = 1 },
   },
-  ['Saddle Horns'] = {
+  SaddleHorns = {
     { hash = '0x107D9598', cashPrice = 10, goldPrice = 1 },
     { hash = '0x2A28C8BE', cashPrice = 10, goldPrice = 1 },
     { hash = '0x333CDC06', cashPrice = 10, goldPrice = 1 },
@@ -136,7 +136,7 @@ HorseComp = {
     { hash = '0xA4D3D842', cashPrice = 10, goldPrice = 1 },
     { hash = '0x30C3D3D4', cashPrice = 10, goldPrice = 1 },
   },
-  ['Saddle Bags'] = {
+  SaddleBags = {
     { hash = '0x1D4EDB88', cashPrice = 10, goldPrice = 1 },
     { hash = '0x20AA8620', cashPrice = 10, goldPrice = 1 },
     { hash = '0x293E17B3', cashPrice = 10, goldPrice = 1 },
@@ -225,7 +225,7 @@ HorseComp = {
     { hash = '0xD2B91EC5', cashPrice = 10, goldPrice = 1 },
     { hash = '0xB433E1C3', cashPrice = 10, goldPrice = 1 },
   },
-  ['Tails'] = {
+  Tails = {
     { hash = '0x12DBBBAF', cashPrice = 10, goldPrice = 1 },
     { hash = '0x17EB79D3', cashPrice = 10, goldPrice = 1 },
     { hash = '0x1A3B721B', cashPrice = 10, goldPrice = 1 },
@@ -318,7 +318,7 @@ HorseComp = {
     { hash = '0x6465A66B', cashPrice = 10, goldPrice = 1 },
     { hash = '0xE283AA65', cashPrice = 10, goldPrice = 1 },
   },
-  ['Manes'] = {
+  Manes = {
     { hash = '0x130E341A', cashPrice = 10, goldPrice = 1 },
     { hash = '0x14098229', cashPrice = 10, goldPrice = 1 },
     { hash = '0x16923E26', cashPrice = 10, goldPrice = 1 },
@@ -565,7 +565,7 @@ HorseComp = {
     { hash = '0xFEDA1FF1', cashPrice = 10, goldPrice = 1 },
     { hash = '0xFF77B75B', cashPrice = 10, goldPrice = 1 },
   },
-  ['Saddles'] = {
+  Saddles = {
     { hash = '0x003897CA', cashPrice = 10, goldPrice = 1 },
     { hash = '0x0205E696', cashPrice = 10, goldPrice = 1 },
     { hash = '0x19FFCB58', cashPrice = 10, goldPrice = 1 },
@@ -746,7 +746,7 @@ HorseComp = {
     { hash = '0xFCE1D7A4', cashPrice = 10, goldPrice = 1 },
     { hash = '0xFD4E14C5', cashPrice = 10, goldPrice = 1 },
   },
-  ['Stirrups'] = {
+  Stirrups = {
     { hash = '0x03B3AB08', cashPrice = 10, goldPrice = 1 },
     { hash = '0x3685C57A', cashPrice = 10, goldPrice = 1 },
     { hash = '0x587DD49F', cashPrice = 10, goldPrice = 1 },
@@ -802,7 +802,7 @@ HorseComp = {
     { hash = '0xEDF82EF6', cashPrice = 10, goldPrice = 1 },
     { hash = '0xFD31EA31', cashPrice = 10, goldPrice = 1 },
   },
-  ['Bedrolls'] = {
+  Bedrolls = {
     { hash = '0x12F0DF9F', cashPrice = 10, goldPrice = 1 },
     { hash = '0x18BB6B30', cashPrice = 10, goldPrice = 1 },
     { hash = '0x1B43F045', cashPrice = 10, goldPrice = 1 },
@@ -834,7 +834,7 @@ HorseComp = {
     { hash = '0xD8258E14', cashPrice = 10, goldPrice = 1 },
     { hash = '0xFFB0391E', cashPrice = 10, goldPrice = 1 },
   },
-  ['Masks'] = {
+  Masks = {
     { hash = '0x08A78F53', cashPrice = 10, goldPrice = 1 },
     { hash = '0x13AC6E51', cashPrice = 10, goldPrice = 1 },
     { hash = '0x226B2F76', cashPrice = 10, goldPrice = 1 },
@@ -887,7 +887,7 @@ HorseComp = {
     { hash = '0xAD6DDEFD', cashPrice = 10, goldPrice = 1 },
     { hash = '0x5B22BA68', cashPrice = 10, goldPrice = 1 },
   },
-  ['Mustaches'] = {
+  Mustaches = {
     { hash = '0x004BBEED', cashPrice = 10, goldPrice = 1 },
     { hash = '0x0960D117', cashPrice = 10, goldPrice = 1 },
     { hash = '0x281A6D81', cashPrice = 10, goldPrice = 1 },
@@ -905,10 +905,10 @@ HorseComp = {
     { hash = '0xED8D1970', cashPrice = 10, goldPrice = 1 },
     { hash = '0xF7203FC3', cashPrice = 10, goldPrice = 1 }
   },
-  ['Holsters'] = {
+  Holsters = {
     { hash = '0xF772CED6', cashPrice = 10, goldPrice = 1 }
   },
-  ['Bridles'] = {
+  Bridles = {
     { hash = '0x0C48F261', cashPrice = 10, goldPrice = 1 },
     { hash = '0x0CBA8E54', cashPrice = 10, goldPrice = 1 },
     { hash = '0x2F62D3A4', cashPrice = 10, goldPrice = 1 },
@@ -932,7 +932,23 @@ HorseComp = {
     { hash = '0xFB2178EC', cashPrice = 10, goldPrice = 1 },
     { hash = '0xFE8E56EC', cashPrice = 10, goldPrice = 1 },
   },
-  ['Horseshoes'] = {
+  Horseshoes = {
     { hash = '0x0865A270', cashPrice = 10, goldPrice = 1 },
   },
+}
+
+Translation = { -- English
+  Saddlecloths = "Saddlecloths",
+  SaddleHorns = "Saddle Horns",
+  SaddleBags = "Saddle Bags",
+  Tails = "Tails",
+  Manes = "Manes",
+  Saddles = "Saddles",
+  Stirrups = "Stirrups",
+  Bedrolls = "Bedrolls",
+  Masks = "Masks",
+  Mustaches = "Mustaches",
+  Holsters = "Holsters",
+  Bridles = "Bridles",
+  Horseshoes = "Horseshoes",
 }
