@@ -9,19 +9,22 @@
 
       <div class="btn-menu main-nav-buttons">
         <MenuButton
-          label="Stable"
+          :label="$store.getters.getTranslation('stableButton')"
+          :isActive="page == 'Stable'"
           :selectedPage="page"
           @click="page = 'Stable'"
           class="enabled"
         />
         <MenuButton
-          label="Trader"
+          :label="$store.getters.getTranslation('traderButton')"
+          :isActive="page == 'Trader'"
           :selectedPage="page"
           @click="page = 'Trader'"
           class="enabled"
         />
         <MenuButton
-          label="Tack Shop"
+          :label="$store.getters.getTranslation('tackShopButton')"
+          :isActive="page == 'Tack Shop'"
           :selectedPage="page"
           @click="page = 'Tack Shop'"
           :class="{
@@ -58,7 +61,7 @@
             'btn-select': isSaveEnabled,
           }"
         >
-          Save
+          {{ $store.getters.getTranslation('saveButton') }}
         </button>
         <button
           id="rotate_left"
@@ -69,7 +72,7 @@
           <i class="fa-solid fa-chevron-left center"></i>
         </button>
         <div class="rotate-text">
-          <span class="grey-text center">Rotate</span>
+          <span class="grey-text center">{{ $store.getters.getTranslation('rotateText') }}</span>
         </div>
         <button
           id="rotate_right"
@@ -79,17 +82,17 @@
         >
           <i class="fa-solid fa-chevron-right center"></i>
         </button>
-        <button id="cancel" class="btn-select" @click="close()">Cancel</button>
+        <button id="cancel" class="btn-select" @click="close()">{{ $store.getters.getTranslation('cancelButton') }}</button>
       </div>
 
       <div class="divider-menu-bottom"></div>
     </div>
     <ConfirmationModal
       :visible="showModal"
-      title="Purchase"
+      :title="$store.getters.getTranslation('confirmationTitle')"
       @close="hideModal()"
     >
-      <p style="text-align: center">Purchase by selecting cash or gold.</p>
+      <p style="text-align: center">{{ $store.getters.getTranslation('confirmationText') }}</p>
       <div class="divider-menu-top" style="margin-top: 1rem"></div>
       <div class="flex cta-wrapper">
         <button
@@ -109,7 +112,7 @@
         </button>
         <!--  -->
         <button @click="hideModal" class="modal-btn flex flex-auto">
-          {{ isSaveEnabled ? "Cancel" : "Close" }}
+          {{ isSaveEnabled ? $store.getters.getTranslation('confirmationButtonCancel') : $store.getters.getTranslation('confirmationButtonClose') }}
         </button>
       </div>
       <div class="divider-menu-bottom"></div>

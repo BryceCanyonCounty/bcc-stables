@@ -21,7 +21,7 @@
           <div class="flex panel">
             <div class="flex flex-auto panel-title">
               <h6 class="grey-text plus">
-                No Horses!&nbsp;&nbsp;Head to the Trader
+                {{ $store.getters.getTranslation('noPersonalHorse') }}
               </h6>
             </div>
           </div>
