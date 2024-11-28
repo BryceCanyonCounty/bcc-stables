@@ -72,5 +72,7 @@ Locales["it_lang"] = {
     discordHorseXPGain = "XP cavallo guadagnata!",
     discordHorseSold = "Cavallo venduto!",
     discordTamedSold = "Cavallo domato venduto!",
-    discordTraded = "Cavallo scambiato con "
+    discordTraded = "Cavallo scambiato con ",
+    flameHooveDesc = 'An enchanted item to activate flaming hooves',
+    flameHoovesActivated = 'Your horse now has flaming hooves!',
 }
