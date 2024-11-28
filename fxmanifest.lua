@@ -3,7 +3,7 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 
 game 'rdr3'
 lua54 'yes'
-author 'BCC @Apollyon'
+author 'BCC Team'
 
 shared_scripts {
     'config/*.lua',
@@ -34,5 +34,5 @@ files {
     "ui/img/*.*"
 }
 
-version '1.4.19'
+version '1.5.0'
 
