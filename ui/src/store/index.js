@@ -12,8 +12,13 @@ export default createStore({
     showTackPrice: false,
     allowSave: false,
     currencyType: null,
+    translations: {}
   },
-  getters: {},
+  getters: {
+    getTranslation: (state) => (key) => {
+      return state.translations[key] ?? ''
+    }
+  },
   mutations: {
     SET_MY_HORSES(state, payload) {
       state.myHorses = payload;
@@ -23,6 +28,9 @@ export default createStore({
     },
     SET_SHOP_NAME(state, payload) {
       state.shopName = payload;
+    },
+    SET_TRANSLATIONS(state, payload) {
+      state.translations = payload;
     },
     SET_COMPONENTS(state, payload) {
       state.comps = payload;
@@ -56,6 +64,9 @@ export default createStore({
     setShopName(context, payload) {
       context.commit("SET_SHOP_NAME", payload);
     },
+    setTranslations(context, payload) {
+      context.commit("SET_TRANSLATIONS", payload);
+    },
     setComponents(context, payload) {
       context.commit("SET_COMPONENTS", payload);
     },
@@ -76,7 +87,7 @@ export default createStore({
     },
     setCurrencyType(context, payload) {
       context.commit("SET_CURRENCY_TYPE", payload);
-    },
+    }
   },
   modules: {},
 });

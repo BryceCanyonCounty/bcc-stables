@@ -132,6 +132,7 @@ Config.horseXpPerBrush  = 1    -- Default: 1 / Set to 0 to Disable / Amount of X
 Config.horseXpPerFeed   = 1    -- Default: 1 / Set to 0 to Disable / Amount of XP Earned when Feeding Horse
 Config.horseXpPerDrink  = 1    -- Default: 1 / Set to 0 to Disable / Amount of XP Earned When Horse Drinks
 Config.showXpMessage    = true -- Default: true / Show XP Increase Message on Screen
+Config.trainingDistance = 100  -- Default: 100 / Distance to Travel to Earn XP
 
 Config.displayHorseBreed = true -- Default: true / Display Breed of Horse Player Mounted
 
@@ -148,7 +149,7 @@ Config.cooldown   = {
 Config.disableKick = false -- Default: false / Disable Kick from Horse
 -----------------------------------------------------
 
--- Sell Price for Horse Purchased in Stable is 60% of Horse cashPrice
+-- Sell Price for Horse Purchased in Stable is 70% of Horse cashPrice
 Config.sellPrice = 0.70 -- Default: 0.70
 -----------------------------------------------------
 

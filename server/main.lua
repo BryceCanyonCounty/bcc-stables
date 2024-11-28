@@ -11,7 +11,6 @@ function LogToDiscord(name, description, embeds)
     end
 end
 
-
 ---@param data table
 VORPcore.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
     local src = source
@@ -56,7 +55,6 @@ VORPcore.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
     end
 end)
 
----@param data table
 VORPcore.Callback.Register('bcc-stables:RegisterHorse', function(source, cb, data)
     local src = source
     local user = VORPcore.getUser(src)
@@ -86,7 +84,6 @@ VORPcore.Callback.Register('bcc-stables:RegisterHorse', function(source, cb, dat
     end
 end)
 
----@param data table
 RegisterNetEvent('bcc-stables:BuyTack', function(data)
     local src = source
     local user = VORPcore.getUser(src)
@@ -114,7 +111,6 @@ RegisterNetEvent('bcc-stables:BuyTack', function(data)
     TriggerClientEvent('bcc-stables:SaveComps', src)
 end)
 
----@param data table
 VORPcore.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, data)
     local src = source
     local user = VORPcore.getUser(src)
@@ -150,7 +146,6 @@ VORPcore.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, data
     cb(true)
 end)
 
----@param data table
 VORPcore.Callback.Register('bcc-stables:SaveTamedHorse', function(source, cb, data)
     local src = source
     local user = VORPcore.getUser(src)
@@ -174,7 +169,6 @@ VORPcore.Callback.Register('bcc-stables:SaveTamedHorse', function(source, cb, da
     cb(true)
 end)
 
----@param data table
 VORPcore.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, data)
     local src = source
     local user = VORPcore.getUser(src)
@@ -188,8 +182,6 @@ VORPcore.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, d
     cb(true)
 end)
 
----@param Xp integer
----@param horseId integer
 RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
     local src = source
     local user = VORPcore.getUser(src)
@@ -204,8 +196,6 @@ RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
     LogToDiscord(charid, _U('discordHorseXPGain'))
 end)
 
----@param data table
----@param horseId integer
 RegisterServerEvent('bcc-stables:SaveHorseStats', function(data, horseId)
     local src = source
     local user = VORPcore.getUser(src)
@@ -218,7 +208,6 @@ RegisterServerEvent('bcc-stables:SaveHorseStats', function(data, horseId)
     { data.health, data.stamina, horseId, identifier, charid })
 end)
 
----@param data table
 RegisterServerEvent('bcc-stables:SelectHorse', function(data)
     local src = source
     local user = VORPcore.getUser(src)
@@ -241,7 +230,6 @@ RegisterServerEvent('bcc-stables:SelectHorse', function(data)
     end
 end)
 
----@param horseId integer
 VORPcore.Callback.Register('bcc-stables:DeselectHorse', function(source, cb, horseId)
     local src = source
     local user = VORPcore.getUser(src)
@@ -255,7 +243,6 @@ VORPcore.Callback.Register('bcc-stables:DeselectHorse', function(source, cb, hor
     cb(true)
 end)
 
----@param horseId integer
 VORPcore.Callback.Register('bcc-stables:SetHorseDead', function(source, cb, horseId)
     local src = source
     local user = VORPcore.getUser(src)
@@ -320,9 +307,6 @@ RegisterNetEvent('bcc-stables:GetMyHorses', function()
     TriggerClientEvent('bcc-stables:ReceiveHorsesData', src, horses)
 end)
 
----@param encodedComponents string
----@param horseId integer
----@param MyHorse_entity integer
 RegisterNetEvent('bcc-stables:UpdateComponents', function(encodedComponents, horseId, MyHorse_entity)
     local src = source
     local user = VORPcore.getUser(src)
@@ -336,7 +320,6 @@ RegisterNetEvent('bcc-stables:UpdateComponents', function(encodedComponents, hor
     TriggerClientEvent('bcc-stables:SetComponents', src, MyHorse_entity, encodedComponents)
 end)
 
----@param data table
 VORPcore.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
     local src = source
     local user = VORPcore.getUser(src)
@@ -375,8 +358,6 @@ VORPcore.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
     end
 end)
 
----@param type string
----@param charid integer
 local function SetPlayerCooldown(type, charid)
     CooldownData[type .. tostring(charid)] = os.time()
 end
@@ -403,7 +384,6 @@ RegisterServerEvent('bcc-stables:SellTamedHorse', function(hash)
     end
 end)
 
----@param type string
 VORPcore.Callback.Register('bcc-stables:CheckPlayerCooldown', function(source, cb, type)
     local src = source
     local user = VORPcore.getUser(src)
@@ -430,8 +410,6 @@ VORPcore.Callback.Register('bcc-stables:CheckPlayerCooldown', function(source, c
     end
 end)
 
----@param serverId integer
----@param horseId integer
 RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
     -- Current Owner
     local src = source
@@ -465,8 +443,6 @@ RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
     end
 end)
 
----@param id integer
----@param model string
 RegisterServerEvent('bcc-stables:RegisterInventory', function(id, model)
     local isRegistered = exports.vorp_inventory:isCustomInventoryRegistered('horse_' .. tostring(id))
     if isRegistered then return end
@@ -493,7 +469,6 @@ RegisterServerEvent('bcc-stables:RegisterInventory', function(id, model)
     end
 end)
 
----@param id integer
 RegisterServerEvent('bcc-stables:OpenInventory', function(id)
     local src = source
     local user = VORPcore.getUser(src)
@@ -510,7 +485,6 @@ for _, item in ipairs(Config.horseFood) do
     end)
 end
 
----@param item string
 RegisterServerEvent('bcc-stables:RemoveItem', function(item)
     local src = source
     local user = VORPcore.getUser(src)
@@ -597,8 +571,6 @@ VORPcore.Callback.Register('bcc-stables:HorseReviveItem', function(source, cb)
     cb(true)
 end)
 
----@param trainer boolean
----@param site string
 VORPcore.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer, site)
     local src = source
     local user = VORPcore.getUser(src)
@@ -625,9 +597,6 @@ VORPcore.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer,
     end
 end)
 
----@param charJob string
----@param jobGrade integer
----@param jobConfig table
 function CheckPlayerJob(charJob, jobGrade, jobConfig)
     for _, job in pairs(jobConfig) do
         if (charJob == job.name) and (tonumber(jobGrade) >= tonumber(job.grade)) then
