@@ -18,7 +18,6 @@ client_scripts {
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'server/versioncheck.lua',
     'server/main.lua'
 }
 
@@ -34,5 +33,5 @@ files {
     "ui/img/*.*"
 }
 
-version '1.5.2'
+version '1.5.3'
 
