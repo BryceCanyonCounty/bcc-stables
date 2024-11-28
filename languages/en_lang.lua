@@ -68,10 +68,9 @@ Locales["en_lang"] = {
     horseDied = "Your horse has died, return to stable to select a horse.",
     -- Discord Alerts
     discordHorsePurchased = "Horse Purchased!",
-    discordTamedPurchased = "Tammed Horse Saved!",
+    discordTamedPurchased = "Tamed Horse Saved!",
     discordHorseXPGain = "Horse XP Gained!",
     discordHorseSold = "Horse Sold!",
     discordTamedSold = "Tamed Horse Sold!",
     discordTraded = "Horse Traded to "
-
 }
