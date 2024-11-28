@@ -23,7 +23,7 @@ export default {
           this.visible = true;
           this.$store.dispatch("setHorses", event.data.shopData);
           this.$store.dispatch("setShopName", event.data.location);
-          this.$store.dispatch("setTranslation", event.data.transData);
+          this.$store.dispatch("setTranslations", event.data.translations);
           this.$store.dispatch(
             "setComponents",
             Object.fromEntries(Object.entries(event.data.compData).sort())
@@ -38,7 +38,7 @@ export default {
           this.$store.dispatch("setMyHorses", null);
           this.$store.dispatch("setHorses", null);
           this.$store.dispatch("setShopName", null);
-          this.$store.dispatch("setTranslation", null);
+          this.$store.dispatch("setTranslations", null);
           this.$store.dispatch("setComponents", null);
           this.$store.dispatch("setSelectedHorse", null);
           this.$store.dispatch("setCompCashPrice", 0);
