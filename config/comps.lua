@@ -936,19 +936,3 @@ HorseComp = {
         { hash = '0x0865A270', cashPrice = 10, goldPrice = 1 },
     },
 }
-
-Translation = { -- English
-    Saddlecloths = "Saddlecloths",
-    SaddleHorns = "Saddle Horns",
-    SaddleBags = "Saddle Bags",
-    Tails = "Tails",
-    Manes = "Manes",
-    Saddles = "Saddles",
-    Stirrups = "Stirrups",
-    Bedrolls = "Bedrolls",
-    Masks = "Masks",
-    Mustaches = "Mustaches",
-    Holsters = "Holsters",
-    Bridles = "Bridles",
-    Horseshoes = "Horseshoes",
-}
