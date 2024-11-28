@@ -3,7 +3,7 @@ local BccUtils = exports['bcc-utils'].initiate()
 local CooldownData = {}
 
 if Config.discord.active == true then
-    Discord = BccUtils.Discord.setup(Config.discord.webhookURL, 'My Script', 'https://cdn2.iconfinder.com/data/icons/frosted-glass/256/Danger.png')    
+    Discord = BccUtils.Discord.setup(Config.discord.webhookURL, Config.discord.title, Config.discord.avatar)
 end
 function LogToDiscord(name, description, embeds)
     if Config.discord.active == true then
