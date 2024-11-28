@@ -5,7 +5,6 @@ export default createStore({
     myHorses: null,
     horses: null,
     shopName: null,
-    translations: null,
     comps: null,
     activeHorse: null,
     compCashPrice: 0,
@@ -88,10 +87,7 @@ export default createStore({
     },
     setCurrencyType(context, payload) {
       context.commit("SET_CURRENCY_TYPE", payload);
-    },
-    setTranslations(context, payload) {
-      context.commit("SET_TRANSLATIONS", payload);
-    },
+    }
   },
   modules: {},
 });
