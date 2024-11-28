@@ -121,7 +121,6 @@ CreateThread(function()
     end
 end)
 
----@param site string
 function OpenStable(site)
     DisplayRadar(false)
     InMenu = true
@@ -133,6 +132,7 @@ function OpenStable(site)
         action = 'show',
         shopData = JobMatchedHorses,
         compData = HorseComp,
+        translations = Translations,
         location = StableName,
         currencyType = Config.currencyType
     })
@@ -140,7 +140,6 @@ function OpenStable(site)
     TriggerServerEvent('bcc-stables:GetMyHorses')
 end
 
----@param dataHorses table
 RegisterNetEvent('bcc-stables:ReceiveHorsesData', function(dataHorses)
     SendNUIMessage({
         action = 'updateMyHorses',
@@ -149,7 +148,6 @@ RegisterNetEvent('bcc-stables:ReceiveHorsesData', function(dataHorses)
 end)
 
 -- View Horses for Purchase
----@param data table
 RegisterNUICallback('loadHorse', function(data, cb)
     cb('ok')
     if MyEntity ~= 0 then
@@ -181,7 +179,6 @@ RegisterNUICallback('loadHorse', function(data, cb)
     Citizen.InvokeNative(0x6585D955A68452A5, ShopEntity) -- ClearPedEnvDirt
 end)
 
----@param data table
 RegisterNUICallback('BuyHorse', function(data, cb)
     cb('ok')
     CheckPlayerJob(true, nil)
@@ -204,7 +201,6 @@ RegisterNUICallback('BuyHorse', function(data, cb)
     end
 end)
 
----@param data table
 function SetHorseName(data)
     IsNaming = true
     if data.origin ~= 'tameHorse' then
@@ -265,6 +261,7 @@ function SetHorseName(data)
             action = 'show',
             shopData = Horses,
             compData = HorseComp,
+            translations = Translations,
             location = StableName,
             currencyType = Config.currencyType
         })
@@ -274,7 +271,6 @@ function SetHorseName(data)
     IsNaming = false
 end
 
----@param data table
 RegisterNUICallback('RenameHorse', function(data, cb)
     cb('ok')
     data.origin = 'updateHorse'
@@ -282,7 +278,6 @@ RegisterNUICallback('RenameHorse', function(data, cb)
 end)
 
 -- View Owned Horse in Stable Menu
----@param data table
 RegisterNUICallback('loadMyHorse', function(data, cb)
     cb('ok')
     MyEntityID = data.HorseId
@@ -327,7 +322,6 @@ RegisterNUICallback('loadMyHorse', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('selectHorse', function(data, cb)
     cb('ok')
     TriggerServerEvent('bcc-stables:SelectHorse', data)
@@ -342,7 +336,6 @@ function GetSelectedHorse()
     end
 end
 
----@param data table
 RegisterNUICallback('CloseStable', function(data, cb)
     cb('ok')
     SendNUIMessage({
@@ -407,6 +400,7 @@ function StableMenu()
         action = 'show',
         shopData = Horses,
         compData = HorseComp,
+        translations = Translations,
         location = StableName,
         currencyType = Config.currencyType
     })
@@ -414,8 +408,6 @@ function StableMenu()
     TriggerServerEvent('bcc-stables:GetMyHorses')
 end
 
----@param horseEntity integer
----@param encodedComponents string
 RegisterNetEvent('bcc-stables:SetComponents', function(horseEntity, encodedComponents)
     local components = json.decode(encodedComponents)
     for _, component in pairs(components) do
@@ -423,7 +415,6 @@ RegisterNetEvent('bcc-stables:SetComponents', function(horseEntity, encodedCompo
     end
 end)
 
----@param data table
 function SpawnHorse(data)
     if Spawning then
         return
@@ -1110,9 +1101,6 @@ AddEventHandler('bcc-stables:ReviveHorse', function()
     end
 end)
 
----@param horsePedId integer
----@param horseId integer
----@param isLooting boolean
 function OpenInventory(horsePedId, horseId, isLooting)
     local hasBags = Citizen.InvokeNative(0xFB4891BD7578CDC1, horsePedId, -2142954459) -- IsMetaPedUsingComponent
 
@@ -1172,6 +1160,7 @@ function GetControlOfHorse()
 end
 
 AddEventHandler('bcc-stables:HorseBonding', function()
+    local trainingDistance = Config.trainingDistance
     while not MaxBonding do
         Wait(5000)
         local playerPed = PlayerPedId()
@@ -1184,7 +1173,7 @@ AddEventHandler('bcc-stables:HorseBonding', function()
                 LastLoc = GetEntityCoords(MyHorse)
             else
                 local dist = #(LastLoc - GetEntityCoords(MyHorse))
-                if dist >= 100 then
+                if dist >= trainingDistance then
                     LastLoc = GetEntityCoords(MyHorse)
                     SaveXp('travel')
                 end
@@ -1193,7 +1182,6 @@ AddEventHandler('bcc-stables:HorseBonding', function()
     end
 end)
 
----@param xpSource string
 function SaveXp(xpSource)
     local horseXp = nil
     local updateXp = {
@@ -1427,7 +1415,6 @@ RegisterNetEvent('bcc-stables:BrushHorse', function()
     Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Core_Fill_Up', 'Consumption_Sounds', true, 0) -- PlaySoundFrontend
 end)
 
----@param item string
 RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     if not MyHorse or MyHorse == 0 then
         return VORPcore.NotifyRightTip(_U('noHorse'), 4000)
@@ -1537,7 +1524,6 @@ function GetClosestPlayer()
 end
 
 -- Select Horse Tack from Menu
----@param data table
 RegisterNUICallback('Saddles', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1550,7 +1536,6 @@ RegisterNUICallback('Saddles', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('Saddlecloths', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1563,7 +1548,6 @@ RegisterNUICallback('Saddlecloths', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('Stirrups', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1576,7 +1560,6 @@ RegisterNUICallback('Stirrups', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('SaddleBags', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1589,7 +1572,6 @@ RegisterNUICallback('SaddleBags', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('Manes', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1602,7 +1584,6 @@ RegisterNUICallback('Manes', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('Tails', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1615,7 +1596,6 @@ RegisterNUICallback('Tails', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('SaddleHorns', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1628,7 +1608,6 @@ RegisterNUICallback('SaddleHorns', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('Bedrolls', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1641,7 +1620,6 @@ RegisterNUICallback('Bedrolls', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('Masks', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1654,7 +1632,6 @@ RegisterNUICallback('Masks', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('Mustaches', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1667,7 +1644,6 @@ RegisterNUICallback('Mustaches', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('Holsters', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1680,7 +1656,6 @@ RegisterNUICallback('Holsters', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('Bridles', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1693,7 +1668,6 @@ RegisterNUICallback('Bridles', function(data, cb)
     end
 end)
 
----@param data table
 RegisterNUICallback('Horseshoes', function(data, cb)
     cb('ok')
     if tonumber(data.id) == -1 then
@@ -1706,20 +1680,16 @@ RegisterNUICallback('Horseshoes', function(data, cb)
     end
 end)
 
----@param entity integer
----@param hash number
 function SetComponent(entity, hash)
     Citizen.InvokeNative(0xD3A7B003ED343FD9, entity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
     Citizen.InvokeNative(0xCC8CA3E88256E58F, entity, false, true, true, true, false) -- UpdatePedVariation
 end
 
----@param category integer
 function RemoveComponent(category)
     Citizen.InvokeNative(0xD710A5007C2AC539, MyEntity, category, 0) -- RemoveTagFromMetaPed
     Citizen.InvokeNative(0xCC8CA3E88256E58F, MyEntity, false, true, true, true, false) -- UpdatePedVariation
 end
 
----@param data table
 RegisterNUICallback('sellHorse', function(data, cb)
     cb('ok')
     DeleteEntity(MyEntity)
@@ -1732,7 +1702,6 @@ RegisterNUICallback('sellHorse', function(data, cb)
     end
 end)
 
----@param dead boolean
 function SaveHorseStats(dead)
     local data = {}
     local healthCore, staminaCore
@@ -1752,7 +1721,6 @@ function SaveHorseStats(dead)
     TriggerServerEvent('bcc-stables:SaveHorseStats', data, MyHorseId)
 end
 
----@param data table
 function SetHorseStats(data)
     Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, data.health)  -- SetAttributeCoreValue
     Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, data.stamina) -- SetAttributeCoreValue
@@ -1783,7 +1751,6 @@ function CameraLighting()
 end
 
 -- -- Rotate Horses while Viewing
----@param data table
 RegisterNUICallback('rotate', function(data, cb)
     cb('ok')
     local direction = data.RotateHorse
@@ -1795,7 +1762,6 @@ RegisterNUICallback('rotate', function(data, cb)
     end
 end)
 
----@param dir integer
 function Rotation(dir)
     local entity = 0
 
@@ -1903,7 +1869,6 @@ function StartPrompts()
     PromptRegisterEnd(LootHorse)
 end
 
----@param menuGroup integer
 function HorseTargetPrompts(menuGroup)
     local currentLevel = Citizen.InvokeNative(0x147149F2E909323C, MyHorse, 7, Citizen.ResultAsInteger()) -- GetAttributeBaseRank
 
@@ -1965,8 +1930,6 @@ function HorseTargetPrompts(menuGroup)
     end
 end
 
----@param trainer boolean
----@param site string
 function CheckPlayerJob(trainer, site)
     local result = VORPcore.Callback.TriggerAwait('bcc-stables:CheckJob', trainer, site)
     if trainer and result then
@@ -1985,7 +1948,6 @@ function CheckPlayerJob(trainer, site)
     end
 end
 
----@param site string
 function AddTrainerBlip(site)
     local siteCfg = Trainers[site]
     siteCfg.TrainerBlip = Citizen.InvokeNative(0x554d9d53f696d002, 1664425300, siteCfg.npc.coords) -- BlipAddForCoords
@@ -1993,12 +1955,10 @@ function AddTrainerBlip(site)
     Citizen.InvokeNative(0x9CB1A1623062F402, siteCfg.TrainerBlip,  siteCfg.blip.name) -- SetBlipName
 end
 
----@param site string
----@param closed boolean
 function ManageStableBlip(site, closed)
     local siteCfg = Stables[site]
 
-    if closed and not siteCfg.blip.showClosed then
+    if (closed and not siteCfg.blip.showClosed) or (not siteCfg.blip.show) then
         if Stables[site].Blip then
             RemoveBlip(Stables[site].Blip)
             Stables[site].Blip = nil
@@ -2018,7 +1978,6 @@ function ManageStableBlip(site, closed)
     Citizen.InvokeNative(0x662D364ABF16DE2F, Stables[site].Blip, joaat(Config.BlipColors[color])) -- BlipAddModifier
 end
 
----@param site string
 function AddTrainerNPC(site)
     local siteCfg = Trainers[site]
     local modelName = siteCfg.npc.model
@@ -2033,7 +1992,6 @@ function AddTrainerNPC(site)
     SetBlockingOfNonTemporaryEvents(siteCfg.TrainerNPC, true)
 end
 
----@param site string
 function AddStableNPC(site)
     local siteCfg = Stables[site]
     if not siteCfg.NPC then
@@ -2051,7 +2009,6 @@ function AddStableNPC(site)
     end
 end
 
----@param site string
 function RemoveStableNPC(site)
     local siteCfg = Stables[site]
     if siteCfg.NPC then
@@ -2060,8 +2017,6 @@ function RemoveStableNPC(site)
     end
 end
 
----@param model integer
----@param modelName string
 function LoadModel(model, modelName)
     if not IsModelValid(model) then
         return print('Invalid model:', modelName)

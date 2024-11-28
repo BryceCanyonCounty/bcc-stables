@@ -47,13 +47,13 @@ local function ListenForPromptEvent(iEventGroup, hWhichEvent, iEventDataSize, tO
 				-- just to make it easier we'll just write the data to a passed table
 				local bDataExists = Citizen.InvokeNative(0x57EC5FA4D4D6AFCA, 0, i, EventDataStruct:Buffer(), iEventDataSize) -- GET_EVENT_DATA
 				if bDataExists then
-					tOutTable[1] = EventDataStruct:GetInt32(8 * 0)
-					tOutTable[2] = EventDataStruct:GetInt32(8 * 1)
-					tOutTable[3] = EventDataStruct:GetInt32(8 * 2)
-					tOutTable[4] = EventDataStruct:GetInt32(8 * 3)
-					tOutTable[5] = EventDataStruct:GetInt32(8 * 4)
-					tOutTable[6] = EventDataStruct:GetInt32(8 * 5)
-					tOutTable[7] = EventDataStruct:GetInt32(8 * 6)
+					tOutTable[1] = EventDataStruct:GetInt32(8 * 0) -- Prompt Type Id
+					tOutTable[2] = EventDataStruct:GetInt32(8 * 1) -- Unknown
+					tOutTable[3] = EventDataStruct:GetInt32(8 * 2) -- Target Entity Id
+					tOutTable[4] = EventDataStruct:GetInt32(8 * 3) -- Unknown
+					tOutTable[5] = EventDataStruct:GetInt32(8 * 4) -- (float) Player Ped Coord x
+					tOutTable[6] = EventDataStruct:GetInt32(8 * 5) -- (float) Player Ped Coord y
+					tOutTable[7] = EventDataStruct:GetInt32(8 * 6) -- (float) Player Ped Coord z
 				else
 					print('ListenForPromptEvent: bDataExists was false?!')
 					return false

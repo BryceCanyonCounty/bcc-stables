@@ -2,6 +2,7 @@
   <TackShopMenuItem
     v-for="(comp, index) in comps"
     :label="index"
+    :translated="translations[index]"
     :maxItems="Object.keys(comp).length"
     :horseComps="comp"
     :key="index"
@@ -23,6 +24,7 @@ export default {
   methods: {},
   computed: {
     ...mapState([
+      "translations",
       "comps",
       "compCashPrice",
       "compGoldPrice",
