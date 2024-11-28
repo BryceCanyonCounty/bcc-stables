@@ -1,4 +1,4 @@
-local VORPcore = exports.vorp_core:GetCore()
+local Core = exports.vorp_core:GetCore()
 local FeatherMenu =  exports['feather-menu'].initiate()
 
 -- Prompts
@@ -183,7 +183,7 @@ RegisterNUICallback('BuyHorse', function(data, cb)
     cb('ok')
     CheckPlayerJob(true, nil)
     if Stables[Site].trainerBuy and not IsTrainer then
-        VORPcore.NotifyRightTip(_U('trainerBuyHorse'), 4000)
+        Core.NotifyRightTip(_U('trainerBuyHorse'), 4000)
         StableMenu()
         return
     end
@@ -193,7 +193,7 @@ RegisterNUICallback('BuyHorse', function(data, cb)
         data.isTrainer = false
     end
     data.origin = 'buyHorse'
-    local canBuy = VORPcore.Callback.TriggerAwait('bcc-stables:BuyHorse', data)
+    local canBuy = Core.Callback.TriggerAwait('bcc-stables:BuyHorse', data)
     if canBuy then
         SetHorseName(data)
     else
@@ -222,7 +222,7 @@ function SetHorseName(data)
         if string.len(horseName) > 0 then
             data.name = horseName
             if data.origin == 'updateHorse' then
-                local nameSaved = VORPcore.Callback.TriggerAwait('bcc-stables:UpdateHorseName', data)
+                local nameSaved = Core.Callback.TriggerAwait('bcc-stables:UpdateHorseName', data)
                 if nameSaved then
                     StableMenu()
                 end
@@ -230,7 +230,7 @@ function SetHorseName(data)
                 return
             elseif data.origin == 'buyHorse' then
                 data.captured = 0
-                local horseSaved = VORPcore.Callback.TriggerAwait('bcc-stables:SaveNewHorse', data)
+                local horseSaved = Core.Callback.TriggerAwait('bcc-stables:SaveNewHorse', data)
                 if horseSaved then
                     StableMenu()
                 end
@@ -243,7 +243,7 @@ function SetHorseName(data)
                 while not Citizen.InvokeNative(0x01FEE67DB37F59B2, playerPed) do -- IsPedOnFoot
                     Wait(10)
                 end
-                local horseSaved = VORPcore.Callback.TriggerAwait('bcc-stables:SaveTamedHorse', data)
+                local horseSaved = Core.Callback.TriggerAwait('bcc-stables:SaveTamedHorse', data)
                 if horseSaved then
                     DeleteEntity(data.mount)
                     HorseBreed = false
@@ -328,7 +328,7 @@ RegisterNUICallback('selectHorse', function(data, cb)
 end)
 
 function GetSelectedHorse()
-    local data = VORPcore.Callback.TriggerAwait('bcc-stables:GetHorseData')
+    local data = Core.Callback.TriggerAwait('bcc-stables:GetHorseData')
     if data then
         SpawnHorse(data)
     else
@@ -704,7 +704,7 @@ end)
 
 function HorseDrinking()
     if not IsEntityInWater(MyHorse) then
-        VORPcore.NotifyRightTip(HorseName .. _U('needWater'), 4000)
+        Core.NotifyRightTip(HorseName .. _U('needWater'), 4000)
         return
     end
     Drinking = true
@@ -884,7 +884,7 @@ function WhistleSpawn()
     if Config.whistleSpawn then
         GetSelectedHorse()
     else
-        VORPcore.NotifyRightTip(_U('stableSpawn'), 4000)
+        Core.NotifyRightTip(_U('stableSpawn'), 4000)
     end
 end
 
@@ -918,9 +918,9 @@ CreateThread(function()
                     TamedModel = model
                     if Config.displayHorseBreed and not HorseBreed then
                         if horseCfg.breed == 'Other' then
-                            VORPcore.NotifyBottomRight(modelCfg.color, 1000)
+                            Core.NotifyBottomRight(modelCfg.color, 1000)
                         else
-                            VORPcore.NotifyBottomRight(horseCfg.breed, 1000)
+                            Core.NotifyBottomRight(horseCfg.breed, 1000)
                         end
                         HorseBreed = true
                     end
@@ -981,16 +981,16 @@ CreateThread(function()
                 PromptSetEnabled(KeepTame, allowKeep)
 
                 if Citizen.InvokeNative(0xE0F65F0640EF0617, SellTame) then  -- PromptHasHoldModeCompleted
-                    local onCooldown = VORPcore.Callback.TriggerAwait('bcc-stables:CheckPlayerCooldown', 'sellTame')
+                    local onCooldown = Core.Callback.TriggerAwait('bcc-stables:CheckPlayerCooldown', 'sellTame')
                     if onCooldown then
-                        VORPcore.NotifyRightTip(_U('sellCooldown'), 4000)
+                        Core.NotifyRightTip(_U('sellCooldown'), 4000)
                         HorseBreed = false
                         goto END
                     end
                     if Config.trainerOnly then
                         CheckPlayerJob(true, nil)
                         if not IsTrainer then
-                            VORPcore.NotifyRightTip(_U('trainerSellHorse'), 4000)
+                            Core.NotifyRightTip(_U('trainerSellHorse'), 4000)
                             HorseBreed = false
                             goto END
                         end
@@ -1001,7 +1001,7 @@ CreateThread(function()
                         while not Citizen.InvokeNative(0x01FEE67DB37F59B2, playerPed) do -- IsPedOnFoot
                             Wait(10)
                         end
-                        VORPcore.NotifyRightTip(_U('tamedCooldown') .. Config.cooldown.sellTame .. _U('minutes'), 4000)
+                        Core.NotifyRightTip(_U('tamedCooldown') .. Config.cooldown.sellTame .. _U('minutes'), 4000)
                         DeleteEntity(mount)
                         mount = 0
                         Wait(200)
@@ -1012,7 +1012,7 @@ CreateThread(function()
                     CheckPlayerJob(true, nil)
                     if Config.trainerOnly then
                         if not IsTrainer then
-                            VORPcore.NotifyRightTip(_U('trainerRegHorse'), 4000)
+                            Core.NotifyRightTip(_U('trainerRegHorse'), 4000)
                             HorseBreed = false
                             goto END
                         end
@@ -1032,7 +1032,7 @@ CreateThread(function()
                         tameData.gender = 'female'
                     end
                     tameData.mount = mount
-                    local canKeep = VORPcore.Callback.TriggerAwait('bcc-stables:RegisterHorse', tameData)
+                    local canKeep = Core.Callback.TriggerAwait('bcc-stables:RegisterHorse', tameData)
                     if canKeep then
                         SetHorseName(tameData)
                     else
@@ -1068,15 +1068,15 @@ AddEventHandler('bcc-stables:CheckHorseHealth', function()
             SaveHorseStats(true)
 
             if Config.death.deselect then
-                deselected = VORPcore.Callback.TriggerAwait('bcc-stables:DeselectHorse', MyHorseId)
+                deselected = Core.Callback.TriggerAwait('bcc-stables:DeselectHorse', MyHorseId)
             end
 
             if Config.death.permanent then
-                permaDead = VORPcore.Callback.TriggerAwait('bcc-stables:SetHorseDead', MyHorseId)
+                permaDead = Core.Callback.TriggerAwait('bcc-stables:SetHorseDead', MyHorseId)
             end
 
             if deselected or permaDead then
-                VORPcore.NotifyRightTip(_U('horseDied'), 4000)
+                Core.NotifyRightTip(_U('horseDied'), 4000)
             end
 
             Wait(5000)
@@ -1088,10 +1088,10 @@ AddEventHandler('bcc-stables:CheckHorseHealth', function()
 end)
 
 AddEventHandler('bcc-stables:ReviveHorse', function()
-    local hasItem = VORPcore.Callback.TriggerAwait('bcc-stables:HorseReviveItem')
+    local hasItem = Core.Callback.TriggerAwait('bcc-stables:HorseReviveItem')
 
     if not hasItem then
-        VORPcore.NotifyRightTip(_U('noReviver'), 4000)
+        Core.NotifyRightTip(_U('noReviver'), 4000)
         return
     end
 
@@ -1105,7 +1105,7 @@ function OpenInventory(horsePedId, horseId, isLooting)
     local hasBags = Citizen.InvokeNative(0xFB4891BD7578CDC1, horsePedId, -2142954459) -- IsMetaPedUsingComponent
 
     if not isLooting and Config.useSaddlebags and not hasBags then
-        VORPcore.NotifyRightTip(_U('noSaddlebags'), 4000)
+        Core.NotifyRightTip(_U('noSaddlebags'), 4000)
         return
     end
 
@@ -1132,7 +1132,7 @@ function ReturnHorse()
     local playerPed = PlayerPedId()
 
     if not MyHorse or MyHorse == 0 then
-        VORPcore.NotifyRightTip(_U('noHorse'), 4000)
+        Core.NotifyRightTip(_U('noHorse'), 4000)
         return
     end
 
@@ -1149,7 +1149,7 @@ function ReturnHorse()
 
     DeleteEntity(MyHorse)
     MyHorse = 0
-    VORPcore.NotifyRightTip(_U('horseReturned'), 4000)
+    Core.NotifyRightTip(_U('horseReturned'), 4000)
 end
 
 function GetControlOfHorse()
@@ -1208,7 +1208,7 @@ function SaveXp(xpSource)
     Citizen.InvokeNative(0x75415EE0CB583760, MyHorse, 7, horseXp) -- AddAttributePoints
 
     if Config.showXpMessage then
-        VORPcore.NotifyRightTip('+ ' .. horseXp .. ' XP', 2000)
+        Core.NotifyRightTip('+ ' .. horseXp .. ' XP', 2000)
     end
 
     local maxXp = Citizen.InvokeNative(0x223BF310F854871C, MyHorse, 7) -- GetMaxAttributePoints
@@ -1365,13 +1365,13 @@ end
 
 RegisterNetEvent('bcc-stables:BrushHorse', function()
     if not MyHorse or MyHorse == 0 then
-        return VORPcore.NotifyRightTip(_U('noHorse'), 4000)
+        return Core.NotifyRightTip(_U('noHorse'), 4000)
     end
 
     local playerPed = PlayerPedId()
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
     if dist > 3.5 then
-        return VORPcore.NotifyRightTip(_U('tooFar'), 4000)
+        return Core.NotifyRightTip(_U('tooFar'), 4000)
     end
 
     ClearPedTasks(playerPed)
@@ -1417,13 +1417,13 @@ end)
 
 RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     if not MyHorse or MyHorse == 0 then
-        return VORPcore.NotifyRightTip(_U('noHorse'), 4000)
+        return Core.NotifyRightTip(_U('noHorse'), 4000)
     end
 
     local playerPed = PlayerPedId()
     local dist = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
     if dist > 3.5 then
-        VORPcore.NotifyRightTip(_U('tooFar'), 4000)
+        Core.NotifyRightTip(_U('tooFar'), 4000)
         return
     end
 
@@ -1696,7 +1696,7 @@ RegisterNUICallback('sellHorse', function(data, cb)
     MyEntity = 0
     Cam = false
 
-    local horseSold = VORPcore.Callback.TriggerAwait('bcc-stables:SellMyHorse', data)
+    local horseSold = Core.Callback.TriggerAwait('bcc-stables:SellMyHorse', data)
     if horseSold then
         StableMenu()
     end
@@ -1800,14 +1800,14 @@ end, false)
 
 RegisterCommand(Config.commands.horseInfo, function(source, args, rawCommand)
     if not MyHorse or MyHorse == 0 then
-        VORPcore.NotifyRightTip(_U('noHorse'), 4000)
+        Core.NotifyRightTip(_U('noHorse'), 4000)
         return
     end
 
     if #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(MyHorse)) <= 3.0 then
         HorseInfoMenu()
     else
-        VORPcore.NotifyRightTip(_U('tooFar'), 4000)
+        Core.NotifyRightTip(_U('tooFar'), 4000)
     end
 end, false)
 
@@ -1931,7 +1931,7 @@ function HorseTargetPrompts(menuGroup)
 end
 
 function CheckPlayerJob(trainer, site)
-    local result = VORPcore.Callback.TriggerAwait('bcc-stables:CheckJob', trainer, site)
+    local result = Core.Callback.TriggerAwait('bcc-stables:CheckJob', trainer, site)
     if trainer and result then
         IsTrainer = false
         if result[1] then
@@ -1942,7 +1942,7 @@ function CheckPlayerJob(trainer, site)
         if result[1] then
             HasJob = true
         elseif Stables[site].shop.jobsEnabled then
-            VORPcore.NotifyRightTip(_U('needJob'), 4000)
+            Core.NotifyRightTip(_U('needJob'), 4000)
         end
         JobMatchedHorses = FindHorsesByJob(result[2])
     end
