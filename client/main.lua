@@ -1466,6 +1466,26 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Core_Fill_Up', 'Consumption_Sounds', true, 0) -- PlaySoundFrontend
 end)
 
+RegisterNetEvent('bcc-stables:FlamedHoove', function()
+    if not MyHorse or MyHorse == 0 then
+        return Core.NotifyRightTip(_U('noHorse'), 4000)
+    end
+
+    local playerPed = PlayerPedId()
+    local playerCoords = GetEntityCoords(playerPed)
+    local horseCoords = GetEntityCoords(MyHorse)
+
+    if #(playerCoords - horseCoords) > 3.5 then
+        return Core.NotifyRightTip(_U('tooFar'), 4000)
+    end
+
+    ClearPedTasks(playerPed)
+
+    Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 207, true)
+    Core.NotifyRightTip(_U('flameHoovesActivated'), 4000)
+end)
+
+
 RegisterNetEvent('bcc-stables:UseLantern', function()
     local playerPed = PlayerPedId()
 
