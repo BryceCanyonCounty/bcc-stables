@@ -10,11 +10,11 @@ Config.devMode = false -- Default: false / Do Not Run on a Live Server
 Config.discord = {
 	active = false,
 	webhookURL = '',
-	title = '',
+	title = 'BCC-Stables',
 	avatar = ''
 }
 -----------------------------------------------------
----
+
 -- Set the currency type
 -- 0 = Cash Only
 -- 1 = Gold Only
