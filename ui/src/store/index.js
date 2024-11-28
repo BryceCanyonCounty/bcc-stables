@@ -54,9 +54,6 @@ export default createStore({
     SET_CURRENCY_TYPE(state, payload) {
       state.currencyType = payload;
     },
-    SET_TRANSLATIONS(state, payload) {
-      state.translations = payload
-    }
   },
   actions: {
     setMyHorses(context, payload) {
