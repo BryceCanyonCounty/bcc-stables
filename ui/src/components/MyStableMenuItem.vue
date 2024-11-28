@@ -34,11 +34,11 @@
     <div class="divider-menu-top" style="margin-top: 1rem"></div>
     <div class="flex cta-wrapper">
       <button @click="SellHorse" class="modal-btn flex flex-auto">
-        <img src="../assets/img/money.png" />{{ store.getters.getTranslation('sellConfirmationButton') }}
+        <img src="../assets/img/money.png" />{{ $store.getters.getTranslation('sellConfirmationButton') }}
       </button>
       <!--  -->
       <button @click="toggleModal" class="modal-btn flex flex-auto">
-        {{ store.getters.getTranslation('sellConfirmationCancelButton') }}
+        {{ $store.getters.getTranslation('sellConfirmationCancelButton') }}
       </button>
     </div>
     <div class="divider-menu-bottom"></div>
