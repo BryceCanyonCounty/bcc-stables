@@ -5,7 +5,7 @@ export default createStore({
     myHorses: null,
     horses: null,
     shopName: null,
-    translation: null,
+    translations: null,
     comps: null,
     activeHorse: null,
     compCashPrice: 0,
@@ -26,7 +26,7 @@ export default createStore({
       state.shopName = payload;
     },
     SET_TRANSLATIONS(state, payload) {
-      state.translation = payload;
+      state.translations = payload;
     },
     SET_COMPONENTS(state, payload) {
       state.comps = payload;
@@ -60,7 +60,7 @@ export default createStore({
     setShopName(context, payload) {
       context.commit("SET_SHOP_NAME", payload);
     },
-    setTranslation(context, payload) {
+    setTranslations(context, payload) {
       context.commit("SET_TRANSLATIONS", payload);
     },
     setComponents(context, payload) {
