@@ -486,6 +486,51 @@ for _, item in ipairs(Config.horseFood) do
     end)
 end
 
+exports.vorp_inventory:registerUsableItem(Config.flameHooveItem, function(data)
+    local src = data.source
+    local user = Core.getUser(src)
+    if not user then return end
+
+    local item = exports.vorp_inventory:getItem(src, Config.flameHooveItem)
+    exports.vorp_inventory:closeInventory(src)
+
+    -- Trigger the client-side event to activate flaming hooves
+    TriggerClientEvent('bcc-stables:FlamedHoove', src)
+
+    -- Check if durability system is enabled in the configuration
+    if not Config.flameHooveDurability then return end
+
+    local maxDurability = Config.flameHooveMaxDurability or 100
+    local useDurability = Config.flameHooveDurabilityPerUse or 1
+
+    -- Handle durability metadata
+    if not next(item.metadata) then
+        -- Initialize durability if none exists
+        local newData = {
+            description = _U('flameHooveDesc') .. '</br>' .. _U('durability') .. (maxDurability - useDurability) .. '%',
+            durability = maxDurability - useDurability,
+            id = item.id
+        }
+        exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
+    else
+        -- Decrease durability and remove item if it breaks
+        if item.metadata.durability <= useDurability then
+            -- Remove item if durability is depleted
+            exports.vorp_inventory:subItemID(src, item.id)
+            Core.NotifyRightTip(src, _U('flameHooveBroken'), 4000)
+        else
+            -- Update durability metadata
+            local newDurability = item.metadata.durability - useDurability
+            local newData = {
+                description = _U('flameHooveDesc') .. '</br>' .. _U('durability') .. newDurability .. '%',
+                durability = newDurability,
+                id = item.id
+            }
+            exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
+        end
+    end
+end)
+
 RegisterServerEvent('bcc-stables:RemoveItem', function(item)
     local src = source
     local user = Core.getUser(src)

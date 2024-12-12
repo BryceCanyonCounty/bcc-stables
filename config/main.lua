@@ -49,6 +49,15 @@ Config.horseFood = {
 	'consumable_carrots',
 	'consumable_apple'
 }
+-----------------------------------------------------
+
+--- Horse Flaming Hooves 
+Config.flameHooveItem = 'diamond' -- The item name for flaming hooves
+Config.flameHooveDurability = true -- Enable or disable durability for the flaming hooves item
+Config.flameHoovesActive = true
+Config.flameHooveMaxDurability = 100 -- Maximum durability for the item
+Config.flameHooveDurabilityPerUse = 5 -- Durability decrease per use
+-----------------------------------------------------
 
 Config.reviver = 'consumable_horse_reviver'
 -----------------------------------------------------

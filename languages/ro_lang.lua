@@ -72,5 +72,7 @@ Locales["ro_lang"] = {
     discordHorseXPGain = "XP cal câștigat!",
     discordHorseSold = "Cal vândut!",
     discordTamedSold = "Cal îmblânzit vândut!",
-    discordTraded = "Cal schimbat cu "
+    discordTraded = "Cal schimbat cu ",
+    flameHooveDesc = 'An enchanted item to activate flaming hooves',
+    flameHoovesActivated = 'Your horse now has flaming hooves!',
 }
