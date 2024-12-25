@@ -69,7 +69,7 @@
           @mousedown="startRotate('left')"
           @mouseleave="onMouseLeave"
         >
-          <i class="fa-solid fa-chevron-left center"></i>
+          <span class="material-icons center">&#xe5cb;</span>
         </button>
         <div class="rotate-text">
           <span class="grey-text center">{{ $store.getters.getTranslation('rotateText') }}</span>
@@ -80,7 +80,7 @@
           @mousedown="startRotate('right')"
           @mouseleave="onMouseLeave"
         >
-          <i class="fa-solid fa-chevron-right center"></i>
+          <span class="material-icons center">&#xe5cc;</span>
         </button>
         <button id="cancel" class="btn-select" @click="close()">{{ $store.getters.getTranslation('cancelButton') }}</button>
       </div>
