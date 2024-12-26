@@ -4,16 +4,16 @@
     <div class="panel">
       <div class="panel-title" @click="[SelectHorse(), Expand()]">
         <h6 class="grey-text plus">
-          <i
-            class="fa-solid fa-chevron-left center active-horse mr"
+          <span
+            class="material-icons center active-horse mr"
             v-if="isActive"
-          ></i>
+          >&#xe5cb;</span>
           {{ label }}
           <GenderIndicator :gender="horse.gender" />
-          <i
-            class="fa-solid fa-chevron-right center active-horse ml"
+          <span
+            class="material-icons center active-horse ml"
             v-if="isActive"
-          ></i>
+          >&#xe5cc;</span>
         </h6>
       </div>
     </div>

@@ -7,7 +7,7 @@
       <div class="col s6 flex justify-end">
         <!--  -->
         <button class="button-left btn flex-" @click="decrease()">
-          <i class="fa-solid fa-chevron-left"></i>
+            <span class="material-icons">&#xe5cb;</span>
         </button>
         <!--  -->
         <div class="item-count flex-none">
@@ -15,7 +15,7 @@
         </div>
         <!--  -->
         <button class="button-right btn flex-none" @click="increase()">
-          <i class="fa-solid fa-chevron-right"></i>
+            <span class="material-icons">&#xe5cc;</span>
         </button>
         <!--  -->
       </div>
