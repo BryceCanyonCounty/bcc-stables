@@ -559,6 +559,10 @@ function SpawnHorse(data)
     PromptsStarted = false
     TriggerEvent('bcc-stables:HorsePrompts')
 
+    if Config.saveInterval > 0 then
+        TriggerEvent('bcc-stables:HorseMonitor')
+    end
+
     InWrithe = false
     LastLoc = nil
     UsingLantern = false
@@ -1046,6 +1050,15 @@ CreateThread(function()
     end
 end)
 
+AddEventHandler('bcc-stables:HorseMonitor', function()
+    local interval = Config.saveInterval * 1000
+    while MyHorse ~= 0 do
+        Wait(interval)
+        SaveHorseStats(false)
+    end
+end)
+
+-- Triggered when Horse is Damaged
 AddEventHandler('bcc-stables:CheckHorseHealth', function()
     if Citizen.InvokeNative(0x3317DEDB88C95038, MyHorse, false) then -- IsPedDeadOrDying
         if not InWrithe then
