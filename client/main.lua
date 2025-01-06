@@ -1701,8 +1701,15 @@ RegisterNUICallback('Horseshoes', function(data, cb)
 end)
 
 function SetComponent(entity, hash)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, entity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
-    Citizen.InvokeNative(0xCC8CA3E88256E58F, entity, false, true, true, true, false) -- UpdatePedVariation
+    repeat Wait(0) until GetNumComponentsInPed(entity) ~= 0 -- Wait untill all previous components are loaded
+
+    if hash and hash ~= "0" then
+        local comp = tonumber(hash)
+        Citizen.InvokeNative(0xD3A7B003ED343FD9, entity, comp, true, true, true) -- ApplyShopItemToPed
+        repeat Wait(0) until GetNumComponentsInPed(entity) ~= 0 -- Wait untill all components are loaded
+
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, entity, false, true, true, true, false) -- UpdatePedVariation
+    end
 end
 
 function RemoveComponent(category)
