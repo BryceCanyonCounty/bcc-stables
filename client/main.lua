@@ -329,11 +329,12 @@ end)
 
 function GetSelectedHorse()
     local data = Core.Callback.TriggerAwait('bcc-stables:GetHorseData')
-    if data then
-        SpawnHorse(data)
-    else
-        print('No selected-horse data returned!')
+
+    if data == false then
+        return print('No selected-horse data returned!')
     end
+
+    SpawnHorse(data)
 end
 
 RegisterNUICallback('CloseStable', function(data, cb)
@@ -421,7 +422,7 @@ function SpawnHorse(data)
     end
     Spawning = true
 
-    if MyHorse then
+    if MyHorse ~= 0 then
         DeleteEntity(MyHorse)
         MyHorse = 0
     end
@@ -509,6 +510,7 @@ function SpawnHorse(data)
     if xp >= maxXp then
         MaxBonding = true
     end
+
     if Config.trainerOnly then
         CheckPlayerJob(true, nil)
         if IsTrainer then
@@ -542,7 +544,8 @@ function SpawnHorse(data)
         end
     end
 
-    SetHorseStats(data)
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, data.health)  -- SetAttributeCoreValue
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, data.stamina) -- SetAttributeCoreValue
 
     TriggerServerEvent('bcc-stables:RegisterInventory', MyHorseId, horseModel)
 
@@ -558,6 +561,10 @@ function SpawnHorse(data)
 
     PromptsStarted = false
     TriggerEvent('bcc-stables:HorsePrompts')
+
+    if Config.saveInterval > 0 then
+        TriggerEvent('bcc-stables:HorseMonitor')
+    end
 
     InWrithe = false
     LastLoc = nil
@@ -1046,6 +1053,16 @@ CreateThread(function()
     end
 end)
 
+AddEventHandler('bcc-stables:HorseMonitor', function()
+    local interval = Config.saveInterval * 1000
+    Wait(5000)
+    while MyHorse ~= 0 do
+        SaveHorseStats(false)
+        Wait(interval)
+    end
+end)
+
+-- Triggered when Horse is Damaged
 AddEventHandler('bcc-stables:CheckHorseHealth', function()
     if Citizen.InvokeNative(0x3317DEDB88C95038, MyHorse, false) then -- IsPedDeadOrDying
         if not InWrithe then
@@ -1117,12 +1134,11 @@ function OpenInventory(horsePedId, horseId, isLooting)
 end
 
 function FleeHorse()
-    Citizen.InvokeNative(0x22B0D0E37CCB840D, MyHorse, PlayerPedId(), 150.0, 10000, 6, 3.0) -- TaskSmartFleePed
-
     SaveHorseStats(false)
 
     GetControlOfHorse()
 
+    Citizen.InvokeNative(0x22B0D0E37CCB840D, MyHorse, PlayerPedId(), 150.0, 10000, 6, 3.0) -- TaskSmartFleePed
     Wait(10000)
     DeleteEntity(MyHorse)
     MyHorse = 0
@@ -1701,8 +1717,15 @@ RegisterNUICallback('Horseshoes', function(data, cb)
 end)
 
 function SetComponent(entity, hash)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, entity, tonumber(hash), true, true, true) -- ApplyShopItemToPed
-    Citizen.InvokeNative(0xCC8CA3E88256E58F, entity, false, true, true, true, false) -- UpdatePedVariation
+    repeat Wait(0) until GetNumComponentsInPed(entity) ~= 0 -- Wait until all previous components are loaded
+
+    if hash and hash ~= "0" then
+        local comp = tonumber(hash)
+        Citizen.InvokeNative(0xD3A7B003ED343FD9, entity, comp, true, true, true) -- ApplyShopItemToPed
+        repeat Wait(0) until GetNumComponentsInPed(entity) ~= 0 -- Wait until all components are loaded
+
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, entity, false, true, true, true, false) -- UpdatePedVariation
+    end
 end
 
 function RemoveComponent(category)
@@ -1723,7 +1746,6 @@ RegisterNUICallback('sellHorse', function(data, cb)
 end)
 
 function SaveHorseStats(dead)
-    local data = {}
     local healthCore, staminaCore
 
     if not dead then
@@ -1734,16 +1756,11 @@ function SaveHorseStats(dead)
         staminaCore = Config.death.stamina
     end
 
-    data = {
+    local data = {
         health = healthCore,
         stamina = staminaCore,
     }
-    TriggerServerEvent('bcc-stables:SaveHorseStats', data, MyHorseId)
-end
-
-function SetHorseStats(data)
-    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, data.health)  -- SetAttributeCoreValue
-    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, data.stamina) -- SetAttributeCoreValue
+    TriggerServerEvent('bcc-stables:SaveHorseStatsToDb', data, MyHorseId)
 end
 
 -- View Horses While in Menu
@@ -2189,8 +2206,7 @@ AddEventHandler('onResourceStop', function(resourceName)
         MyEntity = 0
     end
 
-    if MyHorse then
-        SaveHorseStats(false)
+    if MyHorse ~= 0 then
         DeleteEntity(MyHorse)
         MyHorse = 0
     end

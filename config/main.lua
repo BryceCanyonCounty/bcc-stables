@@ -122,6 +122,11 @@ Config.boost = {
 }
 -----------------------------------------------------
 
+-- Health and Stamina are Saved when Horse Takes Damage or Dies, is Returned at Stable or Flee'd
+-- This Setting will Additionaly Save Horse Health and Stamina on a Timed Interval
+Config.saveInterval = 60 -- Default: 60 / Time in Seconds / Set to 0 to Disable
+-----------------------------------------------------
+
 -- Horse Drinking
 Config.drinkLength = 20 -- Default: 20 / Time in Seconds for Animation to Run
 -----------------------------------------------------

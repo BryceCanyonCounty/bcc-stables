@@ -209,7 +209,7 @@ export default {
 
 .active-horse {
   color: #d89a2e;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 .mr {

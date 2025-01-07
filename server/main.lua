@@ -12,13 +12,15 @@ function LogToDiscord(name, description, embeds)
     end
 end
 
----@param data table
 Core.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
-    local Character = user.getUsedCharacter
-    local charid = Character.charIdentifier
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
+    local character = user.getUsedCharacter
+    local charid = character.charIdentifier
 
     local maxHorses = tonumber(Config.maxPlayerHorses)
     if data.isTrainer then
@@ -37,14 +39,14 @@ Core.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
         for color, colorCfg in pairs(horseCfg.colors) do
             if color == model then
                 if data.IsCash then
-                    if Character.money >= colorCfg.cashPrice then
+                    if character.money >= colorCfg.cashPrice then
                         cb(true)
                     else
                         Core.NotifyRightTip(src, _U('shortCash'), 4000)
                         cb(false)
                     end
                 else
-                    if Character.gold >= colorCfg.goldPrice then
+                    if character.gold >= colorCfg.goldPrice then
                         cb(true)
                     else
                         Core.NotifyRightTip(src, _U('shortGold'), 4000)
@@ -59,9 +61,12 @@ end)
 Core.Callback.Register('bcc-stables:RegisterHorse', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
-    local Character = user.getUsedCharacter
-    local charid = Character.charIdentifier
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
+    local character = user.getUsedCharacter
+    local charid = character.charIdentifier
 
     local maxHorses = tonumber(Config.maxPlayerHorses)
     if data.isTrainer then
@@ -76,7 +81,7 @@ Core.Callback.Register('bcc-stables:RegisterHorse', function(source, cb, data)
     end
 
     if data.IsCash and data.origin == 'tameHorse' then
-        if Character.money >= Config.regCost then
+        if character.money >= Config.regCost then
             cb(true)
         else
             Core.NotifyRightTip(src, _U('shortCash'), 4000)
@@ -88,20 +93,23 @@ end)
 RegisterNetEvent('bcc-stables:BuyTack', function(data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
-    local Character = user.getUsedCharacter
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
+    local character = user.getUsedCharacter
 
     if tonumber(data.cashPrice) > 0 and tonumber(data.goldPrice) > 0 then
         if tonumber(data.currencyType) == 0 then
-            if Character.money >= data.cashPrice then
-                Character.removeCurrency(0, data.cashPrice)
+            if character.money >= data.cashPrice then
+                character.removeCurrency(0, data.cashPrice)
             else
                 Core.NotifyRightTip(src, _U('shortCash'), 4000)
                 return
             end
         else
-            if Character.gold >= data.goldPrice then
-                Character.removeCurrency(1, data.goldPrice)
+            if character.gold >= data.goldPrice then
+                character.removeCurrency(1, data.goldPrice)
             else
                 Core.NotifyRightTip(src, _U('shortGold'), 4000)
                 return
@@ -115,7 +123,10 @@ end)
 Core.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -150,7 +161,10 @@ end)
 Core.Callback.Register('bcc-stables:SaveTamedHorse', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -173,7 +187,10 @@ end)
 Core.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -186,7 +203,10 @@ end)
 RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -197,10 +217,13 @@ RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
     LogToDiscord(charid, _U('discordHorseXPGain'))
 end)
 
-RegisterServerEvent('bcc-stables:SaveHorseStats', function(data, horseId)
+RegisterServerEvent('bcc-stables:SaveHorseStatsToDb', function(data, horseId)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -212,7 +235,10 @@ end)
 RegisterServerEvent('bcc-stables:SelectHorse', function(data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -234,7 +260,10 @@ end)
 Core.Callback.Register('bcc-stables:DeselectHorse', function(source, cb, horseId)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -247,7 +276,10 @@ end)
 Core.Callback.Register('bcc-stables:SetHorseDead', function(source, cb, horseId)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -260,48 +292,46 @@ end)
 Core.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
-    local identifier = character.identifier
-    local charid = character.charIdentifier
-    local data = nil
 
-    local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ? AND `identifier` = ? AND `dead` = ?',
-    { charid, identifier, 0 })
-    if #horses ~= 0 then
-        for i = 1, #horses do
-            if horses[i].selected == 1 then
-                data = {
-                    model = horses[i].model,
-                    name = horses[i].name,
-                    components = horses[i].components,
-                    id = horses[i].id,
-                    gender = horses[i].gender,
-                    xp = horses[i].xp,
-                    captured = horses[i].captured,
-                    health = horses[i].health,
-                    stamina = horses[i].stamina
-                }
-                cb(data)
-            end
-        end
-        if data == nil then
-            Core.NotifyRightTip(src, _U('noSelectedHorse'), 4000)
-            cb(false)
-        end
+    local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ? AND `identifier` = ? AND `dead` = ? AND `selected` = ?',
+    { character.charIdentifier, character.identifier, 0, 1 })
+
+    if #horses > 0 then
+        local horse = horses[1]
+        local horseData = {
+            model = horse.model,
+            name = horse.name,
+            components = horse.components,
+            id = horse.id,
+            gender = horse.gender,
+            xp = horse.xp,
+            captured = horse.captured,
+            health = horse.health,
+            stamina = horse.stamina
+        }
+        return cb(horseData)
     else
-        Core.NotifyRightTip(src, _U('noHorses'), 4000)
-        cb(false)
+        local noHorsesMessage = #horses == 0 and _U('noHorses') or _U('noSelectedHorse')
+        Core.NotifyRightTip(source, noHorsesMessage, 4000)
+        return cb(false)
     end
 end)
 
 RegisterNetEvent('bcc-stables:GetMyHorses', function()
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
-    local Character = user.getUsedCharacter
-    local identifier = Character.identifier
-    local charid = Character.charIdentifier
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
+    local character = user.getUsedCharacter
+    local identifier = character.identifier
+    local charid = character.charIdentifier
 
     local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ? AND `identifier` = ? AND `dead` = ?',
     { charid, identifier, 0 })
@@ -311,7 +341,10 @@ end)
 RegisterNetEvent('bcc-stables:UpdateComponents', function(encodedComponents, horseId, MyHorse_entity)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -324,7 +357,10 @@ end)
 Core.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -366,7 +402,10 @@ end
 RegisterServerEvent('bcc-stables:SellTamedHorse', function(hash)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local charid = character.charIdentifier
 
@@ -388,7 +427,10 @@ end)
 Core.Callback.Register('bcc-stables:CheckPlayerCooldown', function(source, cb, type)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local cooldown = Config.cooldown[type]
     local onList = false
@@ -415,14 +457,20 @@ RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
     -- Current Owner
     local src = source
     local curUser = Core.getUser(src)
-    if not curUser then return end
+    if not curUser then
+        print('User not found for source:', src)
+        return
+    end
     local curOwner = curUser.getUsedCharacter
     local curOwnerId = curOwner.identifier
     local curOwnerCharId = curOwner.charIdentifier
     local curOwnerName = curOwner.firstname .. " " .. curOwner.lastname
     -- New Owner
     local newUser = Core.getUser(serverId)
-    if not newUser then return end
+    if not newUser then
+        print('User not found for source:', serverId)
+        return
+    end
     local newOwner = newUser.getUsedCharacter
     local newOwnerId = newOwner.identifier
     local newOwnerCharId = newOwner.charIdentifier
@@ -473,7 +521,10 @@ end)
 RegisterServerEvent('bcc-stables:OpenInventory', function(id)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     exports.vorp_inventory:openInventory(src, 'horse_' .. tostring(id))
 end)
 
@@ -489,7 +540,10 @@ end
 exports.vorp_inventory:registerUsableItem(Config.flameHooveItem, function(data)
     local src = data.source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
 
     local item = exports.vorp_inventory:getItem(src, Config.flameHooveItem)
     exports.vorp_inventory:closeInventory(src)
@@ -534,14 +588,20 @@ end)
 RegisterServerEvent('bcc-stables:RemoveItem', function(item)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     exports.vorp_inventory:subItem(src, item, 1)
 end)
 
 exports.vorp_inventory:registerUsableItem(Config.horsebrush, function(data)
     local src = data.source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
 
     local item = exports.vorp_inventory:getItem(src, Config.horsebrush)
     exports.vorp_inventory:closeInventory(src)
@@ -573,7 +633,10 @@ end)
 exports.vorp_inventory:registerUsableItem(Config.lantern, function(data)
     local src = data.source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
 
     local item = exports.vorp_inventory:getItem(src, Config.lantern)
     exports.vorp_inventory:closeInventory(src)
@@ -605,7 +668,10 @@ end)
 Core.Callback.Register('bcc-stables:HorseReviveItem', function(source, cb)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local reviveItem = Config.reviver
 
     local item = exports.vorp_inventory:getItem(src, reviveItem)
@@ -620,41 +686,32 @@ end)
 Core.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer, site)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
-    local Character = user.getUsedCharacter
-    local charJob = Character.job
-    local jobGrade = Character.jobGrade
-
-    if not charJob then return cb(false) end
-
-    local jobConfig
-    if trainer then
-        jobConfig = Config.trainerJob
-    else
-        jobConfig = Stables[site].shop.jobs
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
     end
+    local character = user.getUsedCharacter
+
+    local jobConfig = trainer and Config.trainerJob or Stables[site].shop.jobs
 
     local hasJob = false
-    hasJob = CheckPlayerJob(charJob, jobGrade, jobConfig)
-    if hasJob then
-        cb({true, charJob})
-    else
-        cb({false, charJob})
-    end
-end)
-
-function CheckPlayerJob(charJob, jobGrade, jobConfig)
     for _, job in pairs(jobConfig) do
-        if (charJob == job.name) and (tonumber(jobGrade) >= tonumber(job.grade)) then
-            return true
+        if (character.job == job.name) and (tonumber(character.jobGrade) >= tonumber(job.grade)) then
+            hasJob = true
+            break
         end
     end
-end
+
+    cb({hasJob, character.job})
+end)
 
 RegisterNetEvent('vorp_core:instanceplayers', function(setRoom)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
 
     if setRoom == 0 then
         Wait(3000)
