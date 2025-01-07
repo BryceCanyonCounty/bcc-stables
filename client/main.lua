@@ -1717,12 +1717,12 @@ RegisterNUICallback('Horseshoes', function(data, cb)
 end)
 
 function SetComponent(entity, hash)
-    repeat Wait(0) until GetNumComponentsInPed(entity) ~= 0 -- Wait untill all previous components are loaded
+    repeat Wait(0) until GetNumComponentsInPed(entity) ~= 0 -- Wait until all previous components are loaded
 
     if hash and hash ~= "0" then
         local comp = tonumber(hash)
         Citizen.InvokeNative(0xD3A7B003ED343FD9, entity, comp, true, true, true) -- ApplyShopItemToPed
-        repeat Wait(0) until GetNumComponentsInPed(entity) ~= 0 -- Wait untill all components are loaded
+        repeat Wait(0) until GetNumComponentsInPed(entity) ~= 0 -- Wait until all components are loaded
 
         Citizen.InvokeNative(0xCC8CA3E88256E58F, entity, false, true, true, true, false) -- UpdatePedVariation
     end
