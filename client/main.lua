@@ -329,11 +329,12 @@ end)
 
 function GetSelectedHorse()
     local data = Core.Callback.TriggerAwait('bcc-stables:GetHorseData')
-    if data then
-        SpawnHorse(data)
-    else
-        print('No selected-horse data returned!')
+
+    if data == false then
+        return print('No selected-horse data returned!')
     end
+
+    SpawnHorse(data)
 end
 
 RegisterNUICallback('CloseStable', function(data, cb)
@@ -421,7 +422,7 @@ function SpawnHorse(data)
     end
     Spawning = true
 
-    if MyHorse then
+    if MyHorse ~= 0 then
         DeleteEntity(MyHorse)
         MyHorse = 0
     end
@@ -509,6 +510,7 @@ function SpawnHorse(data)
     if xp >= maxXp then
         MaxBonding = true
     end
+
     if Config.trainerOnly then
         CheckPlayerJob(true, nil)
         if IsTrainer then
@@ -542,7 +544,8 @@ function SpawnHorse(data)
         end
     end
 
-    SetHorseStats(data)
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, data.health)  -- SetAttributeCoreValue
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, data.stamina) -- SetAttributeCoreValue
 
     TriggerServerEvent('bcc-stables:RegisterInventory', MyHorseId, horseModel)
 
@@ -1052,11 +1055,10 @@ end)
 
 AddEventHandler('bcc-stables:HorseMonitor', function()
     local interval = Config.saveInterval * 1000
+    Wait(5000)
     while MyHorse ~= 0 do
+        SaveHorseStats(false)
         Wait(interval)
-        if MyHorse ~= 0 then
-            SaveHorseStats(false)
-        end
     end
 end)
 
@@ -1744,7 +1746,6 @@ RegisterNUICallback('sellHorse', function(data, cb)
 end)
 
 function SaveHorseStats(dead)
-    local data = {}
     local healthCore, staminaCore
 
     if not dead then
@@ -1755,16 +1756,11 @@ function SaveHorseStats(dead)
         staminaCore = Config.death.stamina
     end
 
-    data = {
+    local data = {
         health = healthCore,
         stamina = staminaCore,
     }
-    TriggerServerEvent('bcc-stables:SaveHorseStats', data, MyHorseId)
-end
-
-function SetHorseStats(data)
-    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, data.health)  -- SetAttributeCoreValue
-    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, data.stamina) -- SetAttributeCoreValue
+    TriggerServerEvent('bcc-stables:SaveHorseStatsToDb', data, MyHorseId)
 end
 
 -- View Horses While in Menu
@@ -2210,8 +2206,7 @@ AddEventHandler('onResourceStop', function(resourceName)
         MyEntity = 0
     end
 
-    if MyHorse then
-        SaveHorseStats(false)
+    if MyHorse ~= 0 then
         DeleteEntity(MyHorse)
         MyHorse = 0
     end
