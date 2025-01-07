@@ -1054,7 +1054,9 @@ AddEventHandler('bcc-stables:HorseMonitor', function()
     local interval = Config.saveInterval * 1000
     while MyHorse ~= 0 do
         Wait(interval)
-        SaveHorseStats(false)
+        if MyHorse ~= 0 then
+            SaveHorseStats(false)
+        end
     end
 end)
 
@@ -1130,12 +1132,11 @@ function OpenInventory(horsePedId, horseId, isLooting)
 end
 
 function FleeHorse()
-    Citizen.InvokeNative(0x22B0D0E37CCB840D, MyHorse, PlayerPedId(), 150.0, 10000, 6, 3.0) -- TaskSmartFleePed
-
     SaveHorseStats(false)
 
     GetControlOfHorse()
 
+    Citizen.InvokeNative(0x22B0D0E37CCB840D, MyHorse, PlayerPedId(), 150.0, 10000, 6, 3.0) -- TaskSmartFleePed
     Wait(10000)
     DeleteEntity(MyHorse)
     MyHorse = 0
