@@ -12,11 +12,13 @@ function LogToDiscord(name, description, embeds)
     end
 end
 
----@param data table
 Core.Callback.Register('bcc-stables:BuyHorse', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local charid = character.charIdentifier
 
@@ -59,7 +61,10 @@ end)
 Core.Callback.Register('bcc-stables:RegisterHorse', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local charid = character.charIdentifier
 
@@ -88,7 +93,10 @@ end)
 RegisterNetEvent('bcc-stables:BuyTack', function(data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
 
     if tonumber(data.cashPrice) > 0 and tonumber(data.goldPrice) > 0 then
@@ -115,7 +123,10 @@ end)
 Core.Callback.Register('bcc-stables:SaveNewHorse', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -150,7 +161,10 @@ end)
 Core.Callback.Register('bcc-stables:SaveTamedHorse', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -173,7 +187,10 @@ end)
 Core.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -186,7 +203,10 @@ end)
 RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -200,7 +220,10 @@ end)
 RegisterServerEvent('bcc-stables:SaveHorseStatsToDb', function(data, horseId)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -212,7 +235,10 @@ end)
 RegisterServerEvent('bcc-stables:SelectHorse', function(data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -234,7 +260,10 @@ end)
 Core.Callback.Register('bcc-stables:DeselectHorse', function(source, cb, horseId)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -247,7 +276,10 @@ end)
 Core.Callback.Register('bcc-stables:SetHorseDead', function(source, cb, horseId)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -260,7 +292,10 @@ end)
 Core.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
 
     local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ? AND `identifier` = ? AND `dead` = ? AND `selected` = ?',
@@ -290,7 +325,10 @@ end)
 RegisterNetEvent('bcc-stables:GetMyHorses', function()
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -303,7 +341,10 @@ end)
 RegisterNetEvent('bcc-stables:UpdateComponents', function(encodedComponents, horseId, MyHorse_entity)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -316,7 +357,10 @@ end)
 Core.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
@@ -358,7 +402,10 @@ end
 RegisterServerEvent('bcc-stables:SellTamedHorse', function(hash)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     local character = user.getUsedCharacter
     local charid = character.charIdentifier
 
@@ -380,7 +427,10 @@ end)
 Core.Callback.Register('bcc-stables:CheckPlayerCooldown', function(source, cb, type)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
     local cooldown = Config.cooldown[type]
     local onList = false
@@ -407,14 +457,20 @@ RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
     -- Current Owner
     local src = source
     local curUser = Core.getUser(src)
-    if not curUser then return end
+    if not curUser then
+        print('User not found for source:', src)
+        return
+    end
     local curOwner = curUser.getUsedCharacter
     local curOwnerId = curOwner.identifier
     local curOwnerCharId = curOwner.charIdentifier
     local curOwnerName = curOwner.firstname .. " " .. curOwner.lastname
     -- New Owner
     local newUser = Core.getUser(serverId)
-    if not newUser then return end
+    if not newUser then
+        print('User not found for source:', serverId)
+        return
+    end
     local newOwner = newUser.getUsedCharacter
     local newOwnerId = newOwner.identifier
     local newOwnerCharId = newOwner.charIdentifier
@@ -465,7 +521,10 @@ end)
 RegisterServerEvent('bcc-stables:OpenInventory', function(id)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     exports.vorp_inventory:openInventory(src, 'horse_' .. tostring(id))
 end)
 
@@ -481,7 +540,10 @@ end
 exports.vorp_inventory:registerUsableItem(Config.flameHooveItem, function(data)
     local src = data.source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
 
     local item = exports.vorp_inventory:getItem(src, Config.flameHooveItem)
     exports.vorp_inventory:closeInventory(src)
@@ -526,14 +588,20 @@ end)
 RegisterServerEvent('bcc-stables:RemoveItem', function(item)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
     exports.vorp_inventory:subItem(src, item, 1)
 end)
 
 exports.vorp_inventory:registerUsableItem(Config.horsebrush, function(data)
     local src = data.source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
 
     local item = exports.vorp_inventory:getItem(src, Config.horsebrush)
     exports.vorp_inventory:closeInventory(src)
@@ -565,7 +633,10 @@ end)
 exports.vorp_inventory:registerUsableItem(Config.lantern, function(data)
     local src = data.source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
 
     local item = exports.vorp_inventory:getItem(src, Config.lantern)
     exports.vorp_inventory:closeInventory(src)
@@ -597,7 +668,10 @@ end)
 Core.Callback.Register('bcc-stables:HorseReviveItem', function(source, cb)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local reviveItem = Config.reviver
 
     local item = exports.vorp_inventory:getItem(src, reviveItem)
@@ -612,7 +686,10 @@ end)
 Core.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer, site)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+    if not user then
+        print('User not found for source:', src)
+        return cb(false)
+    end
     local character = user.getUsedCharacter
 
     local jobConfig = trainer and Config.trainerJob or Stables[site].shop.jobs
@@ -631,7 +708,10 @@ end)
 RegisterNetEvent('vorp_core:instanceplayers', function(setRoom)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+    if not user then
+        print('User not found for source:', src)
+        return
+    end
 
     if setRoom == 0 then
         Wait(3000)
