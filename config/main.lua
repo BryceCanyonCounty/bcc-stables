@@ -51,12 +51,15 @@ Config.horseFood = {
 }
 -----------------------------------------------------
 
---- Horse Flaming Hooves 
-Config.flameHooveItem = 'diamond' -- The item name for flaming hooves
-Config.flameHooveDurability = true -- Enable or disable durability for the flaming hooves item
-Config.flameHoovesActive = true
-Config.flameHooveMaxDurability = 100 -- Maximum durability for the item
-Config.flameHooveDurabilityPerUse = 5 -- Durability decrease per use
+--- Horse Flaming Hooves
+Config.flamingHooves = {
+    active = true, -- Enable or disable Flaming Hooves
+    item = 'diamond', -- Item Name in Database to Use
+    duration = 2, -- Duration in Minutes for Flaming Hooves Effect
+    durability = true, -- Enable or disable durability for the flaming hooves item
+    maxDurability = 100, -- Maximum durability for the item
+    durabilityPerUse = 5, -- Durability decrease per use
+}
 -----------------------------------------------------
 
 Config.reviver = 'consumable_horse_reviver'
@@ -122,7 +125,7 @@ Config.boost = {
 }
 -----------------------------------------------------
 
--- Health and Stamina are Saved when Horse Takes Damage or Dies, is Returned at Stable or Flee'd
+-- Health and Stamina are Saved when Horse is Returned at Stable or Flee'd
 -- This Setting will Additionaly Save Horse Health and Stamina on a Timed Interval
 Config.saveInterval = 60 -- Default: 60 / Time in Seconds / Set to 0 to Disable
 -----------------------------------------------------
@@ -151,7 +154,7 @@ Config.trainingDistance = 100  -- Default: 100 / Distance to Travel to Earn XP
 Config.displayHorseBreed = true -- Default: true / Display Breed of Horse Player Mounted
 
 Config.allowKeep  = true -- Default: true / Allow to Register Tamed Horse
-Config.regCost    = 25   -- Default: 25 / Cost of Registering a Tamed Horse
+Config.regCost    = 25   -- Default: 25 / Cost of Registering a Tamed Horse in Cash
 
 Config.allowSale      = true -- Default: true / Allow Player to Sell Tamed Horse
 Config.tamedSellPrice = 0.30 -- Default: 0.30 / Sell Price is 30% of Horse cashPrice in Stable
