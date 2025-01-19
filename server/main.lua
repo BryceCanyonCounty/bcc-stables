@@ -512,34 +512,44 @@ if Config.flamingHooves.active then
             local maxDurability = Config.flamingHooves.maxDurability or 100
             local useDurability = Config.flamingHooves.durabilityPerUse or 1
             local itemMetadata = item.metadata
-            local currentDurability = itemMetadata.durability or maxDurability
+            local currentDurability = itemMetadata.durability
 
+            -- Initialize durability if it doesn't exist
+            if not currentDurability then
+                currentDurability = maxDurability
+                local newData = {
+                    description = _U('flameHooveDesc') .. '</br>' .. _U('durability') .. currentDurability .. '%',
+                    durability = currentDurability,
+                    id = item.id
+                }
+                exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
+            end
+
+            -- Check if durability is below the usage threshold
             if currentDurability < useDurability then
                 exports.vorp_inventory:subItemID(src, item.id)
-                Core.NotifyRightTip(src, _U('flameHooveBroken'), 4000)
+                Core.NotifyRightTip(src, _U('itemBroke'), 4000)
                 return
             end
         end
 
-        -- Trigger a client-side event to check the distance
-        TriggerClientEvent('bcc-stables:checkFlamingHoovesDistance', src)
+        TriggerClientEvent('bcc-stables:FlamingHooves', src)
     end)
 
-    RegisterNetEvent('bcc-stables:adjustDurability')
-    AddEventHandler('bcc-stables:adjustDurability', function(source)
+    RegisterServerEvent('bcc-stables:FlamingHoovesDurability', function()
         local src = source
         local user = Core.getUser(src)
         if not user then return end
 
         local item = exports.vorp_inventory:getItem(src, Config.flamingHooves.item)
-        local maxDurability = Config.flamingHooves.maxDurability or 100
         local useDurability = Config.flamingHooves.durabilityPerUse or 1
         local itemMetadata = item.metadata
         local newDurability = itemMetadata.durability - useDurability
 
+        -- Check if durability is below the usage threshold or update the durability
         if newDurability < useDurability then
             exports.vorp_inventory:subItemID(src, item.id)
-            Core.NotifyRightTip(src, _U('flameHooveBroken'), 4000)
+            Core.NotifyRightTip(src, _U('itemBroke'), 4000)
         else
             local newData = {
                 description = _U('flameHooveDesc') .. '</br>' .. _U('durability') .. newDurability .. '%',
