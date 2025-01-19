@@ -339,16 +339,19 @@ end
 
 RegisterNUICallback('CloseStable', function(data, cb)
     cb('ok')
+
     SendNUIMessage({
         action = 'hide'
     })
     SetNuiFocus(false, false)
 
     Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Leaderboard_Hide', 'MP_Leaderboard_Sounds', true, 0) -- PlaySoundFrontend
+
     if ShopEntity ~= 0 then
         DeleteEntity(ShopEntity)
         ShopEntity = 0
     end
+
     if MyEntity ~= 0 then
         DeleteEntity(MyEntity)
         MyEntity = 0
@@ -361,14 +364,17 @@ RegisterNUICallback('CloseStable', function(data, cb)
     ClearPedTasksImmediately(PlayerPedId())
 
     if data.MenuAction == 'save' then
-        TriggerServerEvent('bcc-stables:BuyTack', data)
+        local result = Core.Callback.TriggerAwait('bcc-stables:BuyTack', data)
+        if result then
+            SaveComps()
+        end
     else
         return
     end
 end)
 
 -- Save Horse Tack to Database
-RegisterNetEvent('bcc-stables:SaveComps', function()
+function SaveComps()
     local compData = {
         SaddlesUsing,
         SaddleclothsUsing,
@@ -386,9 +392,14 @@ RegisterNetEvent('bcc-stables:SaveComps', function()
     }
     local compDataEncoded = json.encode(compData)
     if compDataEncoded ~= '[]' then
-        TriggerServerEvent('bcc-stables:UpdateComponents', compDataEncoded, MyEntityID, MyEntity)
+        local result = Core.Callback.TriggerAwait('bcc-stables:UpdateComponents', compDataEncoded, MyEntityID)
+        if result then
+            for _, component in pairs(compData) do
+                SetComponent(MyEntity, component)
+            end
+        end
     end
-end)
+end
 
 -- Reopen Menu After Sell or Failed Purchase
 function StableMenu()
@@ -408,13 +419,6 @@ function StableMenu()
     SetNuiFocus(true, true)
     TriggerServerEvent('bcc-stables:GetMyHorses')
 end
-
-RegisterNetEvent('bcc-stables:SetComponents', function(horseEntity, encodedComponents)
-    local components = json.decode(encodedComponents)
-    for _, component in pairs(components) do
-        SetComponent(horseEntity, component)
-    end
-end)
 
 function SpawnHorse(data)
     if Spawning then
@@ -791,10 +795,17 @@ end
 CreateThread(function()
     while true do
         Wait(0)
+
+        if IsEntityDead(MyHorse) and not InWrithe then
+            InWrithe = true
+            TriggerEvent('bcc-stables:ManageHorseDeath')
+        end
+
         local size = GetNumberOfEvents(0)
         if size > 0 then
             for i = 0, size - 1 do
                 local event = Citizen.InvokeNative(0xA85E614430EFF816, 0, i) -- GetEventAtIndex
+
                 if event == 1327216456 then -- EVENT_PED_WHISTLE
                     local eventDataSize = 2
                     local eventDataStruct = DataView.ArrayBuffer(128)
@@ -811,6 +822,7 @@ CreateThread(function()
                             end
                         end
                     end
+
                 elseif event == 218595333 then -- EVENT_HORSE_BROKEN
                     local eventDataSize = 3
                     local eventDataStruct = DataView.ArrayBuffer(128)
@@ -826,28 +838,44 @@ CreateThread(function()
                             Entity(tamedPedId).state:set('netId', tamedNetId, true)
                         end
                     end
-                elseif event == 402722103 then -- EVENT_ENTITY_DAMAGED 
-                    local eventDataSize = 9
-                    local eventDataStruct = DataView.ArrayBuffer(128)
-                    eventDataStruct:SetInt32(0, 0)  -- Damaged Entity Id
-                    eventDataStruct:SetInt32(8, 0)  -- Object/Ped Id that Damaged Entity
-                    eventDataStruct:SetInt32(16, 0) -- Weapon Hash that Damaged Entity
-                    eventDataStruct:SetInt32(24, 0) -- Ammo Hash that Damaged Entity
-                    eventDataStruct:SetInt32(32, 0) -- (float) Damage Amount
-                    eventDataStruct:SetInt32(40, 0) -- Unknown
-                    eventDataStruct:SetInt32(48, 0) -- (float) Entity Coord x
-                    eventDataStruct:SetInt32(56, 0) -- (float) Entity Coord y
-                    eventDataStruct:SetInt32(64, 0) -- (float) Entity Coord z
-
-                    local data = Citizen.InvokeNative(0x57EC5FA4D4D6AFCA, 0, i, eventDataStruct:Buffer(), eventDataSize) -- GetEventData
-                    if data then
-                        if eventDataStruct:GetInt32(0) == MyHorse then
-                            TriggerEvent('bcc-stables:CheckHorseHealth')
-                        end
-                    end
                 end
             end
         end
+    end
+end)
+
+AddEventHandler('bcc-stables:ManageHorseDeath', function()
+    -- Resurrect and set the horse in writhe
+    Citizen.InvokeNative(0x71BC8E838B9C6035, MyHorse) -- ResurrectPed
+    Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 136, false)-- SetPedConfigFlag / CannotBeMounted
+    Citizen.InvokeNative(0x8C038A39C4A4B6D6, MyHorse, 0, 0) -- TaskAnimalWrithe
+    Wait(100)
+    Citizen.InvokeNative(0x925A160133003AC6, MyHorse, true) -- SetPausePedWritheBleedout
+    Citizen.InvokeNative(0xA3DB37EDF9A74635, PlayerId(), MyHorse, 35, 1, true) -- TARGET_INFO
+    PromptDelete(HorseDrink)
+    PromptDelete(HorseSleep)
+    PromptDelete(HorseRest)
+    PromptDelete(HorseWallow)
+    PromptsStarted = false
+
+    -- Check horse death and handle deselection/permanent death
+    while MyHorse ~= 0 do
+        if IsEntityDead(MyHorse) and InWrithe then
+            SaveHorseStats(true)
+
+            local action = (Config.death.permanent and 'dead') or (Config.death.deselect and 'deselect') or nil
+            if action then
+                TriggerServerEvent('bcc-stables:UpdateHorseStatus', MyHorseId, action)
+                Core.NotifyRightTip(_U('horseDied'), 4000)
+            end
+
+            Wait(5000)
+            DeleteEntity(MyHorse)
+            MyHorse = 0
+            InWrithe = false
+            break
+        end
+        Wait(1000)
     end
 end)
 
@@ -1059,48 +1087,6 @@ AddEventHandler('bcc-stables:HorseMonitor', function()
     while MyHorse ~= 0 do
         SaveHorseStats(false)
         Wait(interval)
-    end
-end)
-
--- Triggered when Horse is Damaged
-AddEventHandler('bcc-stables:CheckHorseHealth', function()
-    if Citizen.InvokeNative(0x3317DEDB88C95038, MyHorse, false) then -- IsPedDeadOrDying
-        if not InWrithe then
-            Citizen.InvokeNative(0x71BC8E838B9C6035, MyHorse) -- ResurrectPed
-            Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 136, false)-- SetPedConfigFlag / CannotBeMounted
-            Citizen.InvokeNative(0x8C038A39C4A4B6D6, MyHorse, 0, 0) -- TaskAnimalWrithe
-            Wait(100)
-            Citizen.InvokeNative(0x925A160133003AC6, MyHorse, true) -- SetPausePedWritheBleedout
-            InWrithe = true
-            Citizen.InvokeNative(0xA3DB37EDF9A74635, PlayerId(), MyHorse, 35, 1, true) -- TARGET_INFO
-            PromptDelete(HorseDrink)
-            PromptDelete(HorseSleep)
-            PromptDelete(HorseRest)
-            PromptDelete(HorseWallow)
-            PromptsStarted = false
-        else
-            if not IsEntityDead(MyHorse) then return end
-
-            local deselected, permaDead = false, false
-            SaveHorseStats(true)
-
-            if Config.death.deselect then
-                deselected = Core.Callback.TriggerAwait('bcc-stables:DeselectHorse', MyHorseId)
-            end
-
-            if Config.death.permanent then
-                permaDead = Core.Callback.TriggerAwait('bcc-stables:SetHorseDead', MyHorseId)
-            end
-
-            if deselected or permaDead then
-                Core.NotifyRightTip(_U('horseDied'), 4000)
-            end
-
-            Wait(5000)
-            DeleteEntity(MyHorse)
-            MyHorse = 0
-            InWrithe = false
-        end
     end
 end)
 
@@ -1482,7 +1468,8 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Core_Fill_Up', 'Consumption_Sounds', true, 0) -- PlaySoundFrontend
 end)
 
-RegisterNetEvent('bcc-stables:FlamedHoove', function()
+RegisterNetEvent('bcc-stables:checkFlamingHoovesDistance')
+AddEventHandler('bcc-stables:checkFlamingHoovesDistance', function()
     if not MyHorse or MyHorse == 0 then
         return Core.NotifyRightTip(_U('noHorse'), 4000)
     end
@@ -1497,9 +1484,24 @@ RegisterNetEvent('bcc-stables:FlamedHoove', function()
 
     ClearPedTasks(playerPed)
 
-    Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 207, true)
+    Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 207, true) -- SetPedConfigFlag / PCF_FlamingHoovesActive
     Core.NotifyRightTip(_U('flameHoovesActivated'), 4000)
+
+    -- Check if durability system is enabled before adjusting durability
+    if Config.flamingHooves.durability then
+        TriggerServerEvent('bcc-stables:adjustDurability')
+    end
+
+    -- Set a timer to deactivate the flaming hooves effect after the specified duration
+    local duration = Config.flamingHooves.duration * 60 * 1000 -- Convert minutes to milliseconds
+    Citizen.SetTimeout(duration, function()
+        if DoesEntityExist(MyHorse) then
+            Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 207, false) -- Deactivate FlamingHooves
+            Core.NotifyRightTip(_U('flameHoovesDeactivated'), 4000)
+        end
+    end)
 end)
+
 
 
 RegisterNetEvent('bcc-stables:UseLantern', function()
