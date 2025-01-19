@@ -49,6 +49,7 @@ Locales["th_lang"] = {
     trainerRegHorse = "เฉพาะผู้ฝึกสอนเท่านั้นที่สามารถลงทะเบียนม้าได้!",
     horsebrushDesc = "แปรงสำหรับแปรงม้า",
     durability = "ความทนทาน: ",
+    itemBroke = "Your item has broken!",
     noReviver = "คุณต้องมีขวดยาฟื้นฟูม้า!",
     horseInfoCoat = 'สีม้า: ',
     horseInfoHealth = 'สุขภาพ: ',

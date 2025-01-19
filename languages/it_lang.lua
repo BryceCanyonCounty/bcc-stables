@@ -49,6 +49,7 @@ Locales["it_lang"] = {
     trainerRegHorse = "Only Trainers can register horses!",
     horsebrushDesc = "A brush used for grooming horses.",
     durability = "Durability: ",
+    itemBroke = "Your item has broken!",
     noReviver = "You need a bottle of horse reviver!",
     horseInfoCoat = 'Coat: ',
     horseInfoHealth = 'Health: ',

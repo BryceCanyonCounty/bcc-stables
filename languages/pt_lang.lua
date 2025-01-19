@@ -49,6 +49,7 @@ Locales["pt_lang"] = {
     trainerRegHorse = "Só os Treinadores podem registar cavalos!",
     horsebrushDesc = "Escova de cavalos utilizada.",
     durability = "Durabilidade: ",
+    itemBroke = "Your item has broken!",
     noReviver = "Precisas de um medicamento para reviver cavalos!",
     horseInfoCoat = 'Pelagem: ',
     horseInfoHealth = 'Vida: ',
