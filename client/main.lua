@@ -31,7 +31,7 @@ local MyHorse, ShopEntity, MyEntity = 0, 0, 0
 local StableName, HorseName, Site
 local MyEntityID, MyHorseId, MyModel
 local InMenu, HasJob, UsingLantern, PromptsStarted = false, false, false, false
-local Drinking, Spawning, Sending, Cam, InWrithe = false, false, false, false, false
+local Drinking, Spawning, Sending, Cam, InWrithe, Activated = false, false, false, false, false, false
 
 CreateThread(function()
     StartPrompts()
@@ -570,6 +570,7 @@ function SpawnHorse(data)
         TriggerEvent('bcc-stables:HorseMonitor')
     end
 
+    Activated = false
     InWrithe = false
     LastLoc = nil
     UsingLantern = false
@@ -1468,11 +1469,12 @@ RegisterNetEvent('bcc-stables:FeedHorse', function(item)
     Citizen.InvokeNative(0x67C540AA08E4A6F5, 'Core_Fill_Up', 'Consumption_Sounds', true, 0) -- PlaySoundFrontend
 end)
 
-RegisterNetEvent('bcc-stables:checkFlamingHoovesDistance')
-AddEventHandler('bcc-stables:checkFlamingHoovesDistance', function()
+RegisterNetEvent('bcc-stables:FlamingHooves', function()
     if not MyHorse or MyHorse == 0 then
         return Core.NotifyRightTip(_U('noHorse'), 4000)
     end
+
+    if Activated then return end
 
     local playerPed = PlayerPedId()
     local playerCoords = GetEntityCoords(playerPed)
@@ -1486,10 +1488,11 @@ AddEventHandler('bcc-stables:checkFlamingHoovesDistance', function()
 
     Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 207, true) -- SetPedConfigFlag / PCF_FlamingHoovesActive
     Core.NotifyRightTip(_U('flameHoovesActivated'), 4000)
+    Activated = true
 
     -- Check if durability system is enabled before adjusting durability
     if Config.flamingHooves.durability then
-        TriggerServerEvent('bcc-stables:adjustDurability')
+        TriggerServerEvent('bcc-stables:FlamingHoovesDurability')
     end
 
     -- Set a timer to deactivate the flaming hooves effect after the specified duration
@@ -1498,6 +1501,7 @@ AddEventHandler('bcc-stables:checkFlamingHoovesDistance', function()
         if DoesEntityExist(MyHorse) then
             Citizen.InvokeNative(0x1913FE4CBF41C463, MyHorse, 207, false) -- Deactivate FlamingHooves
             Core.NotifyRightTip(_U('flameHoovesDeactivated'), 4000)
+            Activated = false
         end
     end)
 end)
