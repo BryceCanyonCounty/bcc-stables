@@ -67,6 +67,7 @@ Locales["th_lang"] = {
     horseInfoTrickLvl_4a = "ท่า: เต้น | space",
     horseInfoTrickLvl_4b = "เดินข้าง | space + A หรือ D",
     horseDied = "ม้าของคุณเสียชีวิตแล้ว กลับไปที่คอกม้าเพื่อเลือกม้าใหม่",
+    horseWrithe = "Your horse needs help!",
     -- Discord Alerts
     discordHorsePurchased = "ซื้อม้าแล้ว!",
     discordTamedPurchased = "บันทึกม้าที่เชื่องแล้ว!",
