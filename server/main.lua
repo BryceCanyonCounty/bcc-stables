@@ -209,7 +209,7 @@ Core.Callback.Register('bcc-stables:UpdateHorseName', function(source, cb, data)
     cb(true)
 end)
 
-RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
+RegisterNetEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -224,7 +224,7 @@ RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
     LogToDiscord(charid, _U('discordHorseXPGain'))
 end)
 
-RegisterServerEvent('bcc-stables:SaveHorseStatsToDb', function(health, stamina, horseId)
+RegisterNetEvent('bcc-stables:SaveHorseStatsToDb', function(health, stamina, horseId)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -237,7 +237,7 @@ RegisterServerEvent('bcc-stables:SaveHorseStatsToDb', function(health, stamina, 
     { health, stamina, horseId, identifier, charid })
 end)
 
-RegisterServerEvent('bcc-stables:SelectHorse', function(data)
+RegisterNetEvent('bcc-stables:SelectHorse', function(data)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -256,7 +256,7 @@ RegisterServerEvent('bcc-stables:SelectHorse', function(data)
     { 1, selectedHorseId, charid, identifier })
 end)
 
-RegisterServerEvent('bcc-stables:SetHorseWrithe', function(horseId)
+RegisterNetEvent('bcc-stables:SetHorseWrithe', function(horseId)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -270,7 +270,7 @@ RegisterServerEvent('bcc-stables:SetHorseWrithe', function(horseId)
 end)
 
 -- Update Horse Selected and Dead Status After Death Event
-RegisterServerEvent('bcc-stables:UpdateHorseStatus', function(horseId, action)
+RegisterNetEvent('bcc-stables:UpdateHorseStatus', function(horseId, action)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -406,7 +406,7 @@ Core.Callback.Register('bcc-stables:SellMyHorse', function(source, cb, data)
     cb(false)
 end)
 
-RegisterServerEvent('bcc-stables:SellTamedHorse', function(hash)
+RegisterNetEvent('bcc-stables:SellTamedHorse', function(hash)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -430,7 +430,7 @@ RegisterServerEvent('bcc-stables:SellTamedHorse', function(hash)
     end
 end)
 
-RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
+RegisterNetEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
     -- Current Owner
     local src = source
     local curUser = Core.getUser(src)
@@ -466,7 +466,7 @@ RegisterServerEvent('bcc-stables:SaveHorseTrade', function(serverId, horseId)
     end
 end)
 
-RegisterServerEvent('bcc-stables:RegisterInventory', function(id, model)
+RegisterNetEvent('bcc-stables:RegisterInventory', function(id, model)
     local idStr = 'horse_' .. tostring(id)
     local isRegistered = exports.vorp_inventory:isCustomInventoryRegistered(idStr)
     if isRegistered then return end
@@ -492,7 +492,7 @@ RegisterServerEvent('bcc-stables:RegisterInventory', function(id, model)
     end
 end)
 
-RegisterServerEvent('bcc-stables:OpenInventory', function(id)
+RegisterNetEvent('bcc-stables:OpenInventory', function(id)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -548,7 +548,7 @@ if Config.flamingHooves.active then
         TriggerClientEvent('bcc-stables:FlamingHooves', src)
     end)
 
-    RegisterServerEvent('bcc-stables:FlamingHoovesDurability', function()
+    RegisterNetEvent('bcc-stables:FlamingHoovesDurability', function()
         local src = source
         local user = Core.getUser(src)
         if not user then return end
@@ -573,7 +573,7 @@ if Config.flamingHooves.active then
     end)
 end
 
-RegisterServerEvent('bcc-stables:RemoveItem', function(item)
+RegisterNetEvent('bcc-stables:RemoveItem', function(item)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -617,7 +617,7 @@ exports.vorp_inventory:registerUsableItem(Config.horsebrush.item, function(data)
     TriggerClientEvent('bcc-stables:BrushHorse', src)
 end)
 
-RegisterServerEvent('bcc-stables:HorseBrushDurability', function()
+RegisterNetEvent('bcc-stables:HorseBrushDurability', function()
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -641,35 +641,63 @@ RegisterServerEvent('bcc-stables:HorseBrushDurability', function()
     end
 end)
 
-exports.vorp_inventory:registerUsableItem(Config.lantern, function(data)
+exports.vorp_inventory:registerUsableItem(Config.lantern.item, function(data)
     local src = data.source
     local user = Core.getUser(src)
     if not user then return end
 
-    local item = exports.vorp_inventory:getItem(src, Config.lantern)
+    local item = exports.vorp_inventory:getItem(src, Config.lantern.item)
     exports.vorp_inventory:closeInventory(src)
-    TriggerClientEvent('bcc-stables:UseLantern', src)
 
-    if not Config.lanternDurability then return end
+    if Config.lantern.durability then
+        local maxDurability = Config.lantern.maxDurability or 100
+        local useDurability = Config.lantern.durabilityPerUse or 1
+        local itemMetadata = item.metadata
+        local currentDurability = itemMetadata.durability
 
-    if not next(item.metadata) then
-        local newData = {
-            description = _U('durability') .. 100 - 1 .. '%',
-            durability = 100 - 1,
-            id = item.id
-        }
-        exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
-    else
-        if item.metadata.durability < 1 then
-            exports.vorp_inventory:subItemID(src, item.id)
-        else
+        -- Initialize durability if it doesn't exist
+        if not currentDurability then
+            currentDurability = maxDurability
             local newData = {
-                description = _U('durability') .. item.metadata.durability - 1 .. '%',
-                durability = item.metadata.durability - 1,
+                description = _U('lanternDesc') .. '</br>' .. _U('durability') .. currentDurability .. '%',
+                durability = currentDurability,
                 id = item.id
             }
             exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
         end
+
+        -- Check if durability is below the usage threshold
+        if currentDurability < useDurability then
+            exports.vorp_inventory:subItemID(src, item.id)
+            Core.NotifyRightTip(src, _U('itemBroke'), 4000)
+            return
+        end
+    end
+
+    TriggerClientEvent('bcc-stables:UseLantern', src)
+end)
+
+RegisterNetEvent('bcc-stables:LanternDurability', function()
+    local src = source
+    local user = Core.getUser(src)
+    if not user then return end
+
+    local item = exports.vorp_inventory:getItem(src, Config.lantern.item)
+    local useDurability = Config.lantern.durabilityPerUse or 1
+    local itemMetadata = item.metadata
+    local newDurability = itemMetadata.durability - useDurability
+
+    -- Check if durability is below the usage threshold or update the durability
+    if newDurability < useDurability then
+        exports.vorp_inventory:subItemID(src, item.id)
+        Core.NotifyRightTip(src, _U('itemBroke'), 4000)
+    else
+        local newData = {
+            description = _U('lanternDesc') .. '</br>' .. _U('durability') .. newDurability .. '%',
+            durability = newDurability,
+            id = item.id
+        }
+        exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
     end
 end)
 
