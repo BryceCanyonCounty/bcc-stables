@@ -224,7 +224,7 @@ RegisterServerEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
     LogToDiscord(charid, _U('discordHorseXPGain'))
 end)
 
-RegisterServerEvent('bcc-stables:SaveHorseStatsToDb', function(data, horseId)
+RegisterServerEvent('bcc-stables:SaveHorseStatsToDb', function(health, stamina, horseId)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -232,8 +232,6 @@ RegisterServerEvent('bcc-stables:SaveHorseStatsToDb', function(data, horseId)
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
-    local health = data.health
-    local stamina = data.stamina
 
     MySQL.query.await('UPDATE `player_horses` SET `health` = ?, `stamina` = ? WHERE id = ? AND `identifier` = ? AND `charid` = ?',
     { health, stamina, horseId, identifier, charid })
@@ -258,6 +256,19 @@ RegisterServerEvent('bcc-stables:SelectHorse', function(data)
     { 1, selectedHorseId, charid, identifier })
 end)
 
+RegisterServerEvent('bcc-stables:SetHorseWrithe', function(horseId)
+    local src = source
+    local user = Core.getUser(src)
+    if not user then return end
+
+    local character = user.getUsedCharacter
+    local identifier = character.identifier
+    local charid = character.charIdentifier
+
+    MySQL.query.await('UPDATE `player_horses` SET `writhe` = ? WHERE `id` = ? AND `identifier` = ? AND `charid` = ?',
+    { 1, horseId, identifier, charid })
+end)
+
 -- Update Horse Selected and Dead Status After Death Event
 RegisterServerEvent('bcc-stables:UpdateHorseStatus', function(horseId, action)
     local src = source
@@ -268,11 +279,11 @@ RegisterServerEvent('bcc-stables:UpdateHorseStatus', function(horseId, action)
     local identifier = character.identifier
     local charid = character.charIdentifier
 
-    local selected = 0
+    local selected = (action == 'dead' or action == 'deselect') and 0 or 1
     local dead = action == 'dead' and 1 or 0
 
-    MySQL.query.await('UPDATE `player_horses` SET `selected` = ?, `dead` = ? WHERE `id` = ? AND `identifier` = ? AND `charid` = ?',
-    { selected, dead, horseId, identifier, charid })
+    MySQL.query.await('UPDATE `player_horses` SET `selected` = ?, `writhe` = ?, `dead` = ? WHERE `id` = ? AND `identifier` = ? AND `charid` = ?',
+    { selected, 0, dead, horseId, identifier, charid })
 end)
 
 Core.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
@@ -312,7 +323,8 @@ Core.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
         xp = selectedHorse.xp,
         captured = selectedHorse.captured,
         health = selectedHorse.health,
-        stamina = selectedHorse.stamina
+        stamina = selectedHorse.stamina,
+        writhe = selectedHorse.writhe
     }
     return cb(horseData)
 end)
@@ -561,44 +573,71 @@ if Config.flamingHooves.active then
     end)
 end
 
-
-
 RegisterServerEvent('bcc-stables:RemoveItem', function(item)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
+
     exports.vorp_inventory:subItem(src, item, 1)
 end)
 
-exports.vorp_inventory:registerUsableItem(Config.horsebrush, function(data)
+exports.vorp_inventory:registerUsableItem(Config.horsebrush.item, function(data)
     local src = data.source
     local user = Core.getUser(src)
     if not user then return end
 
-    local item = exports.vorp_inventory:getItem(src, Config.horsebrush)
+    local item = exports.vorp_inventory:getItem(src, Config.horsebrush.item)
     exports.vorp_inventory:closeInventory(src)
-    TriggerClientEvent('bcc-stables:BrushHorse', src)
 
-    if not Config.horsebrushDurability then return end
+    if Config.horsebrush.durability then
+        local maxDurability = Config.horsebrush.maxDurability or 100
+        local useDurability = Config.horsebrush.durabilityPerUse or 1
+        local itemMetadata = item.metadata
+        local currentDurability = itemMetadata.durability
 
-    if not next(item.metadata) then
-        local newData = {
-            description = _U('horsebrushDesc') .. '</br>' .. _U('durability') .. 100 - 1 .. '%',
-            durability = 100 - 1,
-            id = item.id
-        }
-        exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
-    else
-        if item.metadata.durability < 1 then
-            exports.vorp_inventory:subItemID(src, item.id)
-        else
+        -- Initialize durability if it doesn't exist
+        if not currentDurability then
+            currentDurability = maxDurability
             local newData = {
-                description = _U('horsebrushDesc') .. '</br>' .. _U('durability') .. item.metadata.durability - 1 .. '%',
-                durability = item.metadata.durability - 1,
+                description = _U('horsebrushDesc') .. '</br>' .. _U('durability') .. currentDurability .. '%',
+                durability = currentDurability,
                 id = item.id
             }
             exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
         end
+
+        -- Check if durability is below the usage threshold
+        if currentDurability < useDurability then
+            exports.vorp_inventory:subItemID(src, item.id)
+            Core.NotifyRightTip(src, _U('itemBroke'), 4000)
+            return
+        end
+    end
+
+    TriggerClientEvent('bcc-stables:BrushHorse', src)
+end)
+
+RegisterServerEvent('bcc-stables:HorseBrushDurability', function()
+    local src = source
+    local user = Core.getUser(src)
+    if not user then return end
+
+    local item = exports.vorp_inventory:getItem(src, Config.horsebrush.item)
+    local useDurability = Config.horsebrush.durabilityPerUse or 1
+    local itemMetadata = item.metadata
+    local newDurability = itemMetadata.durability - useDurability
+
+    -- Check if durability is below the usage threshold or update the durability
+    if newDurability < useDurability then
+        exports.vorp_inventory:subItemID(src, item.id)
+        Core.NotifyRightTip(src, _U('itemBroke'), 4000)
+    else
+        local newData = {
+            description = _U('horsebrushDesc') .. '</br>' .. _U('durability') .. newDurability .. '%',
+            durability = newDurability,
+            id = item.id
+        }
+        exports.vorp_inventory:setItemMetadata(src, item.id, newData, 1)
     end
 end)
 
