@@ -45,8 +45,12 @@ Config.horsebrush = {
     durabilityPerUse = 1, -- Durability decrease per use
 }
 
-Config.lantern = 'oil_lantern'
-Config.lanternDurability = true
+Config.lantern = {
+    item = 'oil_lantern', -- Item Name in Database
+    durability = true,    -- Enable or disable durability for the lantern item
+    maxDurability = 100,  -- Maximum durability for the item
+    durabilityPerUse = 1, -- Durability decrease per use
+}
 
 Config.horseFood = {
     'consumable_haycube',
