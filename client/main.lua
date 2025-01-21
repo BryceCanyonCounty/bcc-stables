@@ -821,7 +821,6 @@ CreateThread(function()
                     if data then
                         if eventDataStruct:GetInt32(0) == PlayerPedId() then
                             if eventDataStruct:GetInt32(8) ~= 869278708 then -- WHISTLEHORSELONG
-                                print('Whistle Horse')
                                 TriggerEvent('bcc-stables:WhistleHorse')
                             else
                                 TriggerEvent('bcc-stables:LongWhistleHorse')
@@ -1550,21 +1549,31 @@ RegisterNetEvent('bcc-stables:FlamingHooves', function()
     end)
 end)
 
-
-
 RegisterNetEvent('bcc-stables:UseLantern', function()
-    local playerPed = PlayerPedId()
+    if not MyHorse or MyHorse == 0 then
+        return Core.NotifyRightTip(_U('noHorse'), 4000)
+    end
 
-    if #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse)) <= 3.5 then
-        ClearPedTasksImmediately(playerPed)
-        if not UsingLantern then
-            SetComponent(MyHorse, 0x635E387C)
-            UsingLantern = true
-        else
-            Citizen.InvokeNative(0x0D7FFA1B2F69ED82, MyHorse, 0x635E387C, 0, 0) -- RemoveShopItemFromPed
-            Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse, false, true, true, true, false)    -- UpdatePedVariation
-            UsingLantern = false
+    local playerPed = PlayerPedId()
+    local playerCoords = GetEntityCoords(playerPed)
+    local horseCoords = GetEntityCoords(MyHorse)
+
+    if #(playerCoords - horseCoords) > 3.5 then
+        return Core.NotifyRightTip(_U('tooFar'), 4000)
+    end
+
+    ClearPedTasks(playerPed)
+
+    if not UsingLantern then
+        SetComponent(MyHorse, 0x635E387C)
+        UsingLantern = true
+        if Config.lantern.durability then
+            TriggerServerEvent('bcc-stables:LanternDurability')
         end
+    else
+        Citizen.InvokeNative(0x0D7FFA1B2F69ED82, MyHorse, 0x635E387C, 0, 0) -- RemoveShopItemFromPed
+        Citizen.InvokeNative(0xCC8CA3E88256E58F, MyHorse, false, true, true, true, false)    -- UpdatePedVariation
+        UsingLantern = false
     end
 end)
 
@@ -1808,7 +1817,6 @@ function SaveHorseStats(dead)
         Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, staminaCore) -- SetAttributeCoreValue
     end
 
-    print('Health: ' .. healthCore .. ' | Stamina: ' .. staminaCore)
     TriggerServerEvent('bcc-stables:SaveHorseStatsToDb', healthCore, staminaCore, MyHorseId)
 end
 
