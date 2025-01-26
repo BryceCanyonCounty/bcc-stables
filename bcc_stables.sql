@@ -23,7 +23,9 @@ VALUES
   ('consumable_horse_reviver', 'Horse Reviver', 3, 1, 'item_standard', 1, 'Curative compound for injured horse.'),
   ('consumable_haycube', 'Haycube', 10, 1, 'item_standard', 1, 'A compact cube of hay.'),
   ('consumable_apple', 'Apple', 10, 1, 'item_standard', 1, 'A juicy and deliciuos fruit.'),
-  ('consumable_carrots', 'Carrots', 10, 1, 'item_standard', 1, 'An orange root vegetable commonly used in cooking.')
+  ('consumable_carrots', 'Carrots', 10, 1, 'item_standard', 1, 'An orange root vegetable commonly used in cooking.'),
+  ('diamond', 'Hoove Flame', 1, 1, 'item_standard', 1, 'An Fiery aura ignites hooves!'),
+  ('horsebrush', 'Horse Brush', 10, 1, 'item_standard', 1, 'Restores shine, cleanses dust instantly.')
 ON DUPLICATE KEY UPDATE
   `label`=VALUES(`label`),
   `limit`=VALUES(`limit`),
