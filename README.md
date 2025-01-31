@@ -67,7 +67,7 @@ Gain XP by riding, feeding, watering, and brushing your horse. As XP is gained, 
 - [feather-menu](https://github.com/FeatherFramework/feather-menu/releases)
 
 ## Installation
-1. Ensure dependencies are installed/updated before this script.
+1. Make sure dependencies are installed/updated and ensured before this script.
 2. Download the latest release `bcc-stables.zip` at [/releases/latest](https://github.com/BryceCanyonCounty/bcc-stables/releases/latest).
 3. Add the `bcc-stables` folder to your resources folder.
 4. Add `ensure bcc-stables` to your `resources.cfg`.
