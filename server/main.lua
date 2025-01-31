@@ -705,13 +705,14 @@ Core.Callback.Register('bcc-stables:HorseReviveItem', function(source, cb)
     local src = source
     local user = Core.getUser(src)
     if not user then return cb(false) end
-    local reviveItem = Config.reviver
 
-    local item = exports.vorp_inventory:getItem(src, reviveItem)
-    if not item then
-        cb(false)
-        return
+    local reviveItem = Config.reviver
+    local hasItem = exports.vorp_inventory:getItem(src, reviveItem)
+
+    if not hasItem then
+        return cb(false)
     end
+
     exports.vorp_inventory:subItem(src, reviveItem, 1)
     cb(true)
 end)
@@ -742,8 +743,8 @@ Core.Callback.Register('bcc-stables:CheckJob', function(source, cb, trainer, sit
     local src = source
     local user = Core.getUser(src)
     if not user then return cb(false) end
-    local character = user.getUsedCharacter
 
+    local character = user.getUsedCharacter
     local jobConfig = trainer and Config.trainerJob or Stables[site].shop.jobs
 
     local hasJob = false
