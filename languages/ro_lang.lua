@@ -49,6 +49,7 @@ Locales["ro_lang"] = {
     trainerRegHorse = "Only Trainers can register horses!",
     horsebrushDesc = "A brush used for grooming horses.",
     durability = "Durability: ",
+    itemBroke = "Your item has broken!",
     noReviver = "You need a bottle of horse reviver!",
     horseInfoCoat = 'Coat: ',
     horseInfoHealth = 'Health: ',
@@ -66,6 +67,7 @@ Locales["ro_lang"] = {
     horseInfoTrickLvl_4a = "Truc: Dans | space",
     horseInfoTrickLvl_4b = "Side-Pass | space + A sau D",
     horseDied = "Your horse has died, return to stable to select a horse.",
+    horseWrithe = "Your horse needs help!",
     -- Discord Alerts
     discordHorsePurchased = "Cal cumpărat!",
     discordTamedPurchased = "Cal îmblânzit salvat!",
@@ -73,6 +75,8 @@ Locales["ro_lang"] = {
     discordHorseSold = "Cal vândut!",
     discordTamedSold = "Cal îmblânzit vândut!",
     discordTraded = "Cal schimbat cu ",
+    -- Flaming Hooves
     flameHooveDesc = 'An enchanted item to activate flaming hooves',
-    flameHoovesActivated = 'Your horse now has flaming hooves!',
+    flameHoovesActivated = 'Flaming hooves activated!',
+    flameHoovesDeactivated = 'Flaming hooves deactivated!',
 }
