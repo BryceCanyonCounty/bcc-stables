@@ -18,11 +18,6 @@ ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS `stamina` INT(11) NOT NULL 
 ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS `dead` INT(11) NOT NULL DEFAULT 0;
 ALTER TABLE `player_horses` ADD COLUMN IF NOT EXISTS `writhe` INT(11) NOT NULL DEFAULT 0 AFTER `stamina`;
 
-ALTER TABLE `player_horses` MODIFY COLUMN IF EXISTS `selected` INT(11) NOT NULL DEFAULT 0;
-ALTER TABLE `player_horses` MODIFY COLUMN IF EXISTS `captured` INT(11) NOT NULL DEFAULT 0;
-ALTER TABLE `player_horses` MODIFY COLUMN IF EXISTS `dead` INT(11) NOT NULL DEFAULT 0;
-ALTER TABLE `player_horses` MODIFY COLUMN IF EXISTS `writhe` INT(11) NOT NULL DEFAULT 0;
-
 CREATE INDEX IF NOT EXISTS `idx_charid` ON `player_horses` (`charid`);
 CREATE INDEX IF NOT EXISTS `idx_identifier` ON `player_horses` (`identifier`);
 
