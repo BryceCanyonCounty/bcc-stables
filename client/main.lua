@@ -28,7 +28,7 @@ local IsTrainer, IsNaming, MaxBonding, HorseBreed = false, false, false, false
 
 -- Misc.
 MyHorse = 0
-MyModel, HorseName, MyHorseBreed, MyHorseColor = nil, nil, nil, nil
+MyModel, MyHorseBreed, MyHorseColor = nil, nil, nil
 local ShopEntity, MyEntity = 0, 0
 local StableName, Site
 local MyEntityID, MyHorseId
@@ -1823,144 +1823,140 @@ RegisterCommand(Config.commands.horseInfo, function(source, args, rawCommand)
 end, false)
 
 function StartPrompts()
-    OpenShops = PromptRegisterBegin()
-    PromptSetControlAction(OpenShops, Config.keys.shop)
-    PromptSetText(OpenShops, CreateVarString(10, 'LITERAL_STRING', _U('shopPrompt')))
-    PromptSetVisible(OpenShops, true)
-    PromptSetStandardMode(OpenShops)
-    PromptSetGroup(OpenShops, ShopGroup, 0)
-    PromptRegisterEnd(OpenShops)
+    OpenShops = UiPromptRegisterBegin()
+    UiPromptSetControlAction(OpenShops, Config.keys.shop)
+    UiPromptSetText(OpenShops, CreateVarString(10, 'LITERAL_STRING', _U('shopPrompt')))
+    UiPromptSetVisible(OpenShops, true)
+    UiPromptSetStandardMode(OpenShops, true)
+    UiPromptSetGroup(OpenShops, ShopGroup, 0)
+    UiPromptRegisterEnd(OpenShops)
 
-    OpenCall = PromptRegisterBegin()
-    PromptSetControlAction(OpenCall, Config.keys.call)
-    PromptSetText(OpenCall, CreateVarString(10, 'LITERAL_STRING', _U('callPrompt')))
-    PromptSetVisible(OpenCall, true)
-    PromptSetStandardMode(OpenCall)
-    PromptSetGroup(OpenCall, ShopGroup, 1)
-    PromptRegisterEnd(OpenCall)
+    OpenCall = UiPromptRegisterBegin()
+    UiPromptSetControlAction(OpenCall, Config.keys.call)
+    UiPromptSetText(OpenCall, CreateVarString(10, 'LITERAL_STRING', _U('callPrompt')))
+    UiPromptSetVisible(OpenCall, true)
+    UiPromptSetStandardMode(OpenCall, true)
+    UiPromptSetGroup(OpenCall, ShopGroup, 1)
+    UiPromptRegisterEnd(OpenCall)
 
-    OpenReturn = PromptRegisterBegin()
-    PromptSetControlAction(OpenReturn, Config.keys.ret)
-    PromptSetText(OpenReturn, CreateVarString(10, 'LITERAL_STRING', _U('returnPrompt')))
-    PromptSetVisible(OpenReturn, true)
-    PromptSetStandardMode(OpenReturn)
-    PromptSetGroup(OpenReturn, ShopGroup, 1)
-    PromptRegisterEnd(OpenReturn)
+    OpenReturn = UiPromptRegisterBegin()
+    UiPromptSetControlAction(OpenReturn, Config.keys.ret)
+    UiPromptSetText(OpenReturn, CreateVarString(10, 'LITERAL_STRING', _U('returnPrompt')))
+    UiPromptSetVisible(OpenReturn, true)
+    UiPromptSetStandardMode(OpenReturn, true)
+    UiPromptSetGroup(OpenReturn, ShopGroup, 1)
+    UiPromptRegisterEnd(OpenReturn)
 
-    SellTame = PromptRegisterBegin()
-    PromptSetControlAction(SellTame, Config.keys.sell)
-    PromptSetText(SellTame, CreateVarString(10, 'LITERAL_STRING', _U('sellPrompt')))
-    PromptSetHoldMode(SellTame, 2000)
-    PromptSetGroup(SellTame, TameGroup, 0)
-    PromptRegisterEnd(SellTame)
+    SellTame = UiPromptRegisterBegin()
+    UiPromptSetControlAction(SellTame, Config.keys.sell)
+    UiPromptSetText(SellTame, CreateVarString(10, 'LITERAL_STRING', _U('sellPrompt')))
+    UiPromptSetHoldMode(SellTame, 2000)
+    UiPromptSetGroup(SellTame, TameGroup, 0)
+    UiPromptRegisterEnd(SellTame)
 
-    KeepTame = PromptRegisterBegin()
-    PromptSetControlAction(KeepTame, Config.keys.keep)
-    PromptSetText(KeepTame, CreateVarString(10, 'LITERAL_STRING', _U('keepPrompt') .. tostring(Config.regCost)))
-    PromptSetHoldMode(KeepTame, 2000)
-    PromptSetGroup(KeepTame, TameGroup, 0)
-    PromptRegisterEnd(KeepTame)
+    KeepTame = UiPromptRegisterBegin()
+    UiPromptSetControlAction(KeepTame, Config.keys.keep)
+    UiPromptSetText(KeepTame, CreateVarString(10, 'LITERAL_STRING', _U('keepPrompt') .. tostring(Config.regCost)))
+    UiPromptSetHoldMode(KeepTame, 2000)
+    UiPromptSetGroup(KeepTame, TameGroup, 0)
+    UiPromptRegisterEnd(KeepTame)
 
-    TradeHorse = PromptRegisterBegin()
-    PromptSetControlAction(TradeHorse, Config.keys.trade)
-    PromptSetText(TradeHorse, CreateVarString(10, 'LITERAL_STRING', _U('tradePrompt')))
-    PromptSetVisible(TradeHorse, true)
-    PromptSetEnabled(TradeHorse, true)
-    PromptSetHoldMode(TradeHorse, 2000)
-    PromptSetGroup(TradeHorse, TradeGroup, 0)
-    PromptRegisterEnd(TradeHorse)
+    TradeHorse = UiPromptRegisterBegin()
+    UiPromptSetControlAction(TradeHorse, Config.keys.trade)
+    UiPromptSetText(TradeHorse, CreateVarString(10, 'LITERAL_STRING', _U('tradePrompt')))
+    UiPromptSetVisible(TradeHorse, true)
+    UiPromptSetEnabled(TradeHorse, true)
+    UiPromptSetHoldMode(TradeHorse, 2000)
+    UiPromptSetGroup(TradeHorse, TradeGroup, 0)
+    UiPromptRegisterEnd(TradeHorse)
 
-    LootHorse = PromptRegisterBegin()
-    PromptSetControlAction(LootHorse, Config.keys.loot)
-    PromptSetText(LootHorse, CreateVarString(10, 'LITERAL_STRING', _U('lootHorsePrompt')))
-    PromptSetVisible(LootHorse, true)
-    PromptSetEnabled(LootHorse, true)
-    PromptSetStandardMode(LootHorse)
-    PromptSetGroup(LootHorse, LootGroup, 0)
-    PromptRegisterEnd(LootHorse)
+    LootHorse = UiPromptRegisterBegin()
+    UiPromptSetControlAction(LootHorse, Config.keys.loot)
+    UiPromptSetText(LootHorse, CreateVarString(10, 'LITERAL_STRING', _U('lootHorsePrompt')))
+    UiPromptSetVisible(LootHorse, true)
+    UiPromptSetEnabled(LootHorse, true)
+    UiPromptSetStandardMode(LootHorse, true)
+    UiPromptSetGroup(LootHorse, LootGroup, 0)
+    UiPromptRegisterEnd(LootHorse)
 end
 
 function HorseTargetPrompts(menuGroup)
     local currentLevel = Citizen.InvokeNative(0x147149F2E909323C, MyHorse, 7, Citizen.ResultAsInteger()) -- GetAttributeBaseRank
 
     if not PromptsStarted then
-        HorseDrink = PromptRegisterBegin()
-        PromptSetControlAction(HorseDrink, Config.keys.drink)
-        PromptSetText(HorseDrink, CreateVarString(10, 'LITERAL_STRING', _U('drinkPrompt')))
-        PromptSetVisible(HorseDrink, true)
-        PromptSetStandardMode(HorseDrink, true)
-        PromptSetGroup(HorseDrink, menuGroup, 0)
-        PromptRegisterEnd(HorseDrink)
+        HorseDrink = UiPromptRegisterBegin()
+        UiPromptSetControlAction(HorseDrink, Config.keys.drink)
+        UiPromptSetText(HorseDrink, CreateVarString(10, 'LITERAL_STRING', _U('drinkPrompt')))
+        UiPromptSetVisible(HorseDrink, true)
+        UiPromptSetStandardMode(HorseDrink, true)
+        UiPromptSetGroup(HorseDrink, menuGroup, 0)
+        UiPromptRegisterEnd(HorseDrink)
 
-        HorseRest = PromptRegisterBegin()
-        PromptSetControlAction(HorseRest, Config.keys.rest)
-        PromptSetText(HorseRest, CreateVarString(10, 'LITERAL_STRING', _U('restPrompt')))
-        PromptSetVisible(HorseRest, true)
-        PromptSetStandardMode(HorseRest, true)
-        PromptSetGroup(HorseRest, menuGroup, 0)
-        PromptRegisterEnd(HorseRest)
+        HorseRest = UiPromptRegisterBegin()
+        UiPromptSetControlAction(HorseRest, Config.keys.rest)
+        UiPromptSetText(HorseRest, CreateVarString(10, 'LITERAL_STRING', _U('restPrompt')))
+        UiPromptSetVisible(HorseRest, true)
+        UiPromptSetStandardMode(HorseRest, true)
+        UiPromptSetGroup(HorseRest, menuGroup, 0)
+        UiPromptRegisterEnd(HorseRest)
 
-        HorseSleep = PromptRegisterBegin()
-        PromptSetControlAction(HorseSleep, Config.keys.sleep)
-        PromptSetText(HorseSleep, CreateVarString(10, 'LITERAL_STRING', _U('sleepPrompt')))
-        PromptSetVisible(HorseSleep, true)
-        PromptSetStandardMode(HorseSleep, true)
-        PromptSetGroup(HorseSleep, menuGroup, 0)
-        PromptRegisterEnd(HorseSleep)
+        HorseSleep = UiPromptRegisterBegin()
+        UiPromptSetControlAction(HorseSleep, Config.keys.sleep)
+        UiPromptSetText(HorseSleep, CreateVarString(10, 'LITERAL_STRING', _U('sleepPrompt')))
+        UiPromptSetVisible(HorseSleep, true)
+        UiPromptSetStandardMode(HorseSleep, true)
+        UiPromptSetGroup(HorseSleep, menuGroup, 0)
+        UiPromptRegisterEnd(HorseSleep)
 
-        HorseWallow = PromptRegisterBegin()
-        PromptSetControlAction(HorseWallow, Config.keys.wallow)
-        PromptSetText(HorseWallow, CreateVarString(10, 'LITERAL_STRING', _U('wallowPrompt')))
-        PromptSetVisible(HorseWallow, true)
-        PromptSetStandardMode(HorseWallow, true)
-        PromptSetGroup(HorseWallow, menuGroup, 0)
-        PromptRegisterEnd(HorseWallow)
+        HorseWallow = UiPromptRegisterBegin()
+        UiPromptSetControlAction(HorseWallow, Config.keys.wallow)
+        UiPromptSetText(HorseWallow, CreateVarString(10, 'LITERAL_STRING', _U('wallowPrompt')))
+        UiPromptSetVisible(HorseWallow, true)
+        UiPromptSetStandardMode(HorseWallow, true)
+        UiPromptSetGroup(HorseWallow, menuGroup, 0)
+        UiPromptRegisterEnd(HorseWallow)
 
         PromptsStarted = true
     end
 
-    if currentLevel >= 1 then
-        PromptSetEnabled(HorseDrink, true)
-    else
-        PromptSetEnabled(HorseDrink, false)
-    end
-    if currentLevel >= 2 then
-        PromptSetEnabled(HorseRest, true)
-    else
-        PromptSetEnabled(HorseRest, false)
-    end
-    if currentLevel >= 3 then
-        PromptSetEnabled(HorseSleep, true)
-    else
-        PromptSetEnabled(HorseSleep, false)
-    end
-    if currentLevel >= 4 then
-        PromptSetEnabled(HorseWallow, true)
-    else
-        PromptSetEnabled(HorseWallow, false)
+    local prompts = {
+        {level = 1, prompt = HorseDrink},
+        {level = 2, prompt = HorseRest},
+        {level = 3, prompt = HorseSleep},
+        {level = 4, prompt = HorseWallow}
+    }
+
+    for _, item in ipairs(prompts) do
+        UiPromptSetEnabled(item.prompt, currentLevel >= item.level)
     end
 end
 
 function CheckPlayerJob(trainer, site)
     local result = Core.Callback.TriggerAwait('bcc-stables:CheckJob', trainer, site)
-    if trainer and result then
-        IsTrainer = false
-        if result[1] then
+
+    IsTrainer = false
+    HasJob = false
+
+    if result then
+        if trainer and result[1] then
             IsTrainer = true
-        end
-    elseif result then
-        HasJob = false
-        if result[1] then
+        elseif result[1] then
             HasJob = true
-        elseif Stables[site].shop.jobsEnabled then
+        end
+
+        if not trainer and result[2] then
+            JobMatchedHorses = FindHorsesByJob(result[2])
+        end
+
+        if not trainer and not result[1] and Stables[site].shop.jobsEnabled then
             Core.NotifyRightTip(_U('needJob'), 4000)
         end
-        JobMatchedHorses = FindHorsesByJob(result[2])
     end
 end
 
 function AddTrainerBlip(site)
     local siteCfg = Trainers[site]
+
     siteCfg.TrainerBlip = Citizen.InvokeNative(0x554d9d53f696d002, 1664425300, siteCfg.npc.coords) -- BlipAddForCoords
     SetBlipSprite(siteCfg.TrainerBlip, siteCfg.blip.sprite, true)
     Citizen.InvokeNative(0x9CB1A1623062F402, siteCfg.TrainerBlip,  siteCfg.blip.name) -- SetBlipName
@@ -1968,10 +1964,13 @@ end
 
 function AddTrainerNPC(site)
     local siteCfg = Trainers[site]
+    local coords = siteCfg.npc.coords
+
     local modelName = siteCfg.npc.model
     local model = joaat(modelName)
     LoadModel(model, modelName)
-    siteCfg.TrainerNPC = CreatePed(model, siteCfg.npc.coords.x, siteCfg.npc.coords.y, siteCfg.npc.coords.z - 1.0, siteCfg.npc.heading, false, true, true, true)
+
+    siteCfg.TrainerNPC = CreatePed(model, coords.x, coords.y, coords.z - 1.0, siteCfg.npc.heading, false, false, false, false)
     Citizen.InvokeNative(0x283978A15512B2FE, siteCfg.TrainerNPC, true) -- SetRandomOutfitVariation
     SetEntityCanBeDamaged(siteCfg.TrainerNPC, false)
     SetEntityInvincible(siteCfg.TrainerNPC, true)
@@ -2001,93 +2000,68 @@ function LoadModel(model, modelName)
     end
 end
 
+ -- Update Global Horse Entity after session change
 RegisterNetEvent('bcc-stables:UpdateMyHorseEntity', function()
     if MyHorse ~= 0 then
-        MyHorse = NetworkGetEntityFromNetworkId(LocalPlayer.state.HorseData.MyHorse) -- Update Global Horse Entity after session change
-        local playerPed = PlayerPedId()
-        Citizen.InvokeNative(0xD2CB0FB0FDCB473D, playerPed, MyHorse) -- SetPedAsSaddleHorseForPlayer
-        Citizen.InvokeNative(0x931B241409216C1F, playerPed, MyHorse, false) -- SetPedOwnsAnimal
-        Citizen.InvokeNative(0xB8B6430EAD2D2437, MyHorse, `PLAYER_HORSE`) -- SetPedPersonality
-
-        local horseBlip = Citizen.InvokeNative(0x23f74c2fda6e7c61, -1230993421, MyHorse) -- BlipAddForEntity
-        Citizen.InvokeNative(0x9CB1A1623062F402, horseBlip, HorseName) -- SetBlipName
-        SetPedPromptName(MyHorse, HorseName)
-
-        if Config.horseTag then
-            TriggerEvent('bcc-stables:HorseTag', HorseName)
-        end
+        MyHorse = NetworkGetEntityFromNetworkId(LocalPlayer.state.HorseData.MyHorse)
     end
 end)
 
 -- to count length of maps
 local function len(t)
     local counter = 0
-    for _, _ in pairs(t) do
-        counter += 1
+    for _ in pairs(t) do
+        counter = counter + 1
     end
     return counter
 end
 
---let's go fancy with an implementation that orders pairs for you using default table.sort(). Taken from a lua-users post.
-
+-- to generate ordered index
 local function __genOrderedIndex( t )
     local orderedIndex = {}
     for key in pairs(t) do
-        table.insert( orderedIndex, key )
+        table.insert(orderedIndex, key)
     end
-    table.sort( orderedIndex )
+    table.sort(orderedIndex)
     return orderedIndex
 end
 
+-- to get the next ordered pair
 local function orderedNext(t, state)
-    -- Equivalent of the next function, but returns the keys in the alphabetic
-    -- order. We use a temporary ordered key table that is stored in the
-    -- table being iterated.
-
-    local key = nil
-    --print("orderedNext: state = "..tostring(state) )
     if state == nil then
-        -- the first time, generate the index
-        t.__orderedIndex = __genOrderedIndex( t )
-        key = t.__orderedIndex[1]
+        t.__orderedIndex = __genOrderedIndex(t)
+        t.__index = 1
     else
-        -- fetch the next value
-        for i = 1, #(t.__orderedIndex) do
-            if t.__orderedIndex[i] == state then
-                key = t.__orderedIndex[i+1]
-            end
-        end
+        t.__index = t.__index + 1
     end
 
+    local key = t.__orderedIndex[t.__index]
     if key then
         return key, t[key]
     end
 
-    -- no more value to return, cleanup
     t.__orderedIndex = nil
+    t.__index = nil
     return
 end
 
+-- to get ordered pairs
 local function orderedPairs(t)
-    -- Equivalent of the pairs() function on tables. Allows to iterate
-    -- in order
     return orderedNext, t, nil
 end
 
- function FindHorsesByJob(job)
+function FindHorsesByJob(job)
     local matchingHorses = {}
     for _, horseType in ipairs(Horses) do
         local matchingColors = {}
 
         for horseColor, horseColorData in orderedPairs(horseType.colors) do
-            -- using maps to break a loop, though technically making another loop, albeit simpler. Preferably you already configure jobs as a map so that you could expand
-            -- perhaps when a request comes to have color accesses by job grade or similar
             local horseJobs = {}
             for _, horseJob in pairs(horseColorData.job) do
-                horseJobs[horseJob] = horseJob
+                horseJobs[horseJob] = true
             end
-            -- add matching color directly 
-            if horseJobs[job] ~= nil then
+
+            if horseJobs[job] or len(horseJobs) == 0 then
                 matchingColors[horseColor] = {
                     color = horseColorData.color,
                     cashPrice = horseColorData.cashPrice,
@@ -2096,23 +2070,13 @@ end
                     job = horseColorData.job
                 }
             end
-            --handle case where there isn\t a job attached to horse color config
-            if len(horseJobs) == 0 then
-                matchingColors[horseColor] = {
-                    color = horseColorData.color,
-                    cashPrice = horseColorData.cashPrice,
-                    goldPrice = horseColorData.goldPrice,
-                    invLimit = horseColorData.invLimit,
-                    job = nil
-                }
-            end
         end
 
         if len(matchingColors) > 0 then
-            matchingHorses[#matchingHorses + 1] = {
+            table.insert(matchingHorses, {
                 breed = horseType.breed,
                 colors = matchingColors
-            }
+            })
         end
     end
     return matchingHorses
@@ -2122,12 +2086,12 @@ AddEventHandler('onResourceStop', function(resourceName)
     if (GetCurrentResourceName() ~= resourceName) then
         return
     end
+
     if InMenu then
-        SendNUIMessage({
-            action = 'hide'
-        })
+        SendNUIMessage({ action = 'hide' })
         SetNuiFocus(false, false)
     end
+
     ClearPedTasksImmediately(PlayerPedId())
     DestroyAllCams(true)
     DisplayRadar(true)
@@ -2146,6 +2110,7 @@ AddEventHandler('onResourceStop', function(resourceName)
         DeleteEntity(MyHorse)
         MyHorse = 0
     end
+
     for _, siteCfg in pairs(Stables) do
         if siteCfg.Blip then
             RemoveBlip(siteCfg.Blip)
@@ -2156,6 +2121,7 @@ AddEventHandler('onResourceStop', function(resourceName)
             siteCfg.NPC = nil
         end
     end
+
     for _, siteCfg in pairs(Trainers) do
         if siteCfg.TrainerBlip then
             RemoveBlip(siteCfg.TrainerBlip)
@@ -2166,5 +2132,6 @@ AddEventHandler('onResourceStop', function(resourceName)
             siteCfg.TrainerNPC = nil
         end
     end
+
     CleanupAnimalInfoHud()
 end)
