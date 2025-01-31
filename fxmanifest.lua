@@ -13,7 +13,9 @@ shared_scripts {
 
 client_scripts {
     'client/dataview.lua',
-    'client/*.lua'
+    'client/main.lua',
+    'client/horseinfo.lua',
+    'client/menus/*.lua',
 }
 
 server_scripts {
