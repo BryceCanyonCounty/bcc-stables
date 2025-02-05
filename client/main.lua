@@ -714,6 +714,7 @@ AddEventHandler('bcc-stables:HorseTag', function()
     Citizen.InvokeNative(0x839BFD7D7E49FE09, Citizen.PointerValueIntInitialized(gamerTagId)) -- RemoveMpGamerTag
 end)
 
+-- Manage Horse Lockon Prompts
 local function HandleHorseAction(key, action)
     if Citizen.InvokeNative(0x580417101DDB492F, 0, key) and not Drinking then
         action()
@@ -736,6 +737,7 @@ AddEventHandler('bcc-stables:HorsePrompts', function()
         local distance = #(GetEntityCoords(playerPed) - GetEntityCoords(MyHorse))
 
         if distanceCheckEnabled and distance > horseRadius then
+            SaveHorseStats(InWrithe)
             DeleteEntity(MyHorse)
             MyHorse = 0
             goto END
@@ -877,6 +879,7 @@ end
 
 -- Event Listener
 CreateThread(function()
+    local writheEnabled = Config.death.writheEnabled
     while true do
         Wait(0)
 
@@ -932,9 +935,17 @@ CreateThread(function()
                     eventDataStruct:SetInt32(64, 0) -- (float) Entity Coord z
 
                     local data = Citizen.InvokeNative(0x57EC5FA4D4D6AFCA, 0, i, eventDataStruct:Buffer(), eventDataSize) -- GetEventData
+                    local entity = eventDataStruct:GetInt32(0)
                     if data then
-                        if eventDataStruct:GetInt32(0) == MyHorse then
-                            TriggerEvent('bcc-stables:ManageHorseDeath')
+                        if entity == MyHorse then
+                            if writheEnabled then
+                                TriggerEvent('bcc-stables:ManageHorseDeath')
+                            else
+                                Wait(5000)
+                                SaveHorseStats(true)
+                                DeleteEntity(MyHorse)
+                                MyHorse = 0
+                            end
                         end
                     end
                 end
@@ -954,7 +965,12 @@ AddEventHandler('bcc-stables:ManageHorseDeath', function()
         RemoveHorsePrompts()
 
         Core.NotifyRightTip(_U('horseWrithe'), 4000)
-        TriggerServerEvent('bcc-stables:SetHorseWrithe', MyHorseId)
+
+        if Config.death.persistentWrithe then
+            TriggerServerEvent('bcc-stables:SetHorseWrithe', MyHorseId)
+        end
+
+        SaveHorseStats(true)
     else
         local action = (Config.death.permanent and 'dead') or (Config.death.deselect and 'deselect') or nil
         if action then
@@ -963,12 +979,11 @@ AddEventHandler('bcc-stables:ManageHorseDeath', function()
         TriggerServerEvent('bcc-stables:UpdateHorseStatus', MyHorseId, action)
 
         Wait(5000)
+        SaveHorseStats(true)
         DeleteEntity(MyHorse)
         MyHorse = 0
         InWrithe = false
     end
-
-    SaveHorseStats(true)
 end)
 
 -- Call Horse to Player
@@ -1197,7 +1212,7 @@ AddEventHandler('bcc-stables:HorseMonitor', function()
         interval = interval - checkInterval
 
         if interval <= 0 and not IsFleeing then
-            SaveHorseStats(false)
+            SaveHorseStats(InWrithe)
             interval = intervalValue
         end
     end
@@ -1215,6 +1230,8 @@ AddEventHandler('bcc-stables:ReviveHorse', function()
     if not IsEntityDead(MyHorse) then
         Citizen.InvokeNative(0x356088527D9EBAAD, PlayerPedId(), MyHorse, `s_inv_horsereviver01x`) -- TaskReviveTarget
         TriggerServerEvent('bcc-stables:UpdateHorseStatus', MyHorseId, nil)
+        SetEntityHealth(MyHorse, GetEntityMaxHealth(MyHorse), 0)
+        SaveHorseStats(true)
         InWrithe = false
     end
 end)
@@ -1262,7 +1279,7 @@ function ReturnHorse()
         end
     end
 
-    SaveHorseStats(false)
+    SaveHorseStats(InWrithe)
     GetControlOfHorse()
     DeleteEntity(MyHorse)
     MyHorse = 0
