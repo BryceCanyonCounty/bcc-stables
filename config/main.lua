@@ -106,12 +106,15 @@ Config.closedCall = true   -- Default: true / 'Call Horse' Button at Stable
 Config.closedReturn = true -- Default: true / 'Return Horse' Button at Stable
 -----------------------------------------------------
 
--- Horse Death Settings
+-- Horse Death Management
+-- Wrihe State: Horse is Down and Unable to Move
 Config.death             = {
-    deselect = false,  -- Default: false / If true, Player Must Return to Stable to Select Horse to Spawn
-    permanent = false, -- Default: false / If true, Horse is Permanently Dead
-    health = 20,       -- Default: 20 / Health Level for First Spawn After Death
-    stamina = 20,      -- Default: 20 / Stamina Level for First Spawn After Death
+    writheEnabled = true,    -- Default: true / If false, Horse will skip Writhe State and go directly to Dead
+    persistentWrithe = true, -- Default: true / If true, Writhe State will be Saved to Database and Set on Spawn Until Revived or Killed
+    deselect = false,        -- Default: false / If true, Player Must Return to Stable to Select Horse to Spawn (Requires "writheEnabled" to be true)
+    permanent = false,       -- Default: false / If true, Horse is Permanently Dead (Requires "writheEnabled" to be true)
+    health = 20,             -- Default: 20 / Max: 100 / Core Health Level for First Spawn After Death
+    stamina = 20,            -- Default: 20 / Max: 100 / Core Stamina Level for First Spawn After Death
 }
 -----------------------------------------------------
 
