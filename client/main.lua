@@ -59,7 +59,7 @@ local function ManageStableBlip(site, closed)
     if Config.BlipColors[color] then
         Citizen.InvokeNative(0x662D364ABF16DE2F, siteCfg.Blip, joaat(Config.BlipColors[color])) -- BlipAddModifier
     else
-        print("Error: Blip color not defined for color: " .. tostring(color))
+        print('Error: Blip color not defined for color: ' .. tostring(color))
     end
 end
 
@@ -120,7 +120,7 @@ CreateThread(function()
         for site, siteCfg in pairs(Stables) do
             local distance = #(playerCoords - siteCfg.npc.coords)
             local hoursActive = siteCfg.shop.hours.active
-            local isClosed = (hoursActive and (hour >= siteCfg.shop.hours.close or hour < siteCfg.shop.hours.open))
+            local isClosed = hoursActive and (hour >= siteCfg.shop.hours.close or hour < siteCfg.shop.hours.open) or false
 
             if siteCfg.blip.show then
                 ManageStableBlip(site, isClosed)
