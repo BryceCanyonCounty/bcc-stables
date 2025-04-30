@@ -469,7 +469,6 @@ end)
 RegisterNetEvent('bcc-stables:RegisterInventory', function(id, model)
     local idStr = 'horse_' .. tostring(id)
     local isRegistered = exports.vorp_inventory:isCustomInventoryRegistered(idStr)
-    if isRegistered then return end
 
     for _, horseCfg in pairs(Horses) do
         if horseCfg.colors[model] then
@@ -480,13 +479,45 @@ RegisterNetEvent('bcc-stables:RegisterInventory', function(id, model)
                 limit = tonumber(colorCfg.invLimit),
                 acceptWeapons = Config.allowWeapons,
                 shared = Config.shareInventory,
-                ignoreItemStackLimit = true,
-                whitelistItems = false,
-                UsePermissions = false,
-                UseBlackList = false,
-                whitelistWeapons = false
+                ignoreItemStackLimit = Config.ignoreItemStackLimit or true,
+                whitelistItems =  Config.useWhiteList or false,
+                UsePermissions = Config.usePermissions or false,
+                UseBlackList = Config.useBlackList or false,
+                whitelistWeapons = Config.whitelistWeapons or false
             }
-            exports.vorp_inventory:registerInventory(data)
+
+            if isRegistered then
+                exports.vorp_inventory:updateCustomInventoryData(idStr, data)
+            else
+                exports.vorp_inventory:registerInventory(data)
+            end
+
+            if data.UsePermissions then
+                for _, permission in ipairs(Config.permissions.allowedJobsTakeFrom) do
+                    exports.vorp_inventory:AddPermissionTakeFromCustom(idStr, permission.name, permission.grade)
+                end
+                for _, permission in ipairs(Config.permissions.allowedJobsMoveTo) do
+                    exports.vorp_inventory:AddPermissionMoveToCustom(idStr, permission.name, permission.grade)
+                end
+            end
+
+            if data.whitelistItems then
+                for _, item in ipairs(Config.itemsLimitWhiteList) do
+                    exports.vorp_inventory:setCustomInventoryItemLimit(idStr, item.name, item.limit)
+                end
+            end
+
+            if data.whitelistWeapons then
+                for _, weapon in ipairs(Config.weaponsLimitWhiteList) do
+                    exports.vorp_inventory:setCustomInventoryWeaponLimit(idStr, weapon.name, weapon.limit)
+                end
+            end
+
+            if data.UseBlackList then
+                for _, item in ipairs(Config.itemsBlackList) do
+                    exports.vorp_inventory:BlackListCustomAny(idStr, item)
+                end
+            end
             break
         end
     end

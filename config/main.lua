@@ -122,6 +122,32 @@ Config.death             = {
 Config.useSaddlebags = true   -- Default: true / Require Saddlebags for Inventory
 Config.shareInventory = false -- Default: false / Share with All Players / Allows Looting Player Horses
 Config.allowWeapons = true    -- Default: true / Allow Weapons
+Config.whitelistWeapons = false -- Default: false / Set to true to Enable White List for Weapons
+Config.weaponsLimitWhiteList = {
+	-- { name = 'WEAPON_MELEE_TORCH', limit = 1, },
+}
+Config.useBlackList = false -- Default: false / Set to false to Disable
+Config.itemsBlackList = {
+	-- 'food_delivery1',
+	-- 'food_delivery2',
+	-- 'food_delivery3',
+}
+Config.ignoreItemStackLimit = true -- Default: true / Set to true to Ignore Item Stack Limit
+Config.useWhiteList = false -- Default: false / Set to true to Enable White List
+Config.itemsLimitWhiteList = {
+	-- { name = 'diamond', limit = 10, },
+}
+Config.usePermissions = false -- Default: false / Set to true to Enable Permissions
+Config.permissions = {
+	allowedJobsTakeFrom = {
+		-- { name = "police", grade = 0 },
+		-- { name = "sheriff", grade = 0 },
+	},
+	allowedJobsMoveTo = {
+		-- { name = "police", grade = 0 },
+		-- { name = "sheriff", grade = 0 },
+	},
+}
 -----------------------------------------------------
 
 -- Health and Stamina Boosts (Set to 0 to Disable Boost - Animations Still Work)
