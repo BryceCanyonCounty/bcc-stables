@@ -26,7 +26,7 @@ VALUES
   ('oil_lantern', 'Oil Lantern', 1, 1, 'item_standard', 1, 'A portable light source.'),
   ('consumable_horse_reviver', 'Horse Reviver', 3, 1, 'item_standard', 1, 'Curative compound for injured horse.'),
   ('consumable_haycube', 'Haycube', 10, 1, 'item_standard', 1, 'A compact cube of hay.'),
-  ('horsebrush', 'Horse Brush', 5, 1, 'item_standard', 1, 'A brush used for grooming horses.')
+  ('horsebrush', 'Horse Brush', 5, 1, 'item_standard', 1, 'A brush used for grooming horses.'),
   ('consumable_apple', 'Apple', 10, 1, 'item_standard', 1, 'A juicy and delicious fruit.'),
   ('consumable_carrots', 'Carrots', 10, 1, 'item_standard', 1, 'An orange root vegetable commonly used in cooking.'),
   ('diamond', 'Diamond', 20, 1, 'item_standard', 1, 'A precious gemstone known for its brilliance and value.')
