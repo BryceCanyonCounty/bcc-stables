@@ -34,6 +34,33 @@ local StableName, Site
 local MyEntityID, MyHorseId
 local InMenu, HasJob, UsingLantern, PromptsStarted, IsFleeing = false, false, false, false, false
 local Drinking, Spawning, Sending, Cam, InWrithe, Activated = false, false, false, false, false, false
+local DevModeActive = Config.devMode
+
+function DebugPrint(message)
+    if DevModeActive then
+        print('^1[DEV MODE] ^4' .. message)
+    end
+end
+
+local function isShopClosed(shopCfg)
+    local hour = GetClockHours()
+    local hoursActive = shopCfg.shop.hours.active
+
+    if not hoursActive then
+        return false
+    end
+
+    local openHour = shopCfg.shop.hours.open
+    local closeHour = shopCfg.shop.hours.close
+
+    if openHour < closeHour then
+        -- Normal: shop opens and closes on the same day
+        return hour < openHour or hour >= closeHour
+    else
+        -- Overnight: shop closes on the next day
+        return hour < openHour and hour >= closeHour
+    end
+end
 
 local function ManageStableBlip(site, closed)
     local siteCfg = Stables[site]
@@ -74,7 +101,7 @@ local function AddStableNPC(site)
         siteCfg.NPC = CreatePed(model, siteCfg.npc.coords.x, siteCfg.npc.coords.y, siteCfg.npc.coords.z - 1.0, siteCfg.npc.heading, false, true, true, true)
         Citizen.InvokeNative(0x283978A15512B2FE, siteCfg.NPC, true) -- SetRandomOutfitVariation
 
-        TaskStartScenarioInPlace(siteCfg.NPC, `WORLD_HUMAN_WRITE_NOTEBOOK`, -1, true, false, false, false)
+        TaskStartScenarioInPlace(siteCfg.NPC, `WORLD_HUMAN_WRITE_NOTEBOOK`, -1, true)
         SetEntityCanBeDamaged(siteCfg.NPC, false)
         SetEntityInvincible(siteCfg.NPC, true)
         Wait(500)
@@ -113,14 +140,12 @@ CreateThread(function()
         local playerPed = PlayerPedId()
         local playerCoords = GetEntityCoords(playerPed)
         local sleep = 1000
-        local hour = GetClockHours()
 
         if InMenu or IsEntityDead(playerPed) then goto END end
 
         for site, siteCfg in pairs(Stables) do
             local distance = #(playerCoords - siteCfg.npc.coords)
-            local hoursActive = siteCfg.shop.hours.active
-            local isClosed = hoursActive and (hour >= siteCfg.shop.hours.close or hour < siteCfg.shop.hours.open) or false
+            local isClosed = isShopClosed(siteCfg)
 
             if siteCfg.blip.show then
                 ManageStableBlip(site, isClosed)
@@ -187,24 +212,22 @@ function OpenStable(site)
     StableName = Stables[Site].shop.name
     CreateCamera()
 
-    SendNUIMessage({
-        action = 'show',
-        shopData = JobMatchedHorses,
-        compData = HorseComp,
-        translations = Translations,
-        location = StableName,
-        currencyType = Config.currencyType
-    })
-    SetNuiFocus(true, true)
-    TriggerServerEvent('bcc-stables:GetMyHorses')
+    local horseData = Core.Callback.TriggerAwait('bcc-stables:GetMyHorses')
+    if horseData then
+        SendNUIMessage({
+            action = 'show',
+            shopData = JobMatchedHorses,
+            compData = HorseComp,
+            translations = Translations,
+            location = StableName,
+            currencyType = Config.currencyType,
+            myHorsesData = horseData
+        })
+        SetNuiFocus(true, true)
+    else
+        print('No horse data received!')
+    end
 end
-
-RegisterNetEvent('bcc-stables:ReceiveHorsesData', function(dataHorses)
-    SendNUIMessage({
-        action = 'updateMyHorses',
-        myHorsesData = dataHorses
-    })
-end)
 
 local function ClearShopHorse()
     if ShopEntity ~= 0 then
@@ -344,18 +367,20 @@ function SetHorseName(data)
     end
 
     if data.origin ~= 'tameHorse' then
-        SendNUIMessage({
-            action = 'show',
-            shopData = Horses,
-            compData = HorseComp,
-            translations = Translations,
-            location = StableName,
-            currencyType = Config.currencyType
-        })
-        SetNuiFocus(true, true)
-        TriggerServerEvent('bcc-stables:GetMyHorses')
+        local horseData = Core.Callback.TriggerAwait('bcc-stables:GetMyHorses')
+        if horseData then
+            SendNUIMessage({
+                action = 'show',
+                shopData = JobMatchedHorses,
+                compData = HorseComp,
+                translations = Translations,
+                location = StableName,
+                currencyType = Config.currencyType,
+                myHorsesData = horseData
+            })
+            SetNuiFocus(true, true)
+        end
     end
-
     IsNaming = false
 end
 
@@ -484,16 +509,19 @@ end
 function StableMenu()
     ClearShopHorse()
 
-    SendNUIMessage({
-        action = 'show',
-        shopData = Horses,
-        compData = HorseComp,
-        translations = Translations,
-        location = StableName,
-        currencyType = Config.currencyType
-    })
-    SetNuiFocus(true, true)
-    TriggerServerEvent('bcc-stables:GetMyHorses')
+    local horseData = Core.Callback.TriggerAwait('bcc-stables:GetMyHorses')
+        if horseData then
+            SendNUIMessage({
+            action = 'show',
+            shopData = JobMatchedHorses,
+            compData = HorseComp,
+            translations = Translations,
+            location = StableName,
+            currencyType = Config.currencyType,
+            myHorsesData = horseData
+        })
+        SetNuiFocus(true, true)
+    end
 end
 
 function SpawnHorse(data)
@@ -585,8 +613,17 @@ function SpawnHorse(data)
     end
 
     -- Set Horse Health and Stamina
-    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, data.health)  -- SetAttributeCoreValue
-    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, data.stamina) -- SetAttributeCoreValue
+    local health = data.health or 100
+    if health == 0 then
+        health = 100
+    end
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, health)  -- SetAttributeCoreValue
+
+    local stamina = data.stamina or 100
+    if stamina == 0 then
+        stamina = 100
+    end
+    Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, stamina) -- SetAttributeCoreValue
 
     -- Bonding
     Citizen.InvokeNative(0x09A59688C26D88DF, MyHorse, 7, xp) -- SetAttributePoints
@@ -1708,17 +1745,37 @@ RegisterNUICallback('Horseshoes', function(data, cb)
     end
 end)
 
+---@param entity number
+---@param hash string
 function SetComponent(entity, hash)
-    repeat Wait(0) until GetNumComponentsInPed(entity) ~= 0 -- Wait until all previous components are loaded
+    if not DoesEntityExist(entity) then return end
 
-    if hash and hash ~= "0" then
-        local comp = tonumber(hash)
+    if hash == 0 then return end
 
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, entity, comp, true, true, true) -- ApplyShopItemToPed
-        repeat Wait(0) until GetNumComponentsInPed(entity) ~= 0 -- Wait until all components are loaded
+    local comp = tonumber(hash)
 
-        Citizen.InvokeNative(0xCC8CA3E88256E58F, entity, false, true, true, true, false) -- UpdatePedVariation
-    end
+    local timeout = 0
+    local maxTimeout = 1000
+    repeat
+        Wait(100)
+        timeout = timeout + 1
+        if timeout >= maxTimeout then
+            break
+        end
+    until GetNumComponentsInPed(entity) ~= 0
+
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, entity, comp, true, true, true) -- ApplyShopItemToPed
+
+    timeout = 0
+    repeat
+        Wait(100)
+        timeout = timeout + 1
+        if timeout >= maxTimeout then
+            break
+        end
+    until GetNumComponentsInPed(entity) ~= 0
+
+    Citizen.InvokeNative(0xCC8CA3E88256E58F, entity, false, true, true, true, false) -- UpdatePedVariation
 end
 
 function RemoveComponent(category)
@@ -1747,9 +1804,11 @@ function SaveHorseStats(dead)
     else
         healthCore = Config.death.health
         staminaCore = Config.death.stamina
-        Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, healthCore) -- SetAttributeCoreValue
+        Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 0, healthCore)  -- SetAttributeCoreValue
         Citizen.InvokeNative(0xC6258F41D86676E0, MyHorse, 1, staminaCore) -- SetAttributeCoreValue
     end
+
+    Wait(100) -- Wait for the values to be set before saving
 
     TriggerServerEvent('bcc-stables:SaveHorseStatsToDb', healthCore, staminaCore, MyHorseId)
 end
@@ -2078,13 +2137,23 @@ function FindHorsesByJob(job)
                 horseJobs[horseJob] = true
             end
 
-            if horseJobs[job] or len(horseJobs) == 0 then
+            if horseJobs[job] then
                 matchingColors[horseColor] = {
                     color = horseColorData.color,
                     cashPrice = horseColorData.cashPrice,
                     goldPrice = horseColorData.goldPrice,
                     invLimit = horseColorData.invLimit,
                     job = horseColorData.job
+                }
+            end
+
+            if len(horseJobs) == 0 then
+                matchingColors[horseColor] = {
+                    color = horseColorData.color,
+                    cashPrice = horseColorData.cashPrice,
+                    goldPrice = horseColorData.goldPrice,
+                    invLimit = horseColorData.invLimit,
+                    job = nil
                 }
             end
         end
