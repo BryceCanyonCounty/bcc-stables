@@ -1,6 +1,13 @@
 local Core = exports.vorp_core:GetCore()
 local BccUtils = exports['bcc-utils'].initiate()
 local CooldownData = {}
+local DevModeActive = Config.devMode
+
+local function DebugPrint(message)
+    if DevModeActive then
+        print('^1[DEV MODE] ^4' .. message)
+    end
+end
 
 if Config.discord.active == true then
     Discord = BccUtils.Discord.setup(Config.discord.webhookURL, Config.discord.title, Config.discord.avatar)
@@ -224,7 +231,7 @@ RegisterNetEvent('bcc-stables:UpdateHorseXp', function(Xp, horseId)
     LogToDiscord(charid, _U('discordHorseXPGain'))
 end)
 
-RegisterNetEvent('bcc-stables:SaveHorseStatsToDb', function(health, stamina, horseId)
+RegisterNetEvent('bcc-stables:SaveHorseStatsToDb', function(health, stamina, id)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
@@ -232,9 +239,13 @@ RegisterNetEvent('bcc-stables:SaveHorseStatsToDb', function(health, stamina, hor
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
+    local horseHealth = tonumber(health) or 100
+    local horseStamina = tonumber(stamina) or 100
+    local horseId = tonumber(id)
 
+    print("Saving horse stats to DB:", horseId, horseHealth, horseStamina)
     MySQL.query.await('UPDATE `player_horses` SET `health` = ?, `stamina` = ? WHERE id = ? AND `identifier` = ? AND `charid` = ?',
-    { health, stamina, horseId, identifier, charid })
+    { horseHealth, horseStamina, horseId, identifier, charid })
 end)
 
 RegisterNetEvent('bcc-stables:SelectHorse', function(data)
@@ -289,7 +300,11 @@ end)
 Core.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
     local src = source
     local user = Core.getUser(src)
-    if not user then return cb(false) end
+
+    if not user then
+        DebugPrint('User not found for source: ' .. tostring(src))
+        return cb(false)
+    end
 
     local character = user.getUsedCharacter
 
@@ -314,7 +329,7 @@ Core.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
         return cb(false)
     end
 
-    local horseData = {
+    cb({
         model = selectedHorse.model,
         name = selectedHorse.name,
         components = selectedHorse.components,
@@ -325,23 +340,26 @@ Core.Callback.Register('bcc-stables:GetHorseData', function(source, cb)
         health = selectedHorse.health,
         stamina = selectedHorse.stamina,
         writhe = selectedHorse.writhe
-    }
-    return cb(horseData)
+    })
 end)
 
-RegisterNetEvent('bcc-stables:GetMyHorses', function()
+Core.Callback.Register('bcc-stables:GetMyHorses', function(source, cb)
     local src = source
     local user = Core.getUser(src)
-    if not user then return end
+
+    -- Check if the user exists
+    if not user then
+        DebugPrint('User not found for source: ' .. tostring(src))
+        return cb(false)
+    end
 
     local character = user.getUsedCharacter
     local identifier = character.identifier
     local charid = character.charIdentifier
 
-    local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ? AND `identifier` = ? AND `dead` = ?',
-    { charid, identifier, 0 })
+    local horses = MySQL.query.await('SELECT * FROM `player_horses` WHERE `charid` = ? AND `identifier` = ? AND `dead` = ?', { charid, identifier, 0 })
 
-    TriggerClientEvent('bcc-stables:ReceiveHorsesData', src, horses)
+    cb(horses)
 end)
 
 Core.Callback.Register('bcc-stables:UpdateComponents', function(source, cb, encodedComponents, horseId)
