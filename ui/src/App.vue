@@ -24,13 +24,8 @@ export default {
           this.$store.dispatch("setHorses", event.data.shopData);
           this.$store.dispatch("setShopName", event.data.location);
           this.$store.dispatch("setTranslations", event.data.translations);
-          this.$store.dispatch(
-            "setComponents",
-            Object.fromEntries(Object.entries(event.data.compData).sort())
-          );
+          this.$store.dispatch("setComponents", Object.fromEntries(Object.entries(event.data.compData).sort()));
           this.$store.dispatch("setCurrencyType", event.data.currencyType);
-          break;
-        case "updateMyHorses":
           this.$store.dispatch("setMyHorses", event.data.myHorsesData);
           break;
         case "hide":
