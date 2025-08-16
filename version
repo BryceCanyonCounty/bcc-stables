@@ -1,2 +1,7 @@
+<1.7.5>
+- Fix horse component loading after server restart
+- Add temporary work around for horse health issue
+- Fix job matched horses when menu is displayed
+
 <1.7.4>
 - Add missing comma in sql file
