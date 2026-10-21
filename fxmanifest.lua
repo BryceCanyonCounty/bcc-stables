@@ -1,38 +1,10 @@
 fx_version 'cerulean'
+game 'rdr3'
 rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aware my resources *will* become incompatible once RedM ships.'
 
-game 'rdr3'
-lua54 'yes'
 author 'BCC Team'
+description 'BCC Stables for Feather Framework - development scaffold'
+version '0.0.0'
 
-shared_scripts {
-    'config/*.lua',
-    'locale.lua',
-    'languages/*.lua'
-}
-
-client_scripts {
-    'client/dataview.lua',
-    'client/main.lua',
-    'client/horseinfo.lua',
-    'client/menus/*.lua',
-}
-
-server_scripts {
-    '@oxmysql/lib/MySQL.lua',
-    'server/main.lua'
-}
-
-ui_page {
-    'ui/index.html'
-}
-
-files {
-    "ui/index.html",
-    "ui/js/*.*",
-    "ui/css/*.*",
-    "ui/fonts/*.*",
-    "ui/img/*.*"
-}
-
-version '1.7.5'
+-- Metadata-only baseline. Add runtime scripts and dependencies after the
+-- corresponding Feather contract integrations have been implemented.
