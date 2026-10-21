@@ -15,11 +15,11 @@ or live RedM acceptance have been completed.
 
 ## Authoritative plan
 
-The master plan lives in the sibling `feather-framework-docs` repository at
-`feather-stables/FEATHER_STABLES_MASTER_PLAN.md`.
+The master plan lives in the sibling `gameplay-resource-docs` repository at
+`bcc-stables/BCC_STABLES_MASTER_PLAN.md`.
 
 Shared workspace location:
-`C:/coding/feather-scripts/feather-framework-docs/feather-stables/FEATHER_STABLES_MASTER_PLAN.md`.
+`C:/coding/feather-scripts/gameplay-resource-docs/bcc-stables/BCC_STABLES_MASTER_PLAN.md`.
 
 Start with Phase 0: verify exact local Feather API contracts and prove entity
 ownership, native behavior and interrupted settlement recovery before gameplay.
